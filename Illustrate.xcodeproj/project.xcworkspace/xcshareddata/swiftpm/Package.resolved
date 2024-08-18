@@ -1,0 +1,15 @@
+{
+  "originHash" : "7b6115d4dfb0145e6b61aa4ba7820f5747c39cb881f4ac3ecb3161472361c5ef",
+  "pins" : [
+    {
+      "identity" : "imagecropper",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/marshallino16/ImageCropper",
+      "state" : {
+        "branch" : "master",
+        "revision" : "b73abb4f342497695b14d7a04a6b5a38cd4c9c26"
+      }
+    }
+  ],
+  "version" : 3
+}
