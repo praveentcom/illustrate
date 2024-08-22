@@ -421,17 +421,18 @@ func getUniversalColorFromHex(hexString: String) -> UIColor {
 }
 #endif
 
-func getAspectRatio(dimension: String) -> (width: Int, height: Int, actualWidth: Int, actualHeight: Int) {
+func getAspectRatio(dimension: String) -> (width: Int, height: Int, actualWidth: Int, actualHeight: Int, ratio: String) {
     let dimensions = dimension.split(separator: "x")
     
     guard dimensions.count == 2,
           let width = Int(dimensions[0]),
           let height = Int(dimensions[1]),
           width > 0, height > 0 else {
-        return (width: 0, height: 0, actualWidth: 0, actualHeight: 0)
+        return (width: 0, height: 0, actualWidth: 0, actualHeight: 0, ratio: "0:0")
     }
     
     let gcdValue = gcd(width, height)
     
-    return (width: width / gcdValue, height: height / gcdValue, actualWidth: width, actualHeight: height)
+    return (
+        width: width / gcdValue, height: height / gcdValue, actualWidth: width, actualHeight: height, ratio: "\(width / gcdValue):\(height / gcdValue)")
 }

@@ -65,6 +65,11 @@
 		ACCAC5D72C722540009A2EA8 /* GalleryVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCAC5D62C722540009A2EA8 /* GalleryVideoView.swift */; };
 		ACE258012C738A6D00A989CA /* UsageMetricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE258002C738A6D00A989CA /* UsageMetricsView.swift */; };
 		ACE258032C738D3500A989CA /* BackgroundColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE258022C738D3500A989CA /* BackgroundColors.swift */; };
+		ACEC4D8C2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D8B2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift */; };
+		ACEC4D8E2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D8D2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift */; };
+		ACEC4D902C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D8F2C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift */; };
+		ACEC4D922C77D1D700928688 /* EditPromptImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D912C77D1D700928688 /* EditPromptImageView.swift */; };
+		ACEC4D942C77D2DE00928688 /* G_REPLICATE_FLUX_DEV_EDIT.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D932C77D2DE00928688 /* G_REPLICATE_FLUX_DEV_EDIT.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -140,6 +145,11 @@
 		ACCAC5D62C722540009A2EA8 /* GalleryVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryVideoView.swift; sourceTree = "<group>"; };
 		ACE258002C738A6D00A989CA /* UsageMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageMetricsView.swift; sourceTree = "<group>"; };
 		ACE258022C738D3500A989CA /* BackgroundColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundColors.swift; sourceTree = "<group>"; };
+		ACEC4D8B2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_FLUX_SCHNELL.swift; sourceTree = "<group>"; };
+		ACEC4D8D2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_FLUX_DEV.swift; sourceTree = "<group>"; };
+		ACEC4D8F2C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_FLUX_PRO.swift; sourceTree = "<group>"; };
+		ACEC4D912C77D1D700928688 /* EditPromptImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPromptImageView.swift; sourceTree = "<group>"; };
+		ACEC4D932C77D2DE00928688 /* G_REPLICATE_FLUX_DEV_EDIT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_FLUX_DEV_EDIT.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -249,6 +259,7 @@
 		AC2CE33F2C69F77000893DC2 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				ACEC4D8A2C77C2C100928688 /* Replicate */,
 				ACA0FF552C6D3BD800A8C1D5 /* Stability */,
 				AC2CE3492C6A36DC00893DC2 /* OpenAI */,
 			);
@@ -354,6 +365,7 @@
 				ACCAC5B62C70A6F3009A2EA8 /* EraseMaskImageView.swift */,
 				ACCAC5B82C70A70C009A2EA8 /* SearchReplaceImageView.swift */,
 				ACCAC5BA2C70A71F009A2EA8 /* RemoveBackgroundImageView.swift */,
+				ACEC4D912C77D1D700928688 /* EditPromptImageView.swift */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -424,6 +436,17 @@
 				ACE258002C738A6D00A989CA /* UsageMetricsView.swift */,
 			);
 			path = Usage;
+			sourceTree = "<group>";
+		};
+		ACEC4D8A2C77C2C100928688 /* Replicate */ = {
+			isa = PBXGroup;
+			children = (
+				ACEC4D8B2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift */,
+				ACEC4D8D2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift */,
+				ACEC4D8F2C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift */,
+				ACEC4D932C77D2DE00928688 /* G_REPLICATE_FLUX_DEV_EDIT.swift */,
+			);
+			path = Replicate;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -507,6 +530,7 @@
 				ACAB78702C6BB6B700EED0E8 /* HistoryView.swift in Sources */,
 				AC2CE33C2C69F09A00893DC2 /* Generation.swift in Sources */,
 				AC2CE33E2C69F13300893DC2 /* ImageSet.swift in Sources */,
+				ACEC4D942C77D2DE00928688 /* G_REPLICATE_FLUX_DEV_EDIT.swift in Sources */,
 				ACCAC5C12C70E7CA009A2EA8 /* G_STABILITY_ERASE.swift in Sources */,
 				ACA0FF5D2C6D4A2500A8C1D5 /* G_STABILITY_SD3.swift in Sources */,
 				ACAB786C2C6BB62E00EED0E8 /* GenerateView.swift in Sources */,
@@ -527,6 +551,7 @@
 				AC2CE31F2C694B5D00893DC2 /* Partner.swift in Sources */,
 				AC2CE3362C69C93100893DC2 /* AddConnectionView.swift in Sources */,
 				ACAB78602C6B1C2E00EED0E8 /* GalleryGridView.swift in Sources */,
+				ACEC4D902C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift in Sources */,
 				ACCAC5B92C70A70C009A2EA8 /* SearchReplaceImageView.swift in Sources */,
 				AC2CE3312C69C8CA00893DC2 /* SettingsView.swift in Sources */,
 				ACCAC5C52C7115F7009A2EA8 /* G_STABILITY_REMOVE_BACKGROUND.swift in Sources */,
@@ -535,6 +560,7 @@
 				ACAB78672C6B7C4600EED0E8 /* AnimationAdapter.swift in Sources */,
 				ACAB786A2C6B899500EED0E8 /* SectionKeyValueView.swift in Sources */,
 				ACCAC5BD2C70CE7B009A2EA8 /* G_STABILITY_OUTPAINT.swift in Sources */,
+				ACEC4D8E2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift in Sources */,
 				ACA0FF572C6D3BE600A8C1D5 /* G_STABILITY_CORE.swift in Sources */,
 				AC2CE3342C69C90B00893DC2 /* ConnectionsView.swift in Sources */,
 				ACCAC5BF2C70DC8A009A2EA8 /* G_STABILITY_INPAINT.swift in Sources */,
@@ -545,6 +571,7 @@
 				ACCAC5B32C70A6C0009A2EA8 /* EditExpandImageView.swift in Sources */,
 				ACCAC5D72C722540009A2EA8 /* GalleryVideoView.swift in Sources */,
 				AC2CE3412C69F77B00893DC2 /* NetworkAdapter.swift in Sources */,
+				ACEC4D922C77D1D700928688 /* EditPromptImageView.swift in Sources */,
 				ACAB78652C6B53FC00EED0E8 /* GenerationImageView.swift in Sources */,
 				AC2CE34B2C6A36F800893DC2 /* G_OPENAI_DALLE3.swift in Sources */,
 				ACCAC5C32C7100CD009A2EA8 /* G_STABILITY_SEARCH_AND_REPLACE.swift in Sources */,
@@ -557,6 +584,7 @@
 				AC2CE32F2C69C8BD00893DC2 /* GalleryImageView.swift in Sources */,
 				AC2CE30D2C69478300893DC2 /* IllustrateApp.swift in Sources */,
 				ACCAC5B52C70A6CB009A2EA8 /* EditMaskImageView.swift in Sources */,
+				ACEC4D8C2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

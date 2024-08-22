@@ -30,7 +30,7 @@ class G_STABILITY_CREATIVE_UPSCALE: ImageGenerationProtocol {
         var attempts = 0
         while attempts < maxAttempts {
             print("Polling for result \(requestId) - attempt \(attempts)/\(maxAttempts)...")
-            try await Task.sleep(nanoseconds: 10_000_000_000)
+            try await Task.sleep(nanoseconds: 8_000_000_000)
             
             do {
                 let response = try await NetworkAdapter.shared.performRequest(

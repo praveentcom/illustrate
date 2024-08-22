@@ -106,7 +106,7 @@ struct RequestsView: View {
         }
         .width(min: 120, ideal: 120, max: 120)
         TableColumn("Cost", value: \.creditUsed) { generation in
-            Text("\(String(format: "%.2f", generation.creditUsed).replacingOccurrences(of: ".00", with: "")) \(getPartner(modelId: generation.modelId)?.creditCurrency.rawValue ?? "Credits")")
+            Text("\(String(format: "%.3f", generation.creditUsed).replacingOccurrences(of: ".000", with: "")) \(getPartner(modelId: generation.modelId)?.creditCurrency.rawValue ?? "Credits")")
         }
         .width(min: 120, ideal: 120, max: 120)
         TableColumn("Color Style", value: \.artStyle.rawValue)

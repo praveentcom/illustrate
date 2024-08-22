@@ -8,6 +8,7 @@ enum EnumPartnerCode: String, Codable, CaseIterable, Identifiable {
     case GOOGLE_CLOUD = "Google Cloud"
     case OPENAI = "OpenAI"
     case STABILITY_AI = "Stability AI"
+    case REPLICATE = "Replicate"
 }
 
 enum EnumPartnerKeyType: String, Codable, CaseIterable, Identifiable {
@@ -133,6 +134,16 @@ let partners = [
         partnerDescription: "High-performance infrastructure for cloud computing, data analytics & machine learning. Secure, reliable and high performance cloud services.",
         keyStructure: "\"project_id\":\\s*\"[a-z0-9\\-]+\",\\s*\"private_key\":\\s*\"-----BEGIN PRIVATE KEY-----\\\\n(?:[^\\\\n]+\\\\n)+-----END PRIVATE KEY-----\\\\n\",\\s*\"client_email\":\\s*\"[a-z0-9\\-]+@[a-z0-9\\-]+\\.iam\\.gserviceaccount\\.com\"",
         keyType: EnumPartnerKeyType.JSON,
+        creditCurrency: EnumPartnerCreditCurrency.USD,
+        active: true
+    ),
+    Partner(
+        partnerId: UUID(uuidString: "10000000-0000-0000-0000-000000000004")!,
+        partnerCode: EnumPartnerCode.REPLICATE,
+        partnerName: "Replicate",
+        partnerDescription: "Replicate is making machine learning accessible to every software developer.",
+        keyStructure: "^r8_-[a-zA-Z0-9]{38}$",
+        keyType: EnumPartnerKeyType.API,
         creditCurrency: EnumPartnerCreditCurrency.USD,
         active: true
     ),

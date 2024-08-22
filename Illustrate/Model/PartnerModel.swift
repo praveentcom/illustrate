@@ -18,6 +18,10 @@ enum EnumPartnerModelCode: String, Codable {
     case STABILITY_REMOVE_BACKGROUND = "STABILITY_REMOVE_BACKGROUND"
     case STABILITY_IMAGE_TO_VIDEO = "STABILITY_IMAGE_TO_VIDEO"
     case GCLOUD_IMAGEN2 = "GCLOUD_IMAGEN2"
+    case REPLICATE_FLUX_SCHNELL = "REPLICATE_FLUX_SCHNELL"
+    case REPLICATE_FLUX_DEV = "REPLICATE_FLUX_DEV"
+    case REPLICATE_FLUX_DEV_EDIT = "REPLICATE_FLUX_DEV_EDIT"
+    case REPLICATE_FLUX_PRO = "REPLICATE_FLUX_PRO"
 }
 
 @Model
@@ -35,6 +39,7 @@ final class PartnerModel: Codable {
         case modelLaunchDate
         case modelDeprecationDate
         case modelGenerateBaseURL
+        case modelStatusBaseURL
         case modelAPIDocumentationURL
         case active
     }
@@ -51,6 +56,7 @@ final class PartnerModel: Codable {
     var modelLaunchDate: Date
     var modelDeprecationDate: Date?
     var modelGenerateBaseURL: String
+    var modelStatusBaseURL: String?
     var modelAPIDocumentationURL: String
     var active: Bool
     
@@ -67,6 +73,7 @@ final class PartnerModel: Codable {
         modelLaunchDate: Date,
         modelDeprecationDate: Date? = nil,
         modelGenerateBaseURL: String,
+        modelStatusBaseURL: String? = nil,
         modelAPIDocumentationURL: String,
         active: Bool
     ) {
@@ -82,6 +89,7 @@ final class PartnerModel: Codable {
         self.modelLaunchDate = modelLaunchDate
         self.modelDeprecationDate = modelDeprecationDate
         self.modelGenerateBaseURL = modelGenerateBaseURL
+        self.modelStatusBaseURL = modelStatusBaseURL
         self.modelAPIDocumentationURL = modelAPIDocumentationURL
         self.active = active
     }
@@ -100,6 +108,7 @@ final class PartnerModel: Codable {
         modelLaunchDate = try container.decode(Date.self, forKey: .modelLaunchDate)
         modelDeprecationDate = try container.decodeIfPresent(Date.self, forKey: .modelDeprecationDate)
         modelGenerateBaseURL = try container.decode(String.self, forKey: .modelGenerateBaseURL)
+        modelStatusBaseURL = try container.decodeIfPresent(String.self, forKey: .modelStatusBaseURL)
         modelAPIDocumentationURL = try container.decode(String.self, forKey: .modelAPIDocumentationURL)
         active = try container.decode(Bool.self, forKey: .active)
     }
@@ -118,6 +127,7 @@ final class PartnerModel: Codable {
         try container.encode(modelLaunchDate, forKey: .modelLaunchDate)
         try container.encode(modelDeprecationDate, forKey: .modelDeprecationDate)
         try container.encode(modelGenerateBaseURL, forKey: .modelGenerateBaseURL)
+        try container.encode(modelStatusBaseURL, forKey: .modelStatusBaseURL)
         try container.encode(modelAPIDocumentationURL, forKey: .modelAPIDocumentationURL)
         try container.encode(active, forKey: .active)
     }
@@ -373,6 +383,74 @@ let partnerModels = [
         modelDeprecationDate: nil,
         modelGenerateBaseURL: "us-central1-aiplatform.googleapis.com",
         modelAPIDocumentationURL: "https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/image-generation",
+        active: true
+    ),
+    PartnerModel(
+        partnerId: UUID(uuidString: "10000000-0000-0000-0000-000000000004")!,
+        modelId: UUID(uuidString: "20000000-0000-0000-0000-000000000401")!,
+        modelCode: EnumPartnerModelCode.REPLICATE_FLUX_PRO,
+        modelSetType: EnumSetType.GENERATE,
+        modelName: "FLUX.1 [pro]",
+        modelDescription: "State-of-the-art image generation with top of the line prompt following, visual quality, image detail and output diversity.",
+        modelMaxInputTokens: 256,
+        modelSupportedImageDimensions: ["1024x1024", "1920x1080", "1024x1536", "1620x1080", "1280x1024", "1080x1920"],
+        modelNegativePromptSupport: false,
+        modelLaunchDate: Date(timeIntervalSince1970: 1702440977), // 2023-12-13 12:16:17
+        modelDeprecationDate: nil,
+        modelGenerateBaseURL: "https://api.replicate.com/v1/models/black-forest-labs/flux-pro/predictions",
+        modelStatusBaseURL: "https://api.replicate.com/v1/predictions",
+        modelAPIDocumentationURL: "https://replicate.com/black-forest-labs/flux-pro?input=http",
+        active: true
+    ),
+    PartnerModel(
+        partnerId: UUID(uuidString: "10000000-0000-0000-0000-000000000004")!,
+        modelId: UUID(uuidString: "20000000-0000-0000-0000-000000000402")!,
+        modelCode: EnumPartnerModelCode.REPLICATE_FLUX_DEV,
+        modelSetType: EnumSetType.GENERATE,
+        modelName: "FLUX.1 [dev]",
+        modelDescription: "A 12 billion parameter rectified flow transformer capable of generating images from text descriptions.",
+        modelMaxInputTokens: 256,
+        modelSupportedImageDimensions: ["1024x1024", "1920x1080", "2560x1080", "1024x1536", "1620x1080", "1280x1024", "1080x1920", "1080x2520"],
+        modelNegativePromptSupport: false,
+        modelLaunchDate: Date(timeIntervalSince1970: 1702440977), // 2023-12-13 12:16:17
+        modelDeprecationDate: nil,
+        modelGenerateBaseURL: "https://api.replicate.com/v1/models/black-forest-labs/flux-dev/predictions",
+        modelStatusBaseURL: "https://api.replicate.com/v1/predictions",
+        modelAPIDocumentationURL: "https://replicate.com/black-forest-labs/flux-dev?input=http",
+        active: true
+    ),
+    PartnerModel(
+        partnerId: UUID(uuidString: "10000000-0000-0000-0000-000000000004")!,
+        modelId: UUID(uuidString: "20000000-0000-0000-0000-000000000403")!,
+        modelCode: EnumPartnerModelCode.REPLICATE_FLUX_DEV_EDIT,
+        modelSetType: EnumSetType.EDIT_PROMPT,
+        modelName: "FLUX.1 [dev]",
+        modelDescription: "A 12 billion parameter rectified flow transformer capable of generating images from text descriptions.",
+        modelMaxInputTokens: 256,
+        modelSupportedImageDimensions: ["1024x1024", "1920x1080", "2560x1080", "1024x1536", "1620x1080", "1280x1024", "1080x1920", "1080x2520"],
+        modelNegativePromptSupport: false,
+        modelLaunchDate: Date(timeIntervalSince1970: 1702440977), // 2023-12-13 12:16:17
+        modelDeprecationDate: nil,
+        modelGenerateBaseURL: "https://api.replicate.com/v1/models/black-forest-labs/flux-dev/predictions",
+        modelStatusBaseURL: "https://api.replicate.com/v1/predictions",
+        modelAPIDocumentationURL: "https://replicate.com/black-forest-labs/flux-dev?input=http",
+        active: true
+    ),
+    PartnerModel(
+        partnerId: UUID(uuidString: "10000000-0000-0000-0000-000000000004")!,
+        modelId: UUID(uuidString: "20000000-0000-0000-0000-000000000404")!,
+        modelCode: EnumPartnerModelCode.REPLICATE_FLUX_SCHNELL,
+        modelSetType: EnumSetType.GENERATE,
+        modelName: "FLUX.1 [schnell]",
+        modelDescription: "The fastest image generation model tailored for local development and personal use.",
+        modelMaxInputTokens: 256,
+        modelSupportedImageDimensions: ["1024x1024", "1920x1080", "2560x1080", "1024x1536", "1620x1080", "1280x1024", "1080x1920", "1080x2520"],
+        modelNegativePromptSupport: false,
+        modelLaunchDate: Date(timeIntervalSince1970: 1702440977), // 2023-12-13 12:16:17
+        modelDeprecationDate: nil,
+        modelGenerateBaseURL: "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions",
+        modelStatusBaseURL: "https://api.replicate.com/v1/predictions",
+        modelAPIDocumentationURL: "https://replicate.com/black-forest-labs/flux-schnell?input=http",
         active: true
     ),
 ]

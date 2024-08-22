@@ -8,6 +8,7 @@ enum EnumSetType: String, Codable, CaseIterable, Identifiable {
     case GENERATE = "Generate Image"
     case EDIT_UPSCALE = "Upscale Image"
     case EDIT_EXPAND = "Expand Image"
+    case EDIT_PROMPT = "Edit with Prompt"
     case EDIT_MASK = "Edit with Mask"
     case EDIT_MASK_ERASE = "Erase with Mask"
     case EDIT_REPLACE = "Search and Replace"
@@ -23,6 +24,8 @@ func getSetTypeInfo(setType: EnumSetType) -> (label: String, iconString: String)
         return ("Upscale Image", "arrow.up.forward.app")
     case .EDIT_EXPAND:
         return ("Expand Image", "arrow.up.left.and.arrow.down.right")
+    case .EDIT_PROMPT:
+        return ("Edit with Prompt", "character.cursor.ibeam")
     case .EDIT_MASK:
         return ("Edit with Mask", "pencil.and.scribble")
     case .EDIT_MASK_ERASE:
@@ -47,6 +50,9 @@ struct NavigationSectionForImageGenerations: View {
             }
             NavigationLink(destination: EditExpandImageView()) {
                 Label(getSetTypeInfo(setType: .EDIT_EXPAND).label, systemImage: getSetTypeInfo(setType: .EDIT_EXPAND).iconString)
+            }
+            NavigationLink(destination: EditPromptImageView()) {
+                Label(getSetTypeInfo(setType: .EDIT_PROMPT).label, systemImage: getSetTypeInfo(setType: .EDIT_PROMPT).iconString)
             }
             NavigationLink(destination: EditMaskImageView()) {
                 Label(getSetTypeInfo(setType: .EDIT_MASK).label, systemImage: getSetTypeInfo(setType: .EDIT_MASK).iconString)

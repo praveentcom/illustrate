@@ -212,7 +212,7 @@ struct GenerationVideoView: View {
                        !modelRevisedPrompt.isEmpty {
                         SectionKeyValueView(icon: "text.quote", key: "Response Prompt", value: modelRevisedPrompt)
                     }
-                    SectionKeyValueView(icon: "dollarsign", key: "Cost", value: "\(String(format: "%.2f", getSelectedGeneration()!.creditUsed).replacingOccurrences(of: ".00", with: "")) \(getPartner(modelId: getSelectedGeneration()!.modelId)?.creditCurrency.rawValue ?? "Credits")")
+                    SectionKeyValueView(icon: "dollarsign", key: "Cost", value: "\(String(format: "%.3f", getSelectedGeneration()!.creditUsed).replacingOccurrences(of: ".000", with: "")) \(getPartner(modelId: getSelectedGeneration()!.modelId)?.creditCurrency.rawValue ?? "Credits")")
                 }
                 
                 Section("Video Metadata") {

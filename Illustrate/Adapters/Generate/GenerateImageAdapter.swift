@@ -96,6 +96,14 @@ func getImageGenerationAdapter(imageGenerationRequest: ImageGenerationRequest) t
         return G_STABILITY_SEARCH_AND_REPLACE()
     case EnumPartnerModelCode.STABILITY_REMOVE_BACKGROUND:
         return G_STABILITY_REMOVE_BACKGROUND()
+    case EnumPartnerModelCode.REPLICATE_FLUX_SCHNELL:
+        return G_REPLICATE_FLUX_SCHNELL()
+    case EnumPartnerModelCode.REPLICATE_FLUX_DEV:
+        return G_REPLICATE_FLUX_DEV()
+    case EnumPartnerModelCode.REPLICATE_FLUX_DEV_EDIT:
+        return G_REPLICATE_FLUX_DEV_EDIT()
+    case EnumPartnerModelCode.REPLICATE_FLUX_PRO:
+        return G_REPLICATE_FLUX_PRO()
     default:
         throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
     }
