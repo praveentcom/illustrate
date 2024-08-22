@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import SwiftUI
 
 enum EnumPartnerCode: String, Codable, CaseIterable, Identifiable {
     var id : String { UUID().uuidString }
@@ -78,6 +79,29 @@ final class Partner: Codable, Identifiable {
         try container.encode(keyType, forKey: .keyType)
         try container.encode(creditCurrency, forKey: .creditCurrency)
         try container.encode(active, forKey: .active)
+    }
+}
+
+func getPartner(modelId: String) -> Partner? {
+    let model = getModel(modelId: modelId)
+    return partners.first(where: { $0.partnerId == model?.partnerId })
+}
+
+func getPartner(partnerId: UUID) -> Partner? {
+    return partners.first(where: { $0.partnerId == partnerId })
+}
+
+struct PartnerLabel: View {
+    var partner: Partner
+    
+    var body: some View {
+        HStack {
+            Image("\(partner.partnerCode)_square".lowercased())
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20, height: 20)
+            Text(partner.partnerName)
+        }
     }
 }
 

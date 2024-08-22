@@ -61,6 +61,8 @@ struct GenerateImageView: View {
             
             isGenerating = false
             
+            print(response)
+            
             return response;
         }
         
@@ -164,6 +166,7 @@ struct GenerateImageView: View {
                                         .frame(width: 20, height: 20)
                                     #endif
                                     Text(quality.rawValue)
+                                        .monospaced()
                                 }
                                 .tag(quality)
                             }
@@ -201,7 +204,8 @@ struct GenerateImageView: View {
                         
                         Picker("Number of images", selection: $numberOfImages) {
                             ForEach(1...4, id: \.self) { count in
-                                Text("\(count)").tag(count)
+                                Text("\(count)")
+                                    .tag(count)
                             }
                         }
                         #if !os(macOS)

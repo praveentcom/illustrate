@@ -159,6 +159,18 @@ struct GenerationImageView: View {
                                         .frame(maxHeight: 400)
                                         .shadow(color: .black.opacity(0.4), radius: 8)
                                         .frame(maxWidth: .infinity)
+                                        .contextMenu {
+                                            Button("Download", systemImage: "arrow.down") {
+                                                image.saveImageToDownloads(fileName: getSelectedGeneration()!.id.uuidString)
+                                            }
+                                            Button("Share", systemImage: "square.and.arrow.up") {
+                                                image.shareImage()
+                                            }
+                                            Divider()
+                                            Button("Delete", systemImage: "trash", role: .destructive) {
+                                                showDeleteConfirmation = true
+                                            }
+                                        }
                                     if (requestImage != nil || maskImage != nil) {
                                         HStack {
                                             Image(systemName: "info.circle")
@@ -184,7 +196,9 @@ struct GenerationImageView: View {
                     if generations.count > 1 {
                         Picker("Select Image", selection: $generationIndex) {
                             ForEach(0..<generations.count, id: \.self) { index in
-                                Text("\(index + 1)").tag(index)
+                                Text("\(index + 1)")
+                                    .monospaced()
+                                    .tag(index)
                             }
                         }
                         .pickerStyle(.segmented)
@@ -192,40 +206,72 @@ struct GenerationImageView: View {
                     }
                 }
                 
-                Section("User Prompts") {
-                    SectionKeyValueView(icon: "text.quote", key: "Requested Prompt", value: getSelectedGeneration()!.prompt)
-                    if (getSelectedGeneration()!.negativePrompt != nil) {
-                        SectionKeyValueView(icon: "text.badge.minus", key: "Negative Prompt", value: getSelectedGeneration()!.negativePrompt!)
-                    }
-                    if (getSelectedGeneration()!.searchPrompt != nil) {
-                        SectionKeyValueView(icon: "rectangle.and.text.magnifyingglass", key: "Search Prompt", value: getSelectedGeneration()!.searchPrompt!)
+                if let prompt = getSelectedGeneration()?.prompt,
+                   !prompt.isEmpty {
+                    Section("User Prompts") {
+                        SectionKeyValueView(icon: "text.quote", key: "Requested Prompt", value: prompt)
+                        if let negativePrompt = getSelectedGeneration()?.negativePrompt,
+                           !negativePrompt.isEmpty {
+                            SectionKeyValueView(icon: "text.badge.minus", key: "Negative Prompt", value: negativePrompt)
+                        }
+                        if let searchPrompt = getSelectedGeneration()?.searchPrompt,
+                           !searchPrompt.isEmpty {
+                            SectionKeyValueView(icon: "rectangle.and.text.magnifyingglass", key: "Search Prompt", value: searchPrompt)
+                        }
                     }
                 }
                 
-                Section("Auto Enhance") {
+                Section("Model Response") {
+                    if let partner = getPartner(modelId: getSelectedGeneration()!.modelId) {
+                        SectionKeyValueView(
+                            icon: "link",
+                            key: "Partner",
+                            value: "",
+                            customValueView: PartnerLabel(partner: partner)
+                        )
+                    }
+                    if let model = getModel(modelId: getSelectedGeneration()!.modelId) {
+                        SectionKeyValueView(
+                            icon: "link",
+                            key: "Model",
+                            value: "",
+                            customValueView: ModelLabel(model: model)
+                        )
+                    }
                     SectionKeyValueView(icon: "sparkles", key: "Auto-enhance Opted", value: getSelectedGeneration()!.promptEnhanceOpted ? "Yes" : "No")
-                    if (getSelectedGeneration()!.promptEnhanceOpted) {
+                    if let promptEnhanceOpted = getSelectedGeneration()?.promptEnhanceOpted,
+                       let promptAfterEnhance = getSelectedGeneration()?.promptAfterEnhance,
+                       !promptAfterEnhance.isEmpty,
+                       promptEnhanceOpted {
                         SectionKeyValueView(icon: "text.quote", key: "Enhanced Prompt", value: getSelectedGeneration()!.promptAfterEnhance)
                     }
+                    if let modelRevisedPrompt = getSelectedGeneration()?.modelRevisedPrompt,
+                       !modelRevisedPrompt.isEmpty {
+                        SectionKeyValueView(icon: "text.quote", key: "Response Prompt", value: modelRevisedPrompt)
+                    }
+                    SectionKeyValueView(icon: "dollarsign", key: "Cost", value: "\(String(format: "%.2f", getSelectedGeneration()!.creditUsed).replacingOccurrences(of: ".00", with: "")) \(getPartner(modelId: getSelectedGeneration()!.modelId)?.creditCurrency.rawValue ?? "Credits")")
                 }
-                Section("Model Response") {
-                    SectionKeyValueView(icon: "text.quote", key: "Response Prompt", value: getSelectedGeneration()!.modelRevisedPrompt ?? getSelectedGeneration()!.prompt)
-                    SectionKeyValueView(icon: "dollarsign", key: "Cost", value: "\(getSelectedGeneration()!.creditUsed)")
-                }
+                
                 Section("Image Metadata") {
-                    SectionKeyValueView(icon: "arrow.down.left.and.arrow.up.right.rectangle", key: "Image Dimensions", value: getSelectedGeneration()!.artDimensions)
                     SectionKeyValueView(
-                        icon: "internaldrive",
-                        key: "Image Size",
-                        value: String(format: "%.2f MB", Double(getSelectedGeneration()!.size) / 1000000.0)
+                        icon: "aspectratio.fill",
+                        key: "Image Dimensions",
+                        value: getSelectedGeneration()!.artDimensions.replacingOccurrences(of: "x", with: " x "),
+                        monospaced: true
                     )
-                    SectionKeyValueView(icon: "paintpalette", key: "Color Style", value: getSelectedGeneration()!.artStyle.rawValue)
-                    SectionKeyValueView(icon: "photo", key: "Quality", value: getSelectedGeneration()!.artQuality.rawValue)
-                    SectionKeyValueView(icon: "photo.on.rectangle.angled.fill", key: "Art Style", value: getSelectedGeneration()!.artVariant.rawValue)
+                    SectionKeyValueView(
+                        icon: "internaldrive.fill",
+                        key: "Image Size",
+                        value: String(format: "%.2f MB", Double(getSelectedGeneration()!.size) / 1000000.0),
+                        monospaced: true
+                    )
+                    SectionKeyValueView(icon: "paintpalette.fill", key: "Color Style", value: getSelectedGeneration()!.artStyle.rawValue)
+                    SectionKeyValueView(icon: "paintbrush.fill", key: "Art Variant", value: getSelectedGeneration()!.artVariant.rawValue)
+                    SectionKeyValueView(icon: "photo", key: "Image Quality", value: getSelectedGeneration()!.artQuality.rawValue, monospaced: true)
                 }
                 Section("Other Metadata") {
                     SectionKeyValueView(icon: "calendar", key: "Created", value: getSelectedGeneration()!.createdAt.formatted(
-                        date: .numeric,
+                        date: .abbreviated,
                         time: .shortened
                     ))
                 }
@@ -269,7 +315,7 @@ struct GenerationImageView: View {
                 }
             }
             ToolbarItem(placement: .destructiveAction) {
-                Button("Delete", systemImage: "trash") {
+                Button("Delete", systemImage: "trash", role: .destructive) {
                     showDeleteConfirmation = true
                 }
             }

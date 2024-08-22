@@ -6,6 +6,7 @@ struct SidebarView: View {
             NavigationSectionForImageGenerations()
             NavigationSectionForVideoGenerations()
             NavigationSectionForGenerationHistory()
+            NavigationSectionForUsageMetrics()
             Section ("Settings") {
                 NavigationLink(destination: ConnectionsView()) {
                     Label("Partner Connections", systemImage: "link")

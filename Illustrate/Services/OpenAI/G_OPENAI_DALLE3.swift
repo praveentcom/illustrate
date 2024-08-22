@@ -2,23 +2,52 @@ import Foundation
 
 class G_OPENAI_DALLE3: ImageGenerationProtocol {
     func getCreditsUsed(request: ImageGenerationRequest) -> Double {
-        return 4.0
+        switch (request.artQuality) {
+        case .STANDARD:
+            switch (request.artDimensions) {
+            case "1024x1024":
+                return 0.04
+            case "1792x1024":
+                return 0.08
+            case "1024x1792":
+                return 0.08
+            default:
+                return 0.08
+            }
+        case .HD:
+            switch (request.artDimensions) {
+            case "1024x1024":
+                return 0.08
+            case "1792x1024":
+                return 0.12
+            case "1024x1792":
+                return 0.12
+            default:
+                return 0.12
+            }
+        }
     }
 
     let model: PartnerModel = partnerModels.first(where: { $0.modelCode == EnumPartnerModelCode.OPENAI_DALLE3 })!
 
     struct ServiceRequest: Codable {
+        let model: String
         let prompt: String
-        let aspect_ratio: String
-        let style_preset: String?
-        let negative_prompt: String?
+        let n: Int
+        let size: String
+        let quality: String
+        let style: String?
+        let response_format: String?
         let user: String
         
-        init(prompt: String, aspectRatio: String, stylePreset: String?, negativePrompt: String?) {
+        init(prompt: String, aspectRatio: String, artQuality: String, stylePreset: String) {
+            self.model = "dall-e-3"
             self.prompt = prompt
-            self.aspect_ratio = aspectRatio
-            self.style_preset = stylePreset
-            self.negative_prompt = negativePrompt
+            self.n = 1
+            self.size = aspectRatio
+            self.quality = artQuality
+            self.style = stylePreset
+            self.response_format = "b64_json"
             self.user = "illustrate_user"
         }
     }
@@ -58,18 +87,14 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
 
     func getImageDimensions(artDimensions: String) -> String {
         switch artDimensions {
-        case "576x1024":
-            return "9:16"
-        case "1024x576":
-            return "16:9"
-        case "768x1024":
-            return "3:4"
-        case "1024x768":
-            return "4:3"
+        case "1792x1024":
+            return "1792x1024"
+        case "1024x1792":
+            return "1024x1792"
         case "1024x1024":
-            return "1:1"
+            return "1024x1024"
         default:
-            return "1:1"
+            return "1024x1024"
         }
     }
 
@@ -78,22 +103,23 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
         let aspectRatio = getImageDimensions(artDimensions: request.artDimensions)
 
         return ServiceRequest(
-            prompt: request.prompt,
+            prompt: "\(stylePreset) - \(request.prompt)",
             aspectRatio: aspectRatio,
-            stylePreset: stylePreset,
-            negativePrompt: request.negativePrompt
+            artQuality: request.artQuality.rawValue.lowercased(),
+            stylePreset: request.artStyle.rawValue.lowercased()
         )
     }
 
     func transformResponse(request: ImageGenerationRequest, response: NetworkResponseData) throws -> ImageGenerationResponse {
         switch response {
         case .dictionary(_, let data):
-            if let imageData = data["image"] as? String {
+            if let nestedData = data["data"] as? [[String: Any]],
+               let imageData = nestedData.first?["b64_json"] as? String {
                 return ImageGenerationResponse(
                     status: .GENERATED,
                     base64: imageData,
                     cost: getCreditsUsed(request: request),
-                    modelPrompt: request.prompt
+                    modelPrompt: nestedData.first?["revised_prompt"] as? String? ?? request.prompt
                 )
             }
             else if let errors = data["errors"] as? [String],
@@ -112,16 +138,7 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
                 )
             }
         case .array(_, let data):
-            if let firstDict = data.first,
-               let imageData = firstDict["image"] as? String {
-                return ImageGenerationResponse(
-                    status: .GENERATED,
-                    base64: imageData,
-                    cost: getCreditsUsed(request: request),
-                    modelPrompt: request.prompt
-                )
-            }
-            else if let errors = data.first?["errors"] as? [String],
+            if let errors = data.first?["errors"] as? [String],
                 let message = errors.first {
                 return ImageGenerationResponse(
                     status: .FAILED,
@@ -137,7 +154,8 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
                 )
             }
         }
-
+        
+        print("Invalid response: \(response)")
         throw NSError(domain: "Invalid response", code: -1, userInfo: nil)
     }
 
@@ -154,8 +172,8 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
                 method: "POST",
                 body: transformedRequest,
                 headers: [
-                    "Authorization": "\(request.partnerKey.value)",
-                    "Content-Type": "multipart/form-data",
+                    "Authorization": "Bearer \(request.partnerKey.value)",
+                    "Content-Type": "application/json",
                     "Accept": "application/json"
                 ]
             )

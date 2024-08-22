@@ -222,16 +222,12 @@ struct EditMaskImageView: View {
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    #if os(macOS)
                                     .frame(height: 200)
-                                    .frame(maxWidth: .infinity)
-                                    #endif
                                     .onTapGesture {
                                         isPhotoPickerOpen = true
                                     }
                             }
                         }
-                        .padding(.vertical, 6)
                         
                         HStack {
                             Spacer()

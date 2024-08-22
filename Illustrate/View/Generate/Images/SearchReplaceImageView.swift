@@ -177,13 +177,7 @@ struct SearchReplaceImageView: View {
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    #if os(macOS)
                                     .frame(height: 200)
-                                    #endif
-                                    .padding(.vertical, 6)
-                                    #if os(macOS)
-                                    .frame(maxWidth: .infinity)
-                                    #endif
                                     .onTapGesture {
                                         isPhotoPickerOpen = true
                                     }

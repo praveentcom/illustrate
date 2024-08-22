@@ -3,10 +3,10 @@ import CloudKit
 import SwiftData
 
 enum EnumGenerateVideoAdapterErrorCode: String, Codable {
-    case GENERATOR_ERROR = "GENERATOR_ERROR"
-    case MODEL_ERROR = "MODEL_ERROR"
-    case ADAPTER_ERROR = "ADAPTER_ERROR"
-    case TRANSFORM_RESPONSE_ERROR = "TRANSFORM_RESPONSE_ERROR"
+    case GENERATOR_ERROR = "Internal Generator Error"
+    case MODEL_ERROR = "Partner Model Error"
+    case ADAPTER_ERROR = "Internal Adapter Error"
+    case TRANSFORM_RESPONSE_ERROR = "Internal Response Transform Error"
 }
 
 struct VideoGenerationRequest: Codable {

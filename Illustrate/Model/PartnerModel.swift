@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import SwiftUI
 
 enum EnumPartnerModelCode: String, Codable {
     case OPENAI_DALLE3 = "OPENAI_DALLE3"
@@ -18,7 +19,6 @@ enum EnumPartnerModelCode: String, Codable {
     case STABILITY_IMAGE_TO_VIDEO = "STABILITY_IMAGE_TO_VIDEO"
     case GCLOUD_IMAGEN2 = "GCLOUD_IMAGEN2"
 }
-
 
 @Model
 final class PartnerModel: Codable {
@@ -120,6 +120,18 @@ final class PartnerModel: Codable {
         try container.encode(modelGenerateBaseURL, forKey: .modelGenerateBaseURL)
         try container.encode(modelAPIDocumentationURL, forKey: .modelAPIDocumentationURL)
         try container.encode(active, forKey: .active)
+    }
+}
+
+func getModel(modelId: String) -> PartnerModel? {
+    return partnerModels.first(where: { $0.modelId.uuidString == modelId })
+}
+
+struct ModelLabel: View {
+    var model: PartnerModel
+    
+    var body: some View {
+        Text(model.modelName)
     }
 }
 

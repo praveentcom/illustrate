@@ -5,6 +5,7 @@ struct HistoryView: View {
         NavigationStack {
             Form {
                 NavigationSectionForGenerationHistory()
+                NavigationSectionForUsageMetrics()
             }
             .formStyle(.grouped)
             .navigationTitle("History")

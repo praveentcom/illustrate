@@ -77,14 +77,26 @@ struct NavigationSectionForVideoGenerations: View {
 struct NavigationSectionForGenerationHistory: View {
     var body: some View {
         Section ("History") {
+            #if os(macOS)
             NavigationLink(destination: RequestsView()) {
                 Label("All Requests", systemImage: "note.text")
             }
+            #endif
             NavigationLink(destination: GalleryImageView()) {
                 Label("Image Gallery", systemImage: "photo")
             }
             NavigationLink(destination: GalleryVideoView()) {
                 Label("Video Gallery", systemImage: "movieclapper")
+            }
+        }
+    }
+}
+
+struct NavigationSectionForUsageMetrics: View {
+    var body: some View {
+        Section ("Metrics") {
+            NavigationLink(destination: UsageMetricsView()) {
+                Label("Usage Metrics", systemImage: "chart.bar")
             }
         }
     }
