@@ -117,6 +117,12 @@ class G_STABILITY_SDXL: ImageGenerationProtocol {
                     errorMessage: message
                 )
             }
+        default:
+            return ImageGenerationResponse(
+                status: .FAILED,
+                errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+                errorMessage: "Unexpected response"
+            )
         }
 
         throw NSError(domain: "Invalid response", code: -1, userInfo: nil)

@@ -153,6 +153,12 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
                     errorMessage: message
                 )
             }
+        default:
+            return ImageGenerationResponse(
+                status: .FAILED,
+                errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+                errorMessage: "Unexpected response"
+            )
         }
         
         print("Invalid response: \(response)")

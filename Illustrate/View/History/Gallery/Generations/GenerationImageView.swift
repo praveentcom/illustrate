@@ -148,8 +148,10 @@ struct GenerationImageView: View {
                                             }
                                         }
                                     }
+                                    .id("mask_\(getSelectedGeneration()!.id.uuidString)")
                                 }
                             }
+                            .id("client_\(getSelectedGeneration()!.id.uuidString)")
 #endif
                             
                             ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_o50") { image in
@@ -188,7 +190,9 @@ struct GenerationImageView: View {
                                                     .cornerRadius(8)
                                                 }
                                             }
+                                            .id("image_mask_\(getSelectedGeneration()!.id.uuidString)")
                                         }
+                                        .id("image_client_\(getSelectedGeneration()!.id.uuidString)")
 #else
                                         Image(uiImage: image)
                                             .resizable()
@@ -198,6 +202,7 @@ struct GenerationImageView: View {
                                     }
                                 }
                             }
+                            .id("image_\(getSelectedGeneration()!.id.uuidString)")
                         }
                         .padding(.vertical, 8)
                     }

@@ -109,6 +109,10 @@ func getImageGenerationAdapter(imageGenerationRequest: ImageGenerationRequest) t
         return G_FAL_FLUX_DEV()
     case EnumConnectionModelCode.FAL_FLUX_PRO:
         return G_FAL_FLUX_PRO()
+    case EnumConnectionModelCode.HUGGING_FACE_FLUX_SCHNELL:
+        return G_HUGGING_FACE_FLUX_SCHNELL()
+    case EnumConnectionModelCode.HUGGING_FACE_FLUX_DEV:
+        return G_HUGGING_FACE_FLUX_DEV()
     default:
         throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
     }

@@ -28,12 +28,12 @@ struct AddConnectionView: View {
                                 Text(connection.connectionName).tag(connection as Connection?)
                             }
                         }
-                    }
-                    if let selectedConnection, selectedConnection.keyType == EnumConnectionKeyType.JSON {
-                        TextField("JSON Key", text: $keyValue, prompt: Text(selectedConnection.keyStructure), axis: .vertical)
-                            .lineLimit(3...8)
-                    } else {
-                        TextField("API Key", text: $keyValue, prompt: Text(selectedConnection?.keyStructure ?? ""))
+                        if selectedConnection!.keyType == EnumConnectionKeyType.JSON {
+                            TextField("JSON Key", text: $keyValue, prompt: Text(selectedConnection!.keyPlaceholder), axis: .vertical)
+                                .lineLimit(3...8)
+                        } else {
+                            TextField("API Key", text: $keyValue, prompt: Text(selectedConnection!.keyPlaceholder))
+                        }
                     }
                 }
             }

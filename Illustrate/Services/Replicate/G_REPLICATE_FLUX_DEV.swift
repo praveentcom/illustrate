@@ -74,7 +74,7 @@ class G_REPLICATE_FLUX_DEV: ImageGenerationProtocol {
                     )
                 }
             break;
-        case .array(_, _):
+        default:
             return ImageGenerationResponse(
                 status: .FAILED,
                 errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
@@ -107,7 +107,7 @@ class G_REPLICATE_FLUX_DEV: ImageGenerationProtocol {
                             return response
                         }
                     break;
-                case .array(_, _):
+                default:
                     break;
                 }
             } catch {
@@ -149,7 +149,7 @@ class G_REPLICATE_FLUX_DEV: ImageGenerationProtocol {
                     if data["id"] as? String != nil {
                         requestId = data["id"] as? String
                     }
-                case .array(_, _):
+                default:
                     return ImageGenerationResponse(
                         status: .FAILED,
                         errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,

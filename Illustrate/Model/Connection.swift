@@ -52,6 +52,7 @@ final class Connection: Codable, Identifiable {
         case connectionName
         case connectionDescription
         case keyStructure
+        case keyPlaceholder
         case keyType
         case creditCurrency
         case active
@@ -62,16 +63,18 @@ final class Connection: Codable, Identifiable {
     var connectionName: String = "OpenAI"
     var connectionDescription: String = ""
     var keyStructure: String = ""
+    var keyPlaceholder: String = ""
     var keyType: EnumConnectionKeyType = EnumConnectionKeyType.JSON
     var creditCurrency: EnumConnectionCreditCurrency = EnumConnectionCreditCurrency.USD
     var active: Bool = true
     
-    init(connectionId: UUID, connectionCode: EnumConnectionCode, connectionName: String, connectionDescription: String, keyStructure: String, keyType: EnumConnectionKeyType, creditCurrency: EnumConnectionCreditCurrency, active: Bool) {
+    init(connectionId: UUID, connectionCode: EnumConnectionCode, connectionName: String, connectionDescription: String, keyStructure: String, keyPlaceholder: String, keyType: EnumConnectionKeyType, creditCurrency: EnumConnectionCreditCurrency, active: Bool) {
         self.connectionId = connectionId
         self.connectionCode = connectionCode
         self.connectionName = connectionName
         self.connectionDescription = connectionDescription
         self.keyStructure = keyStructure
+        self.keyPlaceholder = keyPlaceholder
         self.keyType = keyType
         self.creditCurrency = creditCurrency
         self.active = active
@@ -84,6 +87,7 @@ final class Connection: Codable, Identifiable {
         connectionName = try container.decode(String.self, forKey: .connectionName)
         connectionDescription = try container.decode(String.self, forKey: .connectionDescription)
         keyStructure = try container.decode(String.self, forKey: .keyStructure)
+        keyPlaceholder = try container.decode(String.self, forKey: .keyPlaceholder)
         keyType = try container.decode(EnumConnectionKeyType.self, forKey: .keyType)
         creditCurrency = try container.decode(EnumConnectionCreditCurrency.self, forKey: .creditCurrency)
         active = try container.decode(Bool.self, forKey: .active)
@@ -96,6 +100,7 @@ final class Connection: Codable, Identifiable {
         try container.encode(connectionName, forKey: .connectionName)
         try container.encode(connectionDescription, forKey: .connectionDescription)
         try container.encode(keyStructure, forKey: .keyStructure)
+        try container.encode(keyPlaceholder, forKey: .keyPlaceholder)
         try container.encode(keyType, forKey: .keyType)
         try container.encode(creditCurrency, forKey: .creditCurrency)
         try container.encode(active, forKey: .active)
@@ -132,6 +137,7 @@ let connections = [
         connectionName: "OpenAI",
         connectionDescription: "Creating safe AGI that benefits all of humanity.",
         keyStructure: "^sk-proj-[a-zA-Z0-9]{32}$",
+        keyPlaceholder: "sk-proj-************",
         keyType: EnumConnectionKeyType.API,
         creditCurrency: EnumConnectionCreditCurrency.USD,
         active: true
@@ -142,6 +148,7 @@ let connections = [
         connectionName: "Stability AI",
         connectionDescription: "World’s leading open source generative AI company.",
         keyStructure: "^sk-[a-zA-Z0-9]{38}$",
+        keyPlaceholder: "sk-************",
         keyType: EnumConnectionKeyType.API,
         creditCurrency: EnumConnectionCreditCurrency.CREDITS,
         active: true
@@ -152,6 +159,7 @@ let connections = [
         connectionName: "Google Cloud",
         connectionDescription: "High-performance infrastructure for cloud.",
         keyStructure: "\"project_id\":\\s*\"[a-z0-9\\-]+\",\\s*\"private_key\":\\s*\"-----BEGIN PRIVATE KEY-----\\\\n(?:[^\\\\n]+\\\\n)+-----END PRIVATE KEY-----\\\\n\",\\s*\"client_email\":\\s*\"[a-z0-9\\-]+@[a-z0-9\\-]+\\.iam\\.gserviceaccount\\.com\"",
+        keyPlaceholder: "Enter JSON key",
         keyType: EnumConnectionKeyType.JSON,
         creditCurrency: EnumConnectionCreditCurrency.USD,
         active: true
@@ -161,7 +169,8 @@ let connections = [
         connectionCode: EnumConnectionCode.REPLICATE,
         connectionName: "Replicate",
         connectionDescription: "Making ML accessible to every software developer.",
-        keyStructure: "^r8_-[a-zA-Z0-9]{38}$",
+        keyStructure: "^r8_[a-zA-Z0-9]{38}$",
+        keyPlaceholder: "r8_************",
         keyType: EnumConnectionKeyType.API,
         creditCurrency: EnumConnectionCreditCurrency.USD,
         active: true
@@ -171,7 +180,8 @@ let connections = [
         connectionCode: EnumConnectionCode.FAL_AI,
         connectionName: "Fal AI",
         connectionDescription: "Fast, reliable, cheap. Lightning fast inference.",
-        keyStructure: "^r8_-[a-zA-Z0-9]{38}$",
+        keyStructure: "^$",
+        keyPlaceholder: "********-****-****-****-************:*******************",
         keyType: EnumConnectionKeyType.API,
         creditCurrency: EnumConnectionCreditCurrency.USD,
         active: true
@@ -181,7 +191,8 @@ let connections = [
         connectionCode: EnumConnectionCode.HUGGING_FACE,
         connectionName: "Hugging Face",
         connectionDescription: "The AI community building the future.",
-        keyStructure: "^r8_-[a-zA-Z0-9]{38}$",
+        keyStructure: "^hf_[a-zA-Z0-9]{38}$",
+        keyPlaceholder: "hf_************",
         keyType: EnumConnectionKeyType.API,
         creditCurrency: EnumConnectionCreditCurrency.USD,
         active: true

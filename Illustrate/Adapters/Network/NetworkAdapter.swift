@@ -3,6 +3,7 @@ import Foundation
 enum NetworkResponseData {
     case dictionary(statusCode: Int, data: [String: Any])
     case array(statusCode: Int, data: [[String: Any]])
+    case image(statusCode: Int, base64: String, mimeType: String)
 }
 
 struct NetworkRequestAttachment {
@@ -77,6 +78,13 @@ class NetworkAdapter {
             throw NSError(domain: "Gateway timeout", code: -1, userInfo: nil)
         } else if httpResponse.statusCode == 429 {
             throw NSError(domain: "Too many requests", code: -1, userInfo: nil)
+        }
+        
+        if let contentType = httpResponse.value(forHTTPHeaderField: "Content-Type") {
+            if contentType.contains("image/jpeg") || contentType.contains("image/png") {
+                let base64String = data.base64EncodedString()
+                return .image(statusCode: httpResponse.statusCode, base64: base64String, mimeType: contentType)
+            }
         }
 
         do {

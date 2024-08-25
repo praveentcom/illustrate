@@ -83,7 +83,7 @@ class G_FAL_FLUX_DEV: ImageGenerationProtocol {
                 )
             }
             break;
-        case .array(_, _):
+        default:
             return ImageGenerationResponse(
                 status: .FAILED,
                 errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,

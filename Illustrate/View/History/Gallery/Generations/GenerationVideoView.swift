@@ -127,8 +127,10 @@ struct GenerationVideoView: View {
                                             }
                                         }
                                     }
+                                    .id("mask_\(getSelectedGeneration()!.id.uuidString)")
                                 }
                             }
+                            .id("client_\(getSelectedGeneration()!.id.uuidString)")
 #endif
                             
                             ICloudVideoLoader(videoName: "\(getSelectedGeneration()!.id.uuidString)") { videoUrl in
@@ -153,7 +155,9 @@ struct GenerationVideoView: View {
                                                     .cornerRadius(8)
                                                 }
                                             }
+                                            .id("video_mask_\(getSelectedGeneration()!.id.uuidString)")
                                         }
+                                        .id("video_client_\(getSelectedGeneration()!.id.uuidString)")
 #else
                                         VideoPlayer(player: AVPlayer(url: videoUrl))
                                             .aspectRatio(contentMode: .fill)
@@ -162,6 +166,7 @@ struct GenerationVideoView: View {
                                     }
                                 }
                             }
+                            .id("video_\(getSelectedGeneration()!.id.uuidString)")
                         }
                         .padding(.vertical, 8)
                     }

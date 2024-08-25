@@ -55,6 +55,8 @@ class G_STABILITY_IMAGE_TO_VIDEO: VideoGenerationProtocol {
                     if statusCode == 200 {
                         return response
                     }
+                default:
+                    break
                 }
             } catch {
                 throw NSError(domain: "Polling failed", code: -1, userInfo: nil)
@@ -158,6 +160,8 @@ class G_STABILITY_IMAGE_TO_VIDEO: VideoGenerationProtocol {
             else if data[0]["id"] as? String != nil {
                 requestId = data[0]["id"] as? String
             }
+        default:
+            throw NSError(domain: "Invalid response format", code: -1, userInfo: nil)
         }
         
         guard let requestId = requestId else {
