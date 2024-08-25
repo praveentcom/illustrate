@@ -22,25 +22,30 @@ struct GalleryImageView: View {
     }
 
     var body: some View {
-        ScrollView {
-            GalleryGridView(sets: filteredSets, generations: filteredGenerations, contentType: .IMAGE_2D)
+        VStack {
+            if (filteredGenerations.filter { $0.contentType == .IMAGE_2D }.isEmpty) {
+                Text("No requests.")
+                    .opacity(0.5)
+            } else {
+                ScrollView {
+                    GalleryGridView(sets: filteredSets, generations: filteredGenerations, contentType: .IMAGE_2D)
+                }
+            }
         }
         .toolbar {
             ToolbarItem {
                 Menu {
-                    Button("All Generations", action: { selectedSetType = nil })
-                    Button(getSetTypeInfo(setType: .GENERATE).label, action: { selectedSetType = .GENERATE })
-                    Button(getSetTypeInfo(setType: .EDIT_UPSCALE).label, action: { selectedSetType = .EDIT_UPSCALE })
-                    Button(getSetTypeInfo(setType: .EDIT_EXPAND).label, action: { selectedSetType = .EDIT_EXPAND })
-                    Button(getSetTypeInfo(setType: .EDIT_MASK).label, action: { selectedSetType = .EDIT_MASK })
-                    Button(getSetTypeInfo(setType: .EDIT_MASK_ERASE).label, action: { selectedSetType = .EDIT_MASK_ERASE })
-                    Button(getSetTypeInfo(setType: .EDIT_REPLACE).label, action: { selectedSetType = .EDIT_REPLACE })
-                    Button(getSetTypeInfo(setType: .REMOVE_BACKGROUND).label, action: { selectedSetType = .REMOVE_BACKGROUND })
+                    Button("All Generations", systemImage: "slider.horizontal.3", action: { selectedSetType = nil })
+                    ForEach(sectionItems(section: EnumNavigationSection.ImageGenerations)) { item in
+                        Button(labelForItem(item), systemImage: iconForItem(item)) {
+                            selectedSetType = setTypeForItem(item)
+                        }
+                    }
                 } label: {
                     Image(systemName: "slider.horizontal.3")
                 }
             }
         }
-        .navigationTitle("Image Gallery")
+        .navigationTitle(labelForItem(.historyImageGallery))
     }
 }

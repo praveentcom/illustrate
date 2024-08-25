@@ -18,6 +18,74 @@ func loadVideoUrlFromDocumentsDirectory(withName name: String) -> URL? {
     return nil
 }
 
+func getVideoSizeInBytes(videoURL: URL) -> Int? {
+    if let imageData = try? Data(contentsOf: videoURL) {
+        return imageData.count
+    }
+    return nil
+}
+
+func loadVideoFromiCloud(_ fileName: String) -> URL? {
+    if let video = loadVideoUrlFromDocumentsDirectory(withName: fileName) {
+        return video
+    }
+    
+    guard let containerURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents") else {
+        print("iCloud container not available.")
+        return nil
+    }
+    
+    do {
+        if !FileManager.default.fileExists(atPath: containerURL.path) {
+            try FileManager.default.createDirectory(at: containerURL, withIntermediateDirectories: true, attributes: nil)
+        }
+        
+        var fileUrl: URL? = containerURL.appendingPathComponent("\(fileName).mp4")
+        let data = try Data(contentsOf: fileUrl!)
+        
+        fileUrl = saveVideoToDocumentsDirectory(videoData: data, withName: fileName)
+        return fileUrl
+    } catch {
+        print("Error loading video: \(error.localizedDescription)")
+        return nil
+    }
+}
+
+func saveVideoToiCloud(videoData: Data, fileName: String) {
+    guard let containerURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents") else {
+        print("iCloud container not available.")
+        return
+    }
+
+    do {
+        if !FileManager.default.fileExists(atPath: containerURL.path) {
+            try FileManager.default.createDirectory(at: containerURL, withIntermediateDirectories: true, attributes: nil)
+        }
+
+        let fileURL = containerURL.appendingPathComponent("\(fileName).mp4")
+
+        try videoData.write(to: fileURL)
+        print("Video saved to iCloud: \(fileURL.path)")
+    } catch {
+        print("Error saving video to iCloud: \(error.localizedDescription)")
+    }
+}
+
+func saveVideoToDocumentsDirectory(videoData: Data, withName name: String) -> URL? {
+    let fileManager = FileManager.default
+    let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+    let videoFileURL = documentsURL.appendingPathComponent("\(name).mp4")
+    
+    do {
+        try videoData.write(to: videoFileURL)
+        print("Image saved to: \(videoFileURL.path)")
+        return videoFileURL
+    } catch {
+        print("Error saving image: \(error)")
+        return nil
+    }
+}
+
 #if os(macOS)
 func saveVideoToDownloads(url: URL, fileName: String) {
     let savePanel = NSSavePanel()

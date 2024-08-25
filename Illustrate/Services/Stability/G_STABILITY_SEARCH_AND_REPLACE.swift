@@ -5,7 +5,7 @@ class G_STABILITY_SEARCH_AND_REPLACE: ImageGenerationProtocol {
         return 4.0
     }
     
-    let model: PartnerModel = partnerModels.first(where: { $0.modelCode == EnumPartnerModelCode.STABILITY_SEARCH_AND_REPLACE })!
+    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.STABILITY_SEARCH_AND_REPLACE })!
     
     struct ServiceRequest: Codable {
         let prompt: String
@@ -70,7 +70,7 @@ class G_STABILITY_SEARCH_AND_REPLACE: ImageGenerationProtocol {
         let transformedRequest = transformRequest(request: request)
         
         let headers: [String: String] = [
-            "Authorization": "\(request.partnerKey.value)",
+            "Authorization": "\(request.connectionSecret)",
             "Content-Type": "multipart/form-data",
             "Accept": "application/json"
         ]

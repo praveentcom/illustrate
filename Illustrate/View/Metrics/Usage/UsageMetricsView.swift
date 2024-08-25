@@ -3,8 +3,8 @@ import SwiftData
 import Charts
 
 struct UsageMetricsView: View {
-    @Query var partnerKeys: [PartnerKey]
-    @State private var selectedPartnerKey: PartnerKey?
+    @Query var connectionKeys: [ConnectionKey]
+    @State private var selectedConnectionKey: ConnectionKey?
     
     // Sample Data
     @State private var dailyMetrics: [DailyMetric] = [
@@ -16,12 +16,12 @@ struct UsageMetricsView: View {
     var body: some View {
         ScrollView {
             Form {
-                Section("Select Partner") {
-                    Picker("Partner", selection: $selectedPartnerKey) {
-                        ForEach(partnerKeys, id: \.partnerId) { partnerKey in
-                            let partner = getPartner(partnerId: partnerKey.partnerId)
+                Section("Select Connection") {
+                    Picker("Connection", selection: $selectedConnectionKey) {
+                        ForEach(connectionKeys, id: \.connectionId) { connectionKey in
+                            let connection = getConnection(connectionId: connectionKey.connectionId)
                             
-                            Text(partner?.partnerName ?? "").tag(partnerKey as PartnerKey?)
+                            Text(connection?.connectionName ?? "").tag(connectionKey as ConnectionKey?)
                         }
                     }
                 }
@@ -36,7 +36,7 @@ struct UsageMetricsView: View {
                 #endif
             }()
 
-            if let _ = selectedPartnerKey {
+            if let _ = selectedConnectionKey {
                 LazyVGrid(columns: columns, spacing: 20) {
                     Chart(dailyMetrics) { metric in
                         LineMark(
@@ -49,7 +49,7 @@ struct UsageMetricsView: View {
                     }
                     .frame(height: 200)
                     .padding(.all, 24)
-                    .background(quaternaryBackgroundColor)
+                    .background(quaternarySystemFill)
                     .cornerRadius(8)
 
                     // Cost Incurred Chart
@@ -64,7 +64,7 @@ struct UsageMetricsView: View {
                     }
                     .frame(height: 200)
                     .padding(.all, 24)
-                    .background(quaternaryBackgroundColor)
+                    .background(quaternarySystemFill)
                     .cornerRadius(8)
 
                     // Total Generations Chart
@@ -79,12 +79,12 @@ struct UsageMetricsView: View {
                     }
                     .frame(height: 200)
                     .padding(.all, 24)
-                    .background(quaternaryBackgroundColor)
+                    .background(quaternarySystemFill)
                     .cornerRadius(8)
                 }
                 .padding(.horizontal, 20)
             } else {
-                Text("Please select a Partner to view metrics")
+                Text("Please select a Connection to view metrics")
                     .foregroundColor(.gray)
                     .padding()
             }

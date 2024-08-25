@@ -1,6 +1,15 @@
 {
-  "originHash" : "7b6115d4dfb0145e6b61aa4ba7820f5747c39cb881f4ac3ecb3161472361c5ef",
+  "originHash" : "2cdb9fe1863a85b0bf6e5d77711629b20dec01f57edea8299e24c4c208be15b2",
   "pins" : [
+    {
+      "identity" : "alerttoast",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elai950/AlertToast",
+      "state" : {
+        "revision" : "b39252eacd159904afd7d718bba0afabb87f2f2f",
+        "version" : "1.3.9"
+      }
+    },
     {
       "identity" : "imagecropper",
       "kind" : "remoteSourceControl",
@@ -8,6 +17,15 @@
       "state" : {
         "branch" : "master",
         "revision" : "b73abb4f342497695b14d7a04a6b5a38cd4c9c26"
+      }
+    },
+    {
+      "identity" : "keychain-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/evgenyneu/keychain-swift",
+      "state" : {
+        "revision" : "5e1b02b6a9dac2a759a1d5dbc175c86bd192a608",
+        "version" : "24.0.0"
       }
     }
   ],

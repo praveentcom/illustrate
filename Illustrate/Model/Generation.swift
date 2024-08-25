@@ -92,26 +92,26 @@ class Generation: Identifiable, Codable {
     }
     
     var id: UUID = UUID()
-    var setId: UUID
+    var setId: UUID = UUID()
     var createdAt: Date = Date()
-    var modelId: String
-    var prompt: String
+    var modelId: String = ""
+    var prompt: String = ""
     var promptEnhanceOpted: Bool = false
     var promptAfterEnhance: String = ""
-    var artStyle: EnumArtStyle
-    var artVariant: EnumArtVariant
-    var artQuality: EnumArtQuality
-    var artDimensions: String
+    var artStyle: EnumArtStyle = EnumArtStyle.VIVID
+    var artVariant: EnumArtVariant = EnumArtVariant.NORMAL
+    var artQuality: EnumArtQuality = EnumArtQuality.HD
+    var artDimensions: String = "1024x1024"
     var size: Int = 0
     var creditUsed: Double = 0
-    var status: EnumGenerationStatus
+    var status: EnumGenerationStatus = EnumGenerationStatus.GENERATED
     var colorPalette: [String] = []
-    var modelRevisedPrompt: String?
-    var clientImage: String?
-    var clientMask: String?
-    var negativePrompt: String?
-    var searchPrompt: String?
-    var contentType: EnumGenerationContentType
+    var modelRevisedPrompt: String? = nil
+    var clientImage: String? = nil
+    var clientMask: String? = nil
+    var negativePrompt: String? = nil
+    var searchPrompt: String? = nil
+    var contentType: EnumGenerationContentType = EnumGenerationContentType.IMAGE_2D
 
     init(id: UUID, setId: UUID, modelId: String, prompt: String, promptEnhanceOpted: Bool, promptAfterEnhance: String, artStyle: EnumArtStyle = EnumArtStyle.NATURAL, artVariant: EnumArtVariant = EnumArtVariant.NORMAL, artQuality: EnumArtQuality = EnumArtQuality.HD, artDimensions: String, size: Int, creditUsed: Double, status: EnumGenerationStatus, colorPalette: [String], modelRevisedPrompt: String? = nil, clientImage: String? = nil, clientMask: String? = nil, negativePrompt: String? = nil, searchPrompt: String? = nil, contentType: EnumGenerationContentType = EnumGenerationContentType.IMAGE_2D
     ) {

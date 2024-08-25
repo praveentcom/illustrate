@@ -25,13 +25,13 @@ class NetworkAdapter {
     ) async throws -> NetworkResponseData {
         var request = URLRequest(url: url)
         request.httpMethod = method
-                
+                        
         if let headers = headers {
             for (key, value) in headers {
                 request.setValue(value, forHTTPHeaderField: key)
             }
         }
-        
+                
         if (request.httpMethod != "GET") {
             if let body = body {
                 if request.value(forHTTPHeaderField: "Content-Type") == "multipart/form-data" {
@@ -50,15 +50,33 @@ class NetworkAdapter {
                 }
             }
         }
-        
+                
         if request.value(forHTTPHeaderField: "Content-Type") == nil {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         }
-
-        let (data, response) = try await URLSession.shared.data(for: request)
+                
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 120
+        
+        let session = URLSession(configuration: configuration)
+        let (data, response) = try await session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NSError(domain: "Invalid Response", code: -1, userInfo: nil)
+        }
+        
+        if httpResponse.statusCode == 403 {
+            throw NSError(domain: "Forbidden request", code: -1, userInfo: nil)
+        } else if httpResponse.statusCode == 404 {
+            throw NSError(domain: "Not found", code: -1, userInfo: nil)
+        } else if httpResponse.statusCode == 500 {
+            throw NSError(domain: "Internal server error", code: -1, userInfo: nil)
+        } else if httpResponse.statusCode == 503 {
+            throw NSError(domain: "Service unavailable", code: -1, userInfo: nil)
+        } else if httpResponse.statusCode == 504 {
+            throw NSError(domain: "Gateway timeout", code: -1, userInfo: nil)
+        } else if httpResponse.statusCode == 429 {
+            throw NSError(domain: "Too many requests", code: -1, userInfo: nil)
         }
 
         do {

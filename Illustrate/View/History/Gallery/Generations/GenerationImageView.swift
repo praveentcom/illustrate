@@ -65,7 +65,7 @@ struct GenerationImageView: View {
     @Environment(\.presentationMode) private var presentationMode
     
     @State var setId: UUID
-    @State private var imageSet: ImageSet?
+    @State private var imageSet: ImageSet? = nil
     @State private var generations: [Generation] = []
     @State private var generationIndex: Int = 0
     
@@ -88,6 +88,8 @@ struct GenerationImageView: View {
         modelContext.delete(imageSet!)
         for generation in generations {
             modelContext.delete(generation)
+            
+            deleteICloudDocuments(containingSubstring: generation.id.uuidString)
         }
         try? modelContext.save()
         
@@ -97,10 +99,6 @@ struct GenerationImageView: View {
     var body: some View {
         Form {
             if (getSelectedGeneration() != nil || imageSet != nil) {
-                let image = loadImageFromDocumentsDirectory(withName: "\(getSelectedGeneration()!.id.uuidString)_o50")
-                let requestImage = loadImageFromDocumentsDirectory(withName: "\(getSelectedGeneration()!.id.uuidString)_client")
-                let maskImage = loadImageFromDocumentsDirectory(withName: "\(getSelectedGeneration()!.id.uuidString)_mask")
-                
                 Section {
                     ZStack {
                         if let colorPalette = getSelectedGeneration()?.colorPalette {
@@ -111,82 +109,93 @@ struct GenerationImageView: View {
                         
                         HStack (spacing: 16) {
 #if os(macOS)
-                            if let requestImage = requestImage {
-                                VStack (spacing: 16) {
-                                    Image(nsImage: requestImage)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                                        .frame(maxHeight: 400)
-                                        .overlay {
-                                            if (showMask && maskImage != nil) {
-                                                MaskView(maskImage: maskImage!)
+                            ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_client") { requestImage in
+                                if let requestImage = requestImage {
+                                    ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_mask") { maskImage in
+                                        VStack (spacing: 16) {
+                                            Image(nsImage: requestImage)
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                                .frame(maxHeight: 400)
+                                                .overlay {
+                                                    if (showMask && maskImage != nil) {
+                                                        MaskView(maskImage: maskImage!)
+                                                    }
+                                                }
+                                                .shadow(color: .black.opacity(0.4), radius: 8)
+                                                .frame(maxWidth: .infinity)
+                                            HStack (spacing: 8) {
+                                                HStack {
+                                                    Image(systemName: "info.circle")
+                                                    Text("Request Image")
+                                                }
+                                                .padding(.vertical, 4)
+                                                .padding(.horizontal, 8)
+                                                .background(.thinMaterial)
+                                                .cornerRadius(8)
+                                                
+                                                if (maskImage != nil) {
+                                                    Toggle(isOn: $showMask) {
+                                                        Text("Show Mask")
+                                                    }
+                                                    .toggleStyle(IllustrateToggleStyle())
+                                                    .padding(.vertical, 4)
+                                                    .padding(.horizontal, 8)
+                                                    .background(.thinMaterial)
+                                                    .cornerRadius(8)
+                                                }
                                             }
-                                        }
-                                        .shadow(color: .black.opacity(0.4), radius: 8)
-                                        .frame(maxWidth: .infinity)
-                                    HStack (spacing: 8) {
-                                        HStack {
-                                            Image(systemName: "info.circle")
-                                            Text("Request Image")
-                                        }
-                                        .padding(.vertical, 4)
-                                        .padding(.horizontal, 8)
-                                        .background(.thinMaterial)
-                                        .cornerRadius(8)
-                                        
-                                        if (maskImage != nil) {
-                                            Toggle(isOn: $showMask) {
-                                                Text("Show Mask")
-                                            }
-                                            .toggleStyle(IllustrateToggleStyle())
-                                            .padding(.vertical, 4)
-                                            .padding(.horizontal, 8)
-                                            .background(.thinMaterial)
-                                            .cornerRadius(8)
                                         }
                                     }
                                 }
                             }
 #endif
-                            if let image = image {
-                                VStack (spacing: 16) {
+                            
+                            ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_o50") { image in
+                                if let image = image {
+                                    VStack (spacing: 16) {
 #if os(macOS)
-                                    Image(nsImage: image)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                                        .frame(maxHeight: 400)
-                                        .shadow(color: .black.opacity(0.4), radius: 8)
-                                        .frame(maxWidth: .infinity)
-                                        .contextMenu {
-                                            Button("Download", systemImage: "arrow.down") {
-                                                image.saveImageToDownloads(fileName: getSelectedGeneration()!.id.uuidString)
+                                        Image(nsImage: image)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                                            .frame(maxHeight: 400)
+                                            .shadow(color: .black.opacity(0.4), radius: 8)
+                                            .frame(maxWidth: .infinity)
+                                            .contextMenu {
+                                                Button("Download", systemImage: "arrow.down") {
+                                                    image.saveImageToDownloads(fileName: getSelectedGeneration()!.id.uuidString)
+                                                }
+                                                Button("Share", systemImage: "square.and.arrow.up") {
+                                                    image.shareImage()
+                                                }
+                                                Divider()
+                                                Button("Delete", systemImage: "trash", role: .destructive) {
+                                                    showDeleteConfirmation = true
+                                                }
                                             }
-                                            Button("Share", systemImage: "square.and.arrow.up") {
-                                                image.shareImage()
-                                            }
-                                            Divider()
-                                            Button("Delete", systemImage: "trash", role: .destructive) {
-                                                showDeleteConfirmation = true
+                                        ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_client") { requestImage in
+                                            ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_mask") { maskImage in
+                                                if (requestImage != nil || maskImage != nil) {
+                                                    HStack {
+                                                        Image(systemName: "info.circle")
+                                                        Text("Generated Image")
+                                                    }
+                                                    .padding(.vertical, 4)
+                                                    .padding(.horizontal, 8)
+                                                    .background(.thinMaterial)
+                                                    .cornerRadius(8)
+                                                }
                                             }
                                         }
-                                    if (requestImage != nil || maskImage != nil) {
-                                        HStack {
-                                            Image(systemName: "info.circle")
-                                            Text("Generated Image")
-                                        }
-                                        .padding(.vertical, 4)
-                                        .padding(.horizontal, 8)
-                                        .background(.thinMaterial)
-                                        .cornerRadius(8)
-                                    }
 #else
-                                    Image(uiImage: image)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        Image(uiImage: image)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .clipShape(RoundedRectangle(cornerRadius: 8))
 #endif
+                                    }
                                 }
                             }
                         }
@@ -222,12 +231,12 @@ struct GenerationImageView: View {
                 }
                 
                 Section("Model Response") {
-                    if let partner = getPartner(modelId: getSelectedGeneration()!.modelId) {
+                    if let connection = getConnection(modelId: getSelectedGeneration()!.modelId) {
                         SectionKeyValueView(
                             icon: "link",
-                            key: "Partner",
+                            key: "Connection",
                             value: "",
-                            customValueView: PartnerLabel(partner: partner)
+                            customValueView: ConnectionLabel(connection: connection)
                         )
                     }
                     if let model = getModel(modelId: getSelectedGeneration()!.modelId) {
@@ -249,7 +258,7 @@ struct GenerationImageView: View {
                        !modelRevisedPrompt.isEmpty {
                         SectionKeyValueView(icon: "text.quote", key: "Response Prompt", value: modelRevisedPrompt)
                     }
-                    SectionKeyValueView(icon: "dollarsign", key: "Cost", value: "\(String(format: "%.3f", getSelectedGeneration()!.creditUsed).replacingOccurrences(of: ".000", with: "")) \(getPartner(modelId: getSelectedGeneration()!.modelId)?.creditCurrency.rawValue ?? "Credits")")
+                    SectionKeyValueView(icon: "dollarsign", key: "Cost", value: "\(String(format: "%.3f", getSelectedGeneration()!.creditUsed).replacingOccurrences(of: ".000", with: "")) \(getConnection(modelId: getSelectedGeneration()!.modelId)?.creditCurrency.rawValue ?? "Credits")")
                 }
                 
                 Section("Image Metadata") {
@@ -286,37 +295,39 @@ struct GenerationImageView: View {
         }
         .formStyle(.grouped)
         .toolbar {
-            ToolbarItem(placement: .automatic) {
-                Button("Download", systemImage: "arrow.down") {
-                    let image = loadImageFromDocumentsDirectory(withName: "\(getSelectedGeneration()!.id.uuidString)")
-                    if let image = image {
-                        Task {
-                            #if os(macOS)
-                            image.saveImageToDownloads(fileName: getSelectedGeneration()!.id.uuidString)
-                            #else
-                            showDocumentPicker = true
-                            #endif
+            if (imageSet != nil) {
+                ToolbarItem(placement: .automatic) {
+                    Button("Download", systemImage: "arrow.down") {
+                        let image = loadImageFromiCloud("\(getSelectedGeneration()!.id.uuidString)")
+                        if let image = image {
+                            Task {
+                                #if os(macOS)
+                                image.saveImageToDownloads(fileName: getSelectedGeneration()!.id.uuidString)
+                                #else
+                                showDocumentPicker = true
+                                #endif
+                            }
                         }
                     }
                 }
-            }
-            ToolbarItem(placement: .automatic) {
-                Button("Share", systemImage: "square.and.arrow.up") {
-                    let image = loadImageFromDocumentsDirectory(withName: "\(getSelectedGeneration()!.id.uuidString)")
-                    if let image = image {
-                        Task {
-                            #if os(macOS)
-                            image.shareImage()
-                            #else
-                            showShareSheet = true
-                            #endif
+                ToolbarItem(placement: .automatic) {
+                    Button("Share", systemImage: "square.and.arrow.up") {
+                        let image = loadImageFromiCloud("\(getSelectedGeneration()!.id.uuidString)")
+                        if let image = image {
+                            Task {
+                                #if os(macOS)
+                                image.shareImage()
+                                #else
+                                showShareSheet = true
+                                #endif
+                            }
                         }
                     }
                 }
-            }
-            ToolbarItem(placement: .destructiveAction) {
-                Button("Delete", systemImage: "trash", role: .destructive) {
-                    showDeleteConfirmation = true
+                ToolbarItem(placement: .destructiveAction) {
+                    Button("Delete", systemImage: "trash", role: .destructive) {
+                        showDeleteConfirmation = true
+                    }
                 }
             }
         }
@@ -324,7 +335,7 @@ struct GenerationImageView: View {
         .fileExporter(
             isPresented: $showDocumentPicker,
             document: UIImageFileDocument(
-                image: loadImageFromDocumentsDirectory(withName: "\(getSelectedGeneration()?.id.uuidString ?? "")") ?? PlatformImage()
+                image: imageSet != nil ? loadImageFromiCloud("\(getSelectedGeneration()?.id.uuidString ?? "")") ?? PlatformImage() : PlatformImage()
             ),
             contentType: .png,
             defaultFilename: "illustrate_\(getSelectedGeneration()?.id.uuidString ?? "")"
@@ -337,8 +348,11 @@ struct GenerationImageView: View {
             }
         }
         .sheet(isPresented: $showShareSheet) {
-            if let image = loadImageFromDocumentsDirectory(withName: "\(getSelectedGeneration()?.id.uuidString ?? "")") {
-                ImageShareSheet(activityItems: [image])
+            if (imageSet != nil) {
+                let image = loadImageFromiCloud("\(getSelectedGeneration()?.id.uuidString ?? "")")
+                if let image = image {
+                    ImageShareSheet(activityItems: [image])
+                }
             }
         }
         #endif
@@ -354,7 +368,7 @@ struct GenerationImageView: View {
                 secondaryButton: .cancel()
             )
         }
-        .navigationTitle("Image Generation")
+        .navigationTitle(labelForItem(.generationImage(setId: setId)))
     }
     
     private func loadData() {

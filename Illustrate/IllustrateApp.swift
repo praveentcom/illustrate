@@ -13,7 +13,7 @@ struct IllustrateApp: App {
     var body: some Scene {
         WindowGroup {
             MainView()
-                .modelContainer(for: [Partner.self, PartnerKey.self, PartnerModel.self, Generation.self, ImageSet.self])
+                .modelContainer(for: [Connection.self, ConnectionKey.self, ConnectionModel.self, Generation.self, ImageSet.self])
             #if os(macOS)
                 .frame(minWidth: 1200, maxWidth: .infinity, minHeight: 720, maxHeight: .infinity)
             #endif

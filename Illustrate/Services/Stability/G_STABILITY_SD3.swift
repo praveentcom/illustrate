@@ -2,7 +2,7 @@ import Foundation
 
 class G_STABILITY_SD3: ImageGenerationProtocol {
     func getCreditsUsed(request: ImageGenerationRequest) -> Double {
-        let model = partnerModels.first(where: { $0.modelId.uuidString == request.modelId })
+        let model = connectionModels.first(where: { $0.modelId.uuidString == request.modelId })
         
         switch model?.modelCode {
         case .STABILITY_SD3_TURBO:
@@ -14,7 +14,7 @@ class G_STABILITY_SD3: ImageGenerationProtocol {
         }
     }
 
-    let model: PartnerModel = partnerModels.first(where: { $0.modelCode == EnumPartnerModelCode.STABILITY_SD3 })!
+    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.STABILITY_SD3 })!
 
     struct ServiceRequest: Codable {
         let prompt: String
@@ -52,7 +52,7 @@ class G_STABILITY_SD3: ImageGenerationProtocol {
     func transformRequest(request: ImageGenerationRequest) -> ServiceRequest {
         let aspectRatio = getImageDimensions(artDimensions: request.artDimensions)
         
-        let model = partnerModels.first(where: { $0.modelId.uuidString == request.modelId })
+        let model = connectionModels.first(where: { $0.modelId.uuidString == request.modelId })
         let modelString = model?.modelCode == .STABILITY_SD3_TURBO ? "sd3-turbo" : "sd3"
 
         return ServiceRequest(
@@ -132,7 +132,7 @@ class G_STABILITY_SD3: ImageGenerationProtocol {
                 method: "POST",
                 body: transformedRequest,
                 headers: [
-                    "Authorization": "\(request.partnerKey.value)",
+                    "Authorization": "\(request.connectionSecret)",
                     "Content-Type": "multipart/form-data",
                     "Accept": "application/json"
                 ]

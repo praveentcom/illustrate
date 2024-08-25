@@ -5,7 +5,7 @@ class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
         return 0.055;
     }
 
-    let model: PartnerModel = partnerModels.first(where: { $0.modelCode == EnumPartnerModelCode.REPLICATE_FLUX_PRO })!
+    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.REPLICATE_FLUX_PRO })!
 
     struct ServiceRequest: Codable {
         let prompt: String
@@ -23,7 +23,7 @@ class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
         let aspectRatio = getAspectRatio(dimension: request.artDimensions)
 
         return ServiceRequest(
-            prompt: "\(request.artVariant.rawValue) - \(request.prompt)",
+            prompt: request.artVariant != EnumArtVariant.NORMAL ? "\(request.artVariant.rawValue) - \(request.prompt)" : request.prompt,
             aspectRatio: aspectRatio.ratio
         )
     }
@@ -125,7 +125,7 @@ class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
 
         do {
             let headers: [String: String] = [
-                "Authorization": "Bearer \(request.partnerKey.value)",
+                "Authorization": "Bearer \(request.connectionSecret)",
                 "Content-Type": "application/json"
             ]
             

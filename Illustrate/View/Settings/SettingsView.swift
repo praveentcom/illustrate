@@ -2,16 +2,16 @@ import SwiftUI
 
 struct SettingsView: View {
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Integrations") {
-                    NavigationLink(destination: ConnectionsView()) {
-                        Label("Partner Connections", systemImage: "link")
+        Form {
+            Section(EnumNavigationSection.Settings.rawValue) {
+                List(sectionItems(section: EnumNavigationSection.Settings), id: \.self) { item in
+                    NavigationLink(value: item) {
+                        Label(labelForItem(item), systemImage: iconForItem(item))
                     }
                 }
             }
-            .formStyle(.grouped)
-            .navigationTitle("Settings")
         }
+        .formStyle(.grouped)
+        .navigationTitle(EnumNavigationSection.Settings.rawValue)
     }
 }

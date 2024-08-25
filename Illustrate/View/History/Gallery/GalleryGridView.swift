@@ -41,15 +41,18 @@ struct GalleryGridView: View {
 
         LazyVGrid(columns: columns, spacing: 2) {
             ForEach(generations.filter { $0.contentType == contentType }, id: \.id) { generation in
-                if let image = loadImageFromDocumentsDirectory(withName: "\(generation.id.uuidString)_o20") {
-                    ImageCellView(image: image, generation: generation)
-                        .onTapGesture {
-                            selectedGeneration = generation
-                            isNavigationActive = true
-                        }
-                } else {
-                    Color(.clear)
-                        .frame(maxWidth: .infinity, maxHeight: 200)
+                ICloudImageLoader(imageName: ".\(generation.id.uuidString)_o20") { image in
+                    if let image = image {
+                        ImageCellView(image: image, generation: generation)
+                            .onTapGesture {
+                                selectedGeneration = generation
+                                isNavigationActive = true
+                            }
+                    } else {
+                        Color(secondaryLabel)
+                            .frame(width: 20, height: 20)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                    }
                 }
             }
         }

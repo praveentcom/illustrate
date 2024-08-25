@@ -28,7 +28,7 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
         }
     }
 
-    let model: PartnerModel = partnerModels.first(where: { $0.modelCode == EnumPartnerModelCode.OPENAI_DALLE3 })!
+    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.OPENAI_DALLE3 })!
 
     struct ServiceRequest: Codable {
         let model: String
@@ -172,7 +172,7 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
                 method: "POST",
                 body: transformedRequest,
                 headers: [
-                    "Authorization": "Bearer \(request.partnerKey.value)",
+                    "Authorization": "Bearer \(request.connectionSecret)",
                     "Content-Type": "application/json",
                     "Accept": "application/json"
                 ]

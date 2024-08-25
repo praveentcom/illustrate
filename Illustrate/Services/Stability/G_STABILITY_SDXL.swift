@@ -5,7 +5,7 @@ class G_STABILITY_SDXL: ImageGenerationProtocol {
         return 0.2
     }
 
-    let model: PartnerModel = partnerModels.first(where: { $0.modelCode == EnumPartnerModelCode.STABILITY_SDXL })!
+    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.STABILITY_SDXL })!
 
     struct ServiceRequest: Codable {
         let text_prompts: [TextPrompt]
@@ -135,7 +135,7 @@ class G_STABILITY_SDXL: ImageGenerationProtocol {
                 method: "POST",
                 body: transformedRequest,
                 headers: [
-                    "Authorization": "\(request.partnerKey.value)",
+                    "Authorization": "\(request.connectionSecret)",
                     "Accept": "application/json"
                 ]
             )

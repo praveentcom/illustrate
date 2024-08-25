@@ -46,11 +46,14 @@ struct RequestsView: View {
     @TableColumnBuilder<Generation, KeyPathComparator<Generation>>
     var prefixColumns: some TableColumnContent<Generation, KeyPathComparator<Generation>> {
         TableColumn("Spot", value: \.id) { generation in
-            if let image = loadImageFromDocumentsDirectory(withName: "\(generation.id.uuidString)_o20") {
-                ImageCellView(image: image, generation: generation)
-            } else {
-                Color(.clear)
-                    .frame(width: 20, height: 20)
+            ICloudImageLoader(imageName: ".\(generation.id.uuidString)_o04") { image in
+                if let image = image {
+                    ImageCellView(image: image, generation: generation)
+                } else {
+                    Color(secondaryLabel)
+                        .frame(width: 20, height: 20)
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                }
             }
         }
         .width(min: 24, ideal: 32, max: 40)
@@ -62,14 +65,14 @@ struct RequestsView: View {
     
     @TableColumnBuilder<Generation, KeyPathComparator<Generation>>
     var modelInfoColumns: some TableColumnContent<Generation, KeyPathComparator<Generation>> {
-        TableColumn("Partner", value: \.modelId) { generation in
-            if let partner = getPartner(modelId: generation.modelId) {
+        TableColumn("Connection", value: \.modelId) { generation in
+            if let connection = getConnection(modelId: generation.modelId) {
                 HStack {
-                    Image("\(partner.partnerCode)_square".lowercased())
+                    Image("\(connection.connectionCode)_square".lowercased())
                         .resizable()
                         .scaledToFit()
                         .frame(width: 20, height: 20)
-                    Text(partner.partnerName)
+                    Text(connection.connectionName)
                 }
             }
         }
@@ -106,7 +109,7 @@ struct RequestsView: View {
         }
         .width(min: 120, ideal: 120, max: 120)
         TableColumn("Cost", value: \.creditUsed) { generation in
-            Text("\(String(format: "%.3f", generation.creditUsed).replacingOccurrences(of: ".000", with: "")) \(getPartner(modelId: generation.modelId)?.creditCurrency.rawValue ?? "Credits")")
+            Text("\(String(format: "%.3f", generation.creditUsed).replacingOccurrences(of: ".000", with: "")) \(getConnection(modelId: generation.modelId)?.creditCurrency.rawValue ?? "Credits")")
         }
         .width(min: 120, ideal: 120, max: 120)
         TableColumn("Color Style", value: \.artStyle.rawValue)
@@ -139,26 +142,33 @@ struct RequestsView: View {
     }
 
     var body: some View {
-        Table(of: Generation.self, sortOrder: $sortOrder) {
-            prefixColumns
-            modelInfoColumns
-            promptColumns
-            generationInfoColumns
-            otherColumns
-            actionColumns
-        } rows: {
-            ForEach(filteredGenerations) { generation in
-                TableRow(generation)
-                    .contextMenu {
-                        Button("View") {
-                            selectedGeneration = generation
-                            isNavigationActive = true
-                        }
+        VStack {
+            if (filteredGenerations.isEmpty) {
+                Text("No requests.")
+                    .opacity(0.5)
+            } else {
+                Table(of: Generation.self, sortOrder: $sortOrder) {
+                    prefixColumns
+                    modelInfoColumns
+                    promptColumns
+                    generationInfoColumns
+                    otherColumns
+                    actionColumns
+                } rows: {
+                    ForEach(filteredGenerations) { generation in
+                        TableRow(generation)
+                            .contextMenu {
+                                Button("View") {
+                                    selectedGeneration = generation
+                                    isNavigationActive = true
+                                }
+                            }
                     }
+                }
+                .onChange(of: sortOrder) {
+                     filteredGenerations.sort(using: sortOrder)
+                }
             }
-        }
-        .onChange(of: sortOrder) {
-             filteredGenerations.sort(using: sortOrder)
         }
         .onAppear {
             let filteredSetIds = filteredSets.map { $0.id }
@@ -173,6 +183,6 @@ struct RequestsView: View {
                 }
             }
         }
-        .navigationTitle("All Requests")
+        .navigationTitle(labelForItem(.historyRequests))
     }
 }

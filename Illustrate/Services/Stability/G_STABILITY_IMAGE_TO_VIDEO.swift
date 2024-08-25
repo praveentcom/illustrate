@@ -5,7 +5,7 @@ class G_STABILITY_IMAGE_TO_VIDEO: VideoGenerationProtocol {
         return 20.0
     }
     
-    let model: PartnerModel = partnerModels.first(where: { $0.modelCode == EnumPartnerModelCode.STABILITY_IMAGE_TO_VIDEO })!
+    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.STABILITY_IMAGE_TO_VIDEO })!
     
     struct ServiceRequest: Codable {
         let prompt: String?
@@ -107,7 +107,7 @@ class G_STABILITY_IMAGE_TO_VIDEO: VideoGenerationProtocol {
         let transformedRequest = transformRequest(request: request)
         
         let headers: [String: String] = [
-            "Authorization": "\(request.partnerKey.value)",
+            "Authorization": "\(request.connectionSecret)",
             "Content-Type": "multipart/form-data",
             "Accept": "application/json"
         ]

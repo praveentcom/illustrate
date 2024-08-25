@@ -7,9 +7,18 @@
 	<key>com.apple.developer.aps-environment</key>
 	<string>development</string>
 	<key>com.apple.developer.icloud-container-identifiers</key>
-	<array/>
+	<array>
+		<string>iCloud.so.illustrate</string>
+	</array>
 	<key>com.apple.developer.icloud-services</key>
-	<array/>
+	<array>
+		<string>CloudKit</string>
+		<string>CloudDocuments</string>
+	</array>
+	<key>com.apple.developer.ubiquity-container-identifiers</key>
+	<array>
+		<string>iCloud.so.illustrate</string>
+	</array>
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
 	<key>com.apple.security.assets.pictures.read-write</key>
@@ -20,5 +29,9 @@
 	<true/>
 	<key>com.apple.security.network.client</key>
 	<true/>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)so.illustrate.SharedItems</string>
+	</array>
 </dict>
 </plist>

@@ -1,0 +1,41 @@
+//
+//  BackgroundColors.swift
+//  Illustrate
+//
+//  Created by Praveen Thirumurugan on 19/08/24.
+//
+
+import Foundation
+import SwiftUI
+
+var secondaryLabel: Color {
+#if os(macOS)
+    Color(NSColor.secondaryLabelColor)
+#else
+    Color(UIColor.secondaryLabel)
+#endif
+}
+
+var secondarySystemFill: Color {
+#if os(macOS)
+    Color(NSColor.secondarySystemFill)
+#else
+    Color(UIColor.secondarySystemFill)
+#endif
+}
+
+var tertiarySystemFill: Color {
+#if os(macOS)
+    Color(NSColor.tertiarySystemFill)
+#else
+    Color(UIColor.tertiarySystemFill)
+#endif
+}
+
+var quaternarySystemFill: Color {
+#if os(macOS)
+    Color(NSColor.quaternarySystemFill)
+#else
+    Color(UIColor.quaternarySystemFill)
+#endif
+}

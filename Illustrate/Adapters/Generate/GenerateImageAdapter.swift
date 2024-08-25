@@ -4,7 +4,7 @@ import SwiftData
 
 enum EnumGenerateImageAdapterErrorCode: String, Codable {
     case GENERATOR_ERROR = "Internal Generator Error"
-    case MODEL_ERROR = "Partner Model Error"
+    case MODEL_ERROR = "Connection Model Error"
     case ADAPTER_ERROR = "Internal Adapter Error"
     case TRANSFORM_RESPONSE_ERROR = "Internal Response Transform Error"
 }
@@ -27,7 +27,8 @@ struct ImageGenerationRequest: Codable {
     var artDimensions: String
     var clientImage: String?
     var clientMask: String?
-    var partnerKey: PartnerKey
+    var connectionKey: ConnectionKey
+    var connectionSecret: String
     var numberOfImages: Int = 1
     var editDirection: ImageEditDirection?
 }
@@ -53,7 +54,7 @@ struct ImageSetResponse: Codable {
 }
 
 protocol ImageGenerationProtocol {
-    var model: PartnerModel { get }
+    var model: ConnectionModel { get }
     
     associatedtype ServiceRequest
     
@@ -64,82 +65,52 @@ protocol ImageGenerationProtocol {
 }
 
 func getImageGenerationAdapter(imageGenerationRequest: ImageGenerationRequest) throws -> any ImageGenerationProtocol {
-    let model = partnerModels.first(where: { $0.modelId.uuidString == imageGenerationRequest.modelId })
+    let model = connectionModels.first(where: { $0.modelId.uuidString == imageGenerationRequest.modelId })
     if (model == nil) {
         throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
     }
     
     switch model!.modelCode {
-    case EnumPartnerModelCode.OPENAI_DALLE3:
+    case EnumConnectionModelCode.OPENAI_DALLE3:
         return G_OPENAI_DALLE3()
-    case EnumPartnerModelCode.STABILITY_CORE:
+    case EnumConnectionModelCode.STABILITY_CORE:
         return G_STABILITY_CORE()
-    case EnumPartnerModelCode.STABILITY_SDXL:
+    case EnumConnectionModelCode.STABILITY_SDXL:
         return G_STABILITY_SDXL()
-    case EnumPartnerModelCode.STABILITY_ULTRA:
+    case EnumConnectionModelCode.STABILITY_ULTRA:
         return G_STABILITY_ULTRA()
-    case EnumPartnerModelCode.STABILITY_SD3:
+    case EnumConnectionModelCode.STABILITY_SD3:
         return G_STABILITY_SD3()
-    case EnumPartnerModelCode.STABILITY_SD3_TURBO:
+    case EnumConnectionModelCode.STABILITY_SD3_TURBO:
         return G_STABILITY_SD3()
-    case EnumPartnerModelCode.STABILITY_CREATIVE_UPSCALE:
+    case EnumConnectionModelCode.STABILITY_CREATIVE_UPSCALE:
         return G_STABILITY_CREATIVE_UPSCALE()
-    case EnumPartnerModelCode.STABILITY_CONSERVATIVE_UPSCALE:
+    case EnumConnectionModelCode.STABILITY_CONSERVATIVE_UPSCALE:
         return G_STABILITY_CONSERVATIVE_UPSCALE()
-    case EnumPartnerModelCode.STABILITY_OUTPAINT:
+    case EnumConnectionModelCode.STABILITY_OUTPAINT:
         return G_STABILITY_OUTPAINT()
-    case EnumPartnerModelCode.STABILITY_INPAINT:
+    case EnumConnectionModelCode.STABILITY_INPAINT:
         return G_STABILITY_INPAINT()
-    case EnumPartnerModelCode.STABILITY_ERASE:
+    case EnumConnectionModelCode.STABILITY_ERASE:
         return G_STABILITY_ERASE()
-    case EnumPartnerModelCode.STABILITY_SEARCH_AND_REPLACE:
+    case EnumConnectionModelCode.STABILITY_SEARCH_AND_REPLACE:
         return G_STABILITY_SEARCH_AND_REPLACE()
-    case EnumPartnerModelCode.STABILITY_REMOVE_BACKGROUND:
+    case EnumConnectionModelCode.STABILITY_REMOVE_BACKGROUND:
         return G_STABILITY_REMOVE_BACKGROUND()
-    case EnumPartnerModelCode.REPLICATE_FLUX_SCHNELL:
+    case EnumConnectionModelCode.REPLICATE_FLUX_SCHNELL:
         return G_REPLICATE_FLUX_SCHNELL()
-    case EnumPartnerModelCode.REPLICATE_FLUX_DEV:
+    case EnumConnectionModelCode.REPLICATE_FLUX_DEV:
         return G_REPLICATE_FLUX_DEV()
-    case EnumPartnerModelCode.REPLICATE_FLUX_DEV_EDIT:
-        return G_REPLICATE_FLUX_DEV_EDIT()
-    case EnumPartnerModelCode.REPLICATE_FLUX_PRO:
+    case EnumConnectionModelCode.REPLICATE_FLUX_PRO:
         return G_REPLICATE_FLUX_PRO()
+    case EnumConnectionModelCode.FAL_FLUX_SCHNELL:
+        return G_FAL_FLUX_SCHNELL()
+    case EnumConnectionModelCode.FAL_FLUX_DEV:
+        return G_FAL_FLUX_DEV()
+    case EnumConnectionModelCode.FAL_FLUX_PRO:
+        return G_FAL_FLUX_PRO()
     default:
         throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
-    }
-}
-
-func getImageSizeInBytes(imageURL: URL) -> Int? {
-    if let imageData = try? Data(contentsOf: imageURL) {
-        return imageData.count
-    }
-    return nil
-}
-
-func uploadImageToCloudKit(record: CKRecord) async -> Bool {
-    let privateDatabase = CKContainer.default().privateCloudDatabase
-    do {
-        let ckRecord: CKRecord = try await privateDatabase.save(record)
-        
-        return ckRecord.recordID.recordName == record.recordID.recordName
-    } catch {
-        print("Error uploading image: \(error)")
-        return false
-    }
-}
-
-func saveImageToDocumentsDirectory(imageData: Data, withName name: String) -> URL? {
-    let fileManager = FileManager.default
-    let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-    let imageFileURL = documentsURL.appendingPathComponent("\(name).png")
-    
-    do {
-        try imageData.write(to: imageFileURL)
-        print("Image saved to: \(imageFileURL.path)")
-        return imageFileURL
-    } catch {
-        print("Error saving image: \(error)")
-        return nil
     }
 }
 
@@ -169,30 +140,32 @@ class GenerateImageAdapter {
             
             if let imageData = Data(base64Encoded: generation.base64!) {
                 let uuid = UUID()
+                let image: PlatformImage? = toPlatformImage(base64: generation.base64!)
+                image?.saveToiCloud(fileName: uuid.uuidString)
+                
                 let fileUrl: URL? = saveImageToDocumentsDirectory(imageData: imageData, withName: uuid.uuidString)
-                if (fileUrl != nil) {
-                    // Save optimised version
-                    let image: PlatformImage? = toPlatformImage(base64: generation.base64!)
-                    if (image != nil) {
-                        let optimised50 = image!.resizeImage(scale: 0.50)
-                        if (optimised50 != nil) {
-                            if let optimised50Data = Data(base64Encoded: optimised50!) {
-                                _ = saveImageToDocumentsDirectory(imageData: optimised50Data, withName: "\(uuid)_o50")
-                            }
+                if (fileUrl != nil && image != nil) {
+                    let optimised50 = image!.resizeImage(scale: 0.50)
+                    if (optimised50 != nil) {
+                        if let optimised50Data = Data(base64Encoded: optimised50!) {
+                            _ = saveImageToDocumentsDirectory(imageData: optimised50Data, withName: ".\(uuid)_o50")
+                            toPlatformImage(base64: optimised50!)?.saveToiCloud(fileName: ".\(uuid)_o50")
                         }
-                        
-                        let optimised20 = image!.resizeImage(scale: 0.20)
-                        if (optimised20 != nil) {
-                            if let optimised20Data = Data(base64Encoded: optimised20!) {
-                                _ = saveImageToDocumentsDirectory(imageData: optimised20Data, withName: "\(uuid)_o20")
-                            }
+                    }
+                    
+                    let optimised20 = image!.resizeImage(scale: 0.20)
+                    if (optimised20 != nil) {
+                        if let optimised20Data = Data(base64Encoded: optimised20!) {
+                            _ = saveImageToDocumentsDirectory(imageData: optimised20Data, withName: ".\(uuid)_o20")
+                            toPlatformImage(base64: optimised20!)?.saveToiCloud(fileName: ".\(uuid)_o20")
                         }
-                        
-                        let optimised04 = image!.resizeImage(scale: 0.04)
-                        if (optimised04 != nil) {
-                            if let optimised04Data = Data(base64Encoded: optimised04!) {
-                                _ = saveImageToDocumentsDirectory(imageData: optimised04Data, withName: "\(uuid)_o04")
-                            }
+                    }
+                    
+                    let optimised04 = image!.resizeImage(scale: 0.04)
+                    if (optimised04 != nil) {
+                        if let optimised04Data = Data(base64Encoded: optimised04!) {
+                            _ = saveImageToDocumentsDirectory(imageData: optimised04Data, withName: ".\(uuid)_o04")
+                            toPlatformImage(base64: optimised04!)?.saveToiCloud(fileName: ".\(uuid)_o04")
                         }
                     }
                     
@@ -200,16 +173,18 @@ class GenerateImageAdapter {
                     if (imageGenerationRequest.clientImage != nil) {
                         let _: URL? = saveImageToDocumentsDirectory(
                             imageData: Data(base64Encoded: imageGenerationRequest.clientImage!)!,
-                            withName: "\(uuid)_client"
+                            withName: ".\(uuid)_client"
                         )
+                        toPlatformImage(base64: imageGenerationRequest.clientImage!)?.saveToiCloud(fileName: ".\(uuid)_client")
                     }
                     
                     // Save client mask
                     if (imageGenerationRequest.clientMask != nil) {
                         let _: URL? = saveImageToDocumentsDirectory(
                             imageData: Data(base64Encoded: imageGenerationRequest.clientMask!)!,
-                            withName: "\(uuid)_mask"
+                            withName: ".\(uuid)_mask"
                         )
+                        toPlatformImage(base64: imageGenerationRequest.clientMask!)?.saveToiCloud(fileName: ".\(uuid)_mask")
                     }
                     
                     return ImageGenerationResponse(
@@ -276,7 +251,7 @@ class GenerateImageAdapter {
                 }
             }
             
-            let usedModel = partnerModels.first(where: { $0.modelId.uuidString == imageGenerationRequest.modelId })
+            let usedModel = connectionModels.first(where: { $0.modelId.uuidString == imageGenerationRequest.modelId })
             
             let set: ImageSet = ImageSet(
                 prompt: imageGenerationRequest.prompt,
@@ -315,12 +290,12 @@ class GenerateImageAdapter {
                     searchPrompt: nil,
                     contentType: EnumGenerationContentType.IMAGE_2D
                 )
-                
+            
                 modelContext.insert(generation)
-                try? modelContext.save()
-                
                 return generation
             }
+            
+            try? modelContext.save()
             
             return ImageSetResponse(
                 status: EnumGenerationStatus.GENERATED,

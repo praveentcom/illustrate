@@ -1,25 +1,27 @@
 import SwiftUI
 import SwiftData
 import PhotosUI
+import KeychainSwift
+import AlertToast
 
 struct EditExpandImageView: View {
     // MARK: Model Context
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \PartnerKey.createdAt, order: .reverse) private var partnerKeys: [PartnerKey]
+    @Query(sort: \ConnectionKey.createdAt, order: .reverse) private var connectionKeys: [ConnectionKey]
     
-    @State private var selectedPartnerId: String = ""
+    @State private var selectedConnectionId: String = ""
     @State private var selectedModelId: String = ""
     
-    func getSupportedModels() -> [PartnerModel] {
-        if (selectedPartnerId == "") {
+    func getSupportedModels() -> [ConnectionModel] {
+        if (selectedConnectionId == "") {
             return [];
         }
         
-        return partnerModels.filter({ $0.modelSetType == EnumSetType.EDIT_EXPAND && $0.partnerId.uuidString == selectedPartnerId })
+        return connectionModels.filter({ $0.modelSetType == EnumSetType.EDIT_EXPAND && $0.connectionId.uuidString == selectedConnectionId })
     }
     
-    func getSelectedModel() -> PartnerModel? {
-        return partnerModels.first(where: { $0.modelId.uuidString == selectedModelId })
+    func getSelectedModel() -> ConnectionModel? {
+        return connectionModels.first(where: { $0.modelId.uuidString == selectedModelId })
     }
     
     // MARK: Form States
@@ -32,6 +34,10 @@ struct EditExpandImageView: View {
     @State private var negativePrompt: String = ""
     
     @State private var artDimensions: String = ""
+    @State private var artQuality: EnumArtQuality = EnumArtQuality.HD
+    @State private var artStyle: EnumArtStyle = EnumArtStyle.VIVID
+    @State private var artVariant: EnumArtVariant = EnumArtVariant.NORMAL
+    @State private var numberOfImages: Int = 1
     @State private var promptEnhanceOpted: Bool = false
     
     // MARK: Photo States
@@ -50,9 +56,21 @@ struct EditExpandImageView: View {
         
     // MARK: Generation States
     @State private var isGenerating: Bool = false
+    @State private var showErrorToast = false
+    @State private var errorMessage = ""
     func generateImage() async -> ImageSetResponse? {
         if (!isGenerating) {
             isGenerating = true
+            
+            let keychain = KeychainSwift()
+            keychain.accessGroup = keychainAccessGroup
+            keychain.synchronizable = true
+            
+            let connectionSecret: String? = keychain.get(getSelectedModel()!.connectionId.uuidString)
+            if (connectionSecret == nil) {
+                isGenerating = false
+                return nil
+            }
             
             let adapter = GenerateImageAdapter(
                 imageGenerationRequest: ImageGenerationRequest(
@@ -61,7 +79,8 @@ struct EditExpandImageView: View {
                     negativePrompt: negativePrompt,
                     artDimensions: artDimensions,
                     clientImage: selectedImage?.toBase64PNG(),
-                    partnerKey: partnerKeys.first(where: { $0.partnerId == getSelectedModel()!.partnerId })!,
+                    connectionKey: connectionKeys.first(where: { $0.connectionId == getSelectedModel()!.connectionId })!,
+                    connectionSecret: connectionSecret!,
                     editDirection: ImageEditDirection(
                         left: expandLeft ? 500 : 0,
                         right: expandRight ? 500 : 0,
@@ -89,32 +108,32 @@ struct EditExpandImageView: View {
     // MARK: View
     var body: some View {
         VStack {
-            if (selectedModelId != "" && !partnerKeys.isEmpty) {
+            if (selectedModelId != "" && !connectionKeys.isEmpty) {
                 Form {
                     Section(header: Text("Select Model")) {
-                        Picker("Partner", selection: $selectedPartnerId) {
+                        Picker("Connection", selection: $selectedConnectionId) {
                             ForEach(
-                                partners.filter { partner in
-                                    partnerKeys.contains { $0.partnerId == partner.partnerId } &&
-                                    partnerModels.contains { $0.partnerId == partner.partnerId && $0.modelSetType == .EDIT_EXPAND }
-                                }, id: \.partnerId
-                            ) { partner in
+                                connections.filter { connection in
+                                    connectionKeys.contains { $0.connectionId == connection.connectionId } &&
+                                    connectionModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_EXPAND }
+                                }, id: \.connectionId
+                            ) { connection in
                                 HStack {
                                     #if !os(macOS)
-                                    Image("\(partner.partnerCode)_square".lowercased())
+                                    Image("\(connection.connectionCode)_square".lowercased())
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 20, height: 20)
                                     #endif
-                                    Text(partner.partnerName)
+                                    Text(connection.connectionName)
                                 }
-                                .tag(partner.partnerId.uuidString)
+                                .tag(connection.connectionId.uuidString)
                             }
                         }
                         #if !os(macOS)
                         .pickerStyle(.navigationLink)
                         #endif
-                        .onChange(of: selectedPartnerId) {
+                        .onChange(of: selectedConnectionId) {
                             selectedModelId = getSupportedModels().first?.modelId.uuidString ?? ""
                         }
                         
@@ -128,7 +147,7 @@ struct EditExpandImageView: View {
                         .pickerStyle(.navigationLink)
                         #endif
                         .onChange(of: selectedModelId) {
-                            let supportedDimensions = getSelectedModel()?.modelSupportedImageDimensions ?? []
+                            let supportedDimensions = getSelectedModel()?.modelSupportedParams.dimensions ?? []
                             
                             if (artDimensions == "") {
                                 artDimensions = supportedDimensions.first ?? ""
@@ -145,7 +164,7 @@ struct EditExpandImageView: View {
                     
                     Section("Art Details") {
                         Picker("Dimensions", selection: $artDimensions) {
-                            ForEach(getSelectedModel()?.modelSupportedImageDimensions ?? [], id: \.self) { dimension in
+                            ForEach(getSelectedModel()?.modelSupportedParams.dimensions ?? [], id: \.self) { dimension in
                                 HStack {
                                     #if !os(macOS)
                                     Image("symbol_dimension_\(getAspectRatio(dimension: dimension).width)_\(getAspectRatio(dimension: dimension).height)")
@@ -164,6 +183,58 @@ struct EditExpandImageView: View {
                         .onChange(of: artDimensions) {
                             selectedImage = nil
                             colorPalette = []
+                        }
+                        
+                        if (getSelectedModel()?.modelSupportedParams.quality ?? false) {
+                            Picker("Art Quality", selection: $artQuality) {
+                                ForEach(EnumArtQuality.allCases, id: \.self) { quality in
+                                    HStack {
+#if !os(macOS)
+                                        Image("symbol_quality_\(quality.rawValue)".lowercased())
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 20, height: 20)
+#endif
+                                        Text(quality.rawValue)
+                                            .monospaced()
+                                    }
+                                    .tag(quality)
+                                }
+                            }
+#if !os(macOS)
+                            .pickerStyle(.navigationLink)
+#endif
+                        }
+                        
+                        if (getSelectedModel()?.modelSupportedParams.variant ?? false) {
+                            Picker("Art Variant", selection: $artVariant) {
+                                ForEach(EnumArtVariant.allCases, id: \.self) { variant in
+                                    Text(variant.rawValue).tag(variant)
+                                }
+                            }
+#if !os(macOS)
+                            .pickerStyle(.navigationLink)
+#endif
+                        }
+                        
+                        if (getSelectedModel()?.modelSupportedParams.style ?? false) {
+                            Picker("Color Style", selection: $artStyle) {
+                                ForEach(EnumArtStyle.allCases, id: \.self) { style in
+                                    HStack {
+#if !os(macOS)
+                                        Image("symbol_color_\(style.rawValue)".lowercased())
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 20, height: 20)
+#endif
+                                        Text(style.rawValue)
+                                    }
+                                    .tag(style)
+                                }
+                            }
+#if !os(macOS)
+                            .pickerStyle(.navigationLink)
+#endif
                         }
                     }
                     .disabled(isGenerating)
@@ -246,20 +317,38 @@ struct EditExpandImageView: View {
                         }
                     }
                     
-                    Section(header: Text("Expand instructions")) {
-                        TextField("What should be the expanded view?", text: $prompt, prompt: Text("Eg. Enlarged landscape with more trees"), axis: .vertical)
-                            .lineLimit(2...8)
-                            .focused($focusedField, equals: .prompt)
-                        if (getSelectedModel()?.modelNegativePromptSupport ?? false) {
-                            TextField("Negative prompt (if any)", text: $negativePrompt, prompt: Text("Enter negative prompt here"), axis: .vertical)
+                    if (getSelectedModel()?.modelSupportedParams.prompt ?? false) {
+                        Section(header: Text("Expand instructions")) {
+                            TextField("What should be the expanded view?", text: $prompt, prompt: Text("Eg. Enlarged landscape with more trees"), axis: .vertical)
+                                .limitText($prompt, to: getSelectedModel()?.modelSupportedParams.maxPromptLength ?? 1)
                                 .lineLimit(2...8)
-                                .focused($focusedField, equals: .negativePrompt)
+                                .focused($focusedField, equals: .prompt)
+                            if (getSelectedModel()?.modelSupportedParams.negativePrompt ?? false) {
+                                TextField("Negative prompt (if any)", text: $negativePrompt, prompt: Text("Enter negative prompt here"), axis: .vertical)
+                                    .limitText($negativePrompt, to: getSelectedModel()?.modelSupportedParams.maxPromptLength ?? 1)
+                                    .lineLimit(2...8)
+                                    .focused($focusedField, equals: .negativePrompt)
+                            }
                         }
+                        .disabled(isGenerating)
                     }
-                    .disabled(isGenerating)
                     
-                    Section(header: Text("Optional enhancements")) {
-                        Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
+                    Section(header: Text("Additional requests")) {
+                        if (getSelectedModel()?.modelSupportedParams.count ?? 1 > 1) {
+                            Picker("Number of images", selection: $numberOfImages) {
+                                ForEach(1...(getSelectedModel()?.modelSupportedParams.count ?? 1), id: \.self) { count in
+                                    Text("\(count)")
+                                        .tag(count)
+                                }
+                            }
+                            #if !os(macOS)
+                            .pickerStyle(.navigationLink)
+                            #endif
+                        }
+                        
+                        if (getSelectedModel()?.modelSupportedParams.autoEnhance ?? false) {
+                            Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
+                        }
                     }
                     .disabled(isGenerating)
                     
@@ -272,6 +361,9 @@ struct EditExpandImageView: View {
                             if (response?.status == EnumGenerationStatus.GENERATED && response?.set?.id != nil) {
                                 selectedSetId = response!.set!.id
                                 isNavigationActive = true
+                            } else if (response?.status == EnumGenerationStatus.FAILED) {
+                                errorMessage = response?.errorMessage ?? "Something went wrong"
+                                showErrorToast = true
                             }
                         }
                     }
@@ -319,33 +411,49 @@ struct EditExpandImageView: View {
                     )
                 }
             } else {
-                Text("Please connect a partner")
+                PendingConnectionView(setType: .EDIT_EXPAND)
             }
         }
         .onAppear() {
-            if !partnerKeys.isEmpty && selectedModelId.isEmpty {
-                let supportedPartners = partners.filter { partner in
-                    partnerKeys.contains { $0.partnerId == partner.partnerId } &&
-                    partnerModels.contains { $0.partnerId == partner.partnerId && $0.modelSetType == .EDIT_EXPAND }
+            if !connectionKeys.isEmpty && selectedModelId.isEmpty {
+                let supportedConnections = connections.filter { connection in
+                    connectionKeys.contains { $0.connectionId == connection.connectionId } &&
+                    connectionModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_EXPAND }
                 }
 
-                if let firstSupportedPartner = supportedPartners.first,
-                   let key = partnerKeys.first(where: { $0.partnerId == firstSupportedPartner.partnerId }) {
+                if let firstSupportedConnection = supportedConnections.first,
+                   let key = connectionKeys.first(where: { $0.connectionId == firstSupportedConnection.connectionId }) {
                     
-                    selectedPartnerId = key.partnerId.uuidString
+                    selectedConnectionId = key.connectionId.uuidString
                     selectedModelId = getSupportedModels().first?.modelId.uuidString ?? ""
                     
-                    if !selectedPartnerId.isEmpty, !selectedModelId.isEmpty {
-                        artDimensions = getSelectedModel()?.modelSupportedImageDimensions.first ?? ""
+                    if !selectedConnectionId.isEmpty, !selectedModelId.isEmpty {
+                        artDimensions = getSelectedModel()?.modelSupportedParams.dimensions.first ?? ""
                     }
                 }
             }
+        }
+        .toast(isPresenting: $showErrorToast, duration: 4, offsetY: 16) {
+            AlertToast(
+                displayMode: .hud,
+                type: .systemImage("exclamationmark.triangle", Color.red),
+                title: errorMessage,
+                subTitle: "Tap to dismiss"
+            )
+        }
+        .toast(isPresenting: $isGenerating, offsetY: 16) {
+            AlertToast(
+                displayMode: .hud,
+                type: .loading,
+                title: "Generating image",
+                subTitle: "This might take a while, hang on."
+            )
         }
         .navigationDestination(isPresented: $isNavigationActive) {
             if (selectedSetId != nil) {
                 GenerationImageView(setId: selectedSetId!)
             }
         }
-        .navigationTitle("Expand Image")
+        .navigationTitle(labelForItem(.generateEditExpand))
     }
 }

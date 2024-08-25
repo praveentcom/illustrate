@@ -4,7 +4,7 @@ import SwiftData
 
 enum EnumGenerateVideoAdapterErrorCode: String, Codable {
     case GENERATOR_ERROR = "Internal Generator Error"
-    case MODEL_ERROR = "Partner Model Error"
+    case MODEL_ERROR = "Connection Model Error"
     case ADAPTER_ERROR = "Internal Adapter Error"
     case TRANSFORM_RESPONSE_ERROR = "Internal Response Transform Error"
 }
@@ -17,7 +17,8 @@ struct VideoGenerationRequest: Codable {
     var artDimensions: String
     var clientImage: String?
     var clientMask: String?
-    var partnerKey: PartnerKey
+    var connectionKey: ConnectionKey
+    var connectionSecret: String
     var numberOfVideos: Int = 1
     var motion: Int?
     var stickyness: Int?
@@ -44,7 +45,7 @@ struct VideoSetResponse: Codable {
 }
 
 protocol VideoGenerationProtocol {
-    var model: PartnerModel { get }
+    var model: ConnectionModel { get }
     
     associatedtype ServiceRequest
     
@@ -55,50 +56,16 @@ protocol VideoGenerationProtocol {
 }
 
 func getVideoGenerationAdapter(videoGenerationRequest: VideoGenerationRequest) throws -> any VideoGenerationProtocol {
-    let model = partnerModels.first(where: { $0.modelId.uuidString == videoGenerationRequest.modelId })
+    let model = connectionModels.first(where: { $0.modelId.uuidString == videoGenerationRequest.modelId })
     if (model == nil) {
         throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
     }
     
     switch model!.modelCode {
-    case EnumPartnerModelCode.STABILITY_IMAGE_TO_VIDEO:
+    case EnumConnectionModelCode.STABILITY_IMAGE_TO_VIDEO:
         return G_STABILITY_IMAGE_TO_VIDEO()
     default:
         throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
-    }
-}
-
-func getVideoSizeInBytes(videoURL: URL) -> Int? {
-    if let imageData = try? Data(contentsOf: videoURL) {
-        return imageData.count
-    }
-    return nil
-}
-
-func uploadVideoToCloudKit(record: CKRecord) async -> Bool {
-    let privateDatabase = CKContainer.default().privateCloudDatabase
-    do {
-        let ckRecord: CKRecord = try await privateDatabase.save(record)
-        
-        return ckRecord.recordID.recordName == record.recordID.recordName
-    } catch {
-        print("Error uploading video: \(error)")
-        return false
-    }
-}
-
-func saveVideoToDocumentsDirectory(videoData: Data, withName name: String) -> URL? {
-    let fileManager = FileManager.default
-    let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-    let videoFileURL = documentsURL.appendingPathComponent("\(name).mp4")
-    
-    do {
-        try videoData.write(to: videoFileURL)
-        print("Image saved to: \(videoFileURL.path)")
-        return videoFileURL
-    } catch {
-        print("Error saving image: \(error)")
-        return nil
     }
 }
 
@@ -128,6 +95,8 @@ class GenerateVideoAdapter {
             
             if let videoData = Data(base64Encoded: generation.base64!) {
                 let uuid = UUID()
+                saveVideoToiCloud(videoData: videoData, fileName: uuid.uuidString)
+                
                 let fileUrl: URL? = saveVideoToDocumentsDirectory(videoData: videoData, withName: uuid.uuidString)
                 if (fileUrl != nil) {
                     // Create thumbnail
@@ -137,6 +106,7 @@ class GenerateVideoAdapter {
                             imageData: Data(base64Encoded: frameBase64!)!,
                             withName: "\(uuid)"
                         )
+                        toPlatformImage(base64: frameBase64!)?.saveToiCloud(fileName: "\(uuid)")
                     }
                     
                     // Save optimised version
@@ -145,21 +115,24 @@ class GenerateVideoAdapter {
                         let optimised50 = image!.resizeImage(scale: 0.50)
                         if (optimised50 != nil) {
                             if let optimised50Data = Data(base64Encoded: optimised50!) {
-                                _ = saveImageToDocumentsDirectory(imageData: optimised50Data, withName: "\(uuid)_o50")
+                                _ = saveImageToDocumentsDirectory(imageData: optimised50Data, withName: ".\(uuid)_o50")
+                                toPlatformImage(base64: optimised50!)?.saveToiCloud(fileName: ".\(uuid)_o50")
                             }
                         }
                         
                         let optimised20 = image!.resizeImage(scale: 0.20)
                         if (optimised20 != nil) {
                             if let optimised20Data = Data(base64Encoded: optimised20!) {
-                                _ = saveImageToDocumentsDirectory(imageData: optimised20Data, withName: "\(uuid)_o20")
+                                _ = saveImageToDocumentsDirectory(imageData: optimised20Data, withName: ".\(uuid)_o20")
+                                toPlatformImage(base64: optimised20!)?.saveToiCloud(fileName: ".\(uuid)_o20")
                             }
                         }
                         
                         let optimised04 = image!.resizeImage(scale: 0.04)
                         if (optimised04 != nil) {
                             if let optimised04Data = Data(base64Encoded: optimised04!) {
-                                _ = saveImageToDocumentsDirectory(imageData: optimised04Data, withName: "\(uuid)_o04")
+                                _ = saveImageToDocumentsDirectory(imageData: optimised04Data, withName: ".\(uuid)_o04")
+                                toPlatformImage(base64: optimised04!)?.saveToiCloud(fileName: ".\(uuid)_o04")
                             }
                         }
                     }
@@ -168,16 +141,18 @@ class GenerateVideoAdapter {
                     if (videoGenerationRequest.clientImage != nil) {
                         let _: URL? = saveImageToDocumentsDirectory(
                             imageData: Data(base64Encoded: videoGenerationRequest.clientImage!)!,
-                            withName: "\(uuid)_client"
+                            withName: ".\(uuid)_client"
                         )
+                        toPlatformImage(base64: videoGenerationRequest.clientImage!)?.saveToiCloud(fileName: ".\(uuid)_client")
                     }
                     
                     // Save client mask
                     if (videoGenerationRequest.clientMask != nil) {
                         let _: URL? = saveImageToDocumentsDirectory(
                             imageData: Data(base64Encoded: videoGenerationRequest.clientMask!)!,
-                            withName: "\(uuid)_mask"
+                            withName: ".\(uuid)_mask"
                         )
+                        toPlatformImage(base64: videoGenerationRequest.clientMask!)?.saveToiCloud(fileName: ".\(uuid)_mask")
                     }
                     
                     return VideoGenerationResponse(
@@ -244,7 +219,7 @@ class GenerateVideoAdapter {
                 }
             }
             
-            let usedModel = partnerModels.first(where: { $0.modelId.uuidString == videoGenerationRequest.modelId })
+            let usedModel = connectionModels.first(where: { $0.modelId.uuidString == videoGenerationRequest.modelId })
             
             let set: ImageSet = ImageSet(
                 prompt: videoGenerationRequest.prompt ?? "",

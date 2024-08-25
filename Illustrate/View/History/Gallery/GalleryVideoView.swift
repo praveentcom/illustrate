@@ -22,19 +22,30 @@ struct GalleryVideoView: View {
     }
 
     var body: some View {
-        ScrollView {
-            GalleryGridView(sets: filteredSets, generations: filteredGenerations, contentType: .VIDEO)
+        VStack {
+            if (filteredGenerations.filter { $0.contentType == .VIDEO }.isEmpty) {
+                Text("No requests.")
+                    .opacity(0.5)
+            } else {
+                ScrollView {
+                    GalleryGridView(sets: filteredSets, generations: filteredGenerations, contentType: .VIDEO)
+                }
+            }
         }
         .toolbar {
             ToolbarItem {
                 Menu {
-                    Button("All Generations", action: { selectedSetType = nil })
-                    Button(getSetTypeInfo(setType: .VIDEO_IMAGE).label, action: { selectedSetType = .VIDEO_IMAGE })
+                    Button("All Generations", systemImage: "slider.horizontal.3", action: { selectedSetType = nil })
+                    ForEach(sectionItems(section: EnumNavigationSection.VideoGenerations)) { item in
+                        Button(labelForItem(item), systemImage: iconForItem(item)) {
+                            selectedSetType = setTypeForItem(item)
+                        }
+                    }
                 } label: {
                     Image(systemName: "slider.horizontal.3")
                 }
             }
         }
-        .navigationTitle("Video Gallery")
+        .navigationTitle(labelForItem(.historyVideoGallery))
     }
 }

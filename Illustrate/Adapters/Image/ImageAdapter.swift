@@ -25,6 +25,58 @@ func loadImageFromDocumentsDirectory(withName name: String) -> PlatformImage? {
     return nil
 }
 
+func loadImageFromiCloud(_ fileName: String) -> PlatformImage? {
+    if let image = loadImageFromDocumentsDirectory(withName: fileName) {
+        return image
+    }
+    
+    guard let containerURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents") else {
+        print("iCloud container not available.")
+        return nil
+    }
+    
+    do {
+        if !FileManager.default.fileExists(atPath: containerURL.path) {
+            try FileManager.default.createDirectory(at: containerURL, withIntermediateDirectories: true, attributes: nil)
+        }
+        
+        let fileUrl = containerURL.appendingPathComponent("\(fileName).png")
+        let data = try Data(contentsOf: fileUrl)
+        
+        #if os(macOS)
+        guard let image = NSImage(data: data) else { return nil }
+        #else
+        guard let image = UIImage(data: data) else { return nil }
+        #endif
+        return image
+    } catch {
+        print("Error loading image: \(error.localizedDescription)")
+        return nil
+    }
+}
+
+func saveImageToDocumentsDirectory(imageData: Data, withName name: String) -> URL? {
+    let fileManager = FileManager.default
+    let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+    let imageFileURL = documentsURL.appendingPathComponent("\(name).png")
+    
+    do {
+        try imageData.write(to: imageFileURL)
+        print("Image saved to: \(imageFileURL.path)")
+        return imageFileURL
+    } catch {
+        print("Error saving image: \(error)")
+        return nil
+    }
+}
+
+func getImageSizeInBytes(imageURL: URL) -> Int? {
+    if let imageData = try? Data(contentsOf: imageURL) {
+        return imageData.count
+    }
+    return nil
+}
+
 func toPlatformImage(base64: String) -> PlatformImage? {
     #if os(macOS)
     guard let image = NSImage(data: Data(base64Encoded: base64)!) else { return nil }
@@ -35,6 +87,44 @@ func toPlatformImage(base64: String) -> PlatformImage? {
 }
 
 extension PlatformImage {
+    func saveToiCloud(fileName: String) {
+        guard let containerURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents") else {
+            print("iCloud container not available.")
+            return
+        }
+
+        do {
+            if !FileManager.default.fileExists(atPath: containerURL.path) {
+                try FileManager.default.createDirectory(at: containerURL, withIntermediateDirectories: true, attributes: nil)
+            }
+
+            let fileURL = containerURL.appendingPathComponent("\(fileName).png")
+
+            #if os(macOS)
+            guard let tiffData = self.tiffRepresentation,
+                  let bitmapImage = NSBitmapImageRep(data: tiffData),
+                  let pngData = bitmapImage.representation(using: .png, properties: [:]) else {
+                print("Failed to create PNG data from NSImage.")
+                return
+            }
+            #else
+            guard let pngData = self.pngData() else {
+                print("Failed to create PNG data from UIImage.")
+                return
+            }
+            #endif
+
+            try pngData.write(to: fileURL)
+            print("Image saved to iCloud: \(fileURL.path)")
+            
+            #if os(macOS)
+            try FileManager.default.setAttributes([FileAttributeKey.extensionHidden: true], ofItemAtPath: fileURL.path)
+            #endif
+        } catch {
+            print("Error saving image to iCloud: \(error.localizedDescription)")
+        }
+    }
+    
     func toBase64PNG() -> String? {
         #if os(macOS)
         guard let tiffData = self.tiffRepresentation,

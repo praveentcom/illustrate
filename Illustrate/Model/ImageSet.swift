@@ -5,106 +5,108 @@ import SwiftUI
 enum EnumSetType: String, Codable, CaseIterable, Identifiable {
     var id : String { UUID().uuidString }
     
-    case GENERATE = "Generate Image"
-    case EDIT_UPSCALE = "Upscale Image"
-    case EDIT_EXPAND = "Expand Image"
-    case EDIT_PROMPT = "Edit with Prompt"
-    case EDIT_MASK = "Edit with Mask"
-    case EDIT_MASK_ERASE = "Erase with Mask"
-    case EDIT_REPLACE = "Search and Replace"
-    case REMOVE_BACKGROUND = "Remove Background"
-    case VIDEO_IMAGE = "Image to Video"
+    case GENERATE
+    case EDIT_UPSCALE
+    case EDIT_EXPAND
+    case EDIT_PROMPT
+    case EDIT_MASK
+    case EDIT_MASK_ERASE
+    case EDIT_REPLACE
+    case REMOVE_BACKGROUND
+    case VIDEO_IMAGE
 }
 
-func getSetTypeInfo(setType: EnumSetType) -> (label: String, iconString: String) {
-    switch setType {
+func labelForSetType(_ item: EnumSetType) -> String {
+    switch item {
     case .GENERATE:
-        return ("Generate Image", "paintbrush")
+        return "Generate Image"
     case .EDIT_UPSCALE:
-        return ("Upscale Image", "arrow.up.forward.app")
+        return "Upscale Image"
     case .EDIT_EXPAND:
-        return ("Expand Image", "arrow.up.left.and.arrow.down.right")
+        return "Expand Image"
     case .EDIT_PROMPT:
-        return ("Edit with Prompt", "character.cursor.ibeam")
+        return "Edit with Prompt"
     case .EDIT_MASK:
-        return ("Edit with Mask", "pencil.and.scribble")
+        return "Edit with Mask"
     case .EDIT_MASK_ERASE:
-        return ("Erase with Mask", "eraser.line.dashed")
+        return "Erase with Mask"
     case .EDIT_REPLACE:
-        return ("Search and Replace", "lasso")
+        return "Search & Replace"
     case .REMOVE_BACKGROUND:
-        return ("Remove Background", "person.and.background.dotted")
+        return "Remove Background"
     case .VIDEO_IMAGE:
-        return ("Image to Video", "movieclapper")
+        return "Image to Video"
     }
 }
 
-struct NavigationSectionForImageGenerations: View {
-    var body: some View {
-        Section("Generate Images") {
-            NavigationLink(destination: GenerateImageView()) {
-                Label(getSetTypeInfo(setType: .GENERATE).label, systemImage: getSetTypeInfo(setType: .GENERATE).iconString)
-            }
-            NavigationLink(destination: EditUpscaleImageView()) {
-                Label(getSetTypeInfo(setType: .EDIT_UPSCALE).label, systemImage: getSetTypeInfo(setType: .EDIT_UPSCALE).iconString)
-            }
-            NavigationLink(destination: EditExpandImageView()) {
-                Label(getSetTypeInfo(setType: .EDIT_EXPAND).label, systemImage: getSetTypeInfo(setType: .EDIT_EXPAND).iconString)
-            }
-            NavigationLink(destination: EditPromptImageView()) {
-                Label(getSetTypeInfo(setType: .EDIT_PROMPT).label, systemImage: getSetTypeInfo(setType: .EDIT_PROMPT).iconString)
-            }
-            NavigationLink(destination: EditMaskImageView()) {
-                Label(getSetTypeInfo(setType: .EDIT_MASK).label, systemImage: getSetTypeInfo(setType: .EDIT_MASK).iconString)
-            }
-            NavigationLink(destination: EraseMaskImageView()) {
-                Label(getSetTypeInfo(setType: .EDIT_MASK_ERASE).label, systemImage: getSetTypeInfo(setType: .EDIT_MASK_ERASE).iconString)
-            }
-            NavigationLink(destination: SearchReplaceImageView()) {
-                Label(getSetTypeInfo(setType: .EDIT_REPLACE).label, systemImage: getSetTypeInfo(setType: .EDIT_REPLACE).iconString)
-            }
-            NavigationLink(destination: RemoveBackgroundImageView()) {
-                Label(getSetTypeInfo(setType: .REMOVE_BACKGROUND).label, systemImage: getSetTypeInfo(setType: .REMOVE_BACKGROUND).iconString)
-            }
-        }
+func subLabelForSetType(_ item: EnumSetType) -> String {
+    switch item {
+    case .GENERATE:
+        return "Imagine an image and generate in seconds"
+    case .EDIT_UPSCALE:
+        return "Upload low-res image and upscale details"
+    case .EDIT_EXPAND:
+        return "Expand image across any side with your prompt"
+    case .EDIT_PROMPT:
+        return "Edit an existing image with simple prompt"
+    case .EDIT_MASK:
+        return "Edit an existing image by drawing a mask"
+    case .EDIT_MASK_ERASE:
+        return "Erase objects in an image by drawing a mask"
+    case .EDIT_REPLACE:
+        return "Search objects with a prompt and replace with another"
+    case .REMOVE_BACKGROUND:
+        return "Simply remove the background from an image"
+    case .VIDEO_IMAGE:
+        return "Convert an image to a video with your prompt"
     }
 }
 
-struct NavigationSectionForVideoGenerations: View {
-    var body: some View {
-        Section("Generate Videos") {
-            NavigationLink(destination: ImageToVideoView()) {
-                Label(getSetTypeInfo(setType: .VIDEO_IMAGE).label, systemImage: getSetTypeInfo(setType: .VIDEO_IMAGE).iconString)
-            }
-        }
+func iconForSetType(_ item: EnumSetType) -> String {
+    switch item {
+    case .GENERATE:
+        return "paintbrush"
+    case .EDIT_UPSCALE:
+        return "arrow.up.forward.app"
+    case .EDIT_EXPAND:
+        return "arrow.up.left.and.arrow.down.right"
+    case .EDIT_PROMPT:
+        return "character.cursor.ibeam"
+    case .EDIT_MASK:
+        return "pencil.and.outline"
+    case .EDIT_MASK_ERASE:
+        return "eraser"
+    case .EDIT_REPLACE:
+        return "magnifyingglass"
+    case .REMOVE_BACKGROUND:
+        return "scissors"
+    case .VIDEO_IMAGE:
+        return "video"
     }
 }
 
-struct NavigationSectionForGenerationHistory: View {
-    var body: some View {
-        Section ("History") {
-            #if os(macOS)
-            NavigationLink(destination: RequestsView()) {
-                Label("All Requests", systemImage: "note.text")
-            }
-            #endif
-            NavigationLink(destination: GalleryImageView()) {
-                Label("Image Gallery", systemImage: "photo")
-            }
-            NavigationLink(destination: GalleryVideoView()) {
-                Label("Video Gallery", systemImage: "movieclapper")
-            }
-        }
-    }
-}
-
-struct NavigationSectionForUsageMetrics: View {
-    var body: some View {
-        Section ("Metrics") {
-            NavigationLink(destination: UsageMetricsView()) {
-                Label("Usage Metrics", systemImage: "chart.bar")
-            }
-        }
+func setTypeForItem(_ item: EnumNavigationItem) -> EnumSetType {
+    switch item {
+    case .generateGenerate:
+        return .GENERATE
+    case .generateEditUpscale:
+        return .EDIT_UPSCALE
+    case .generateEditExpand:
+        return .EDIT_EXPAND
+    case .generateEditPrompt:
+        return .EDIT_PROMPT
+    case .generateEditMask:
+        return .EDIT_MASK
+    case .generateEraseMask:
+        return .EDIT_MASK_ERASE
+    case .generateSearchReplace:
+        return .EDIT_REPLACE
+    case .generateRemoveBackground:
+        return .REMOVE_BACKGROUND
+    case .generateVideoImage:
+        return .VIDEO_IMAGE
+    default:
+        return .GENERATE
     }
 }
 
@@ -126,15 +128,15 @@ class ImageSet: Identifiable, Codable {
     
     var id: UUID = UUID()
     var createdAt: Date = Date()
-    var prompt: String
+    var prompt: String = ""
     var starred: Bool = false
-    var modelId: String
+    var modelId: String = ""
     var artStyle: EnumArtStyle = EnumArtStyle.NATURAL
     var artVariant: EnumArtVariant = EnumArtVariant.NORMAL
-    var artDimensions: String
+    var artDimensions: String = "1024x1024"
     var setType: EnumSetType = EnumSetType.GENERATE
-    var negativePrompt: String?
-    var searchPrompt: String?
+    var negativePrompt: String? = nil
+    var searchPrompt: String? = nil
 
     init(prompt: String, modelId: String, artStyle: EnumArtStyle = EnumArtStyle.NATURAL, artVariant: EnumArtVariant = EnumArtVariant.NORMAL, artDimensions: String, setType: EnumSetType, negativePrompt: String? = nil, searchPrompt: String? = nil) {
         self.id = UUID()

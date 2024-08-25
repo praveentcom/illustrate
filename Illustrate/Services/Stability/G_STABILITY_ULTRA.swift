@@ -5,7 +5,7 @@ class G_STABILITY_ULTRA: ImageGenerationProtocol {
         return 8.0
     }
 
-    let model: PartnerModel = partnerModels.first(where: { $0.modelCode == EnumPartnerModelCode.STABILITY_ULTRA })!
+    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.STABILITY_ULTRA })!
 
     struct ServiceRequest: Codable {
         let prompt: String
@@ -154,7 +154,7 @@ class G_STABILITY_ULTRA: ImageGenerationProtocol {
                 method: "POST",
                 body: transformedRequest,
                 headers: [
-                    "Authorization": "\(request.partnerKey.value)",
+                    "Authorization": "\(request.connectionSecret)",
                     "Content-Type": "multipart/form-data",
                     "Accept": "application/json"
                 ]

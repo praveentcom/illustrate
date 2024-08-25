@@ -5,7 +5,7 @@ class G_STABILITY_ERASE: ImageGenerationProtocol {
         return 3.0
     }
     
-    let model: PartnerModel = partnerModels.first(where: { $0.modelCode == EnumPartnerModelCode.STABILITY_ERASE })!
+    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.STABILITY_ERASE })!
     
     struct ServiceRequest: Codable {
         let user: String
@@ -60,7 +60,7 @@ class G_STABILITY_ERASE: ImageGenerationProtocol {
         let transformedRequest = transformRequest(request: request)
         
         let headers: [String: String] = [
-            "Authorization": "\(request.partnerKey.value)",
+            "Authorization": "\(request.connectionSecret)",
             "Content-Type": "multipart/form-data",
             "Accept": "application/json"
         ]
