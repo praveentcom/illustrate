@@ -68,6 +68,7 @@ struct GenerationImageView: View {
     @State private var imageSet: ImageSet? = nil
     @State private var generations: [Generation] = []
     @State private var generationIndex: Int = 0
+    @State private var minHeight: CGFloat = 0
     
     @State private var showMask: Bool = false
     @State private var showDeleteConfirmation = false
@@ -177,6 +178,11 @@ struct GenerationImageView: View {
                                                     showDeleteConfirmation = true
                                                 }
                                             }
+                                            .onAppear {
+                                                if (min(image.size.height, 400) > minHeight) {
+                                                    minHeight = min(image.size.height, 400)
+                                                }
+                                            }
                                         ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_client") { requestImage in
                                             ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_mask") { maskImage in
                                                 if (requestImage != nil || maskImage != nil) {
@@ -203,6 +209,7 @@ struct GenerationImageView: View {
                                 }
                             }
                             .id("image_\(getSelectedGeneration()!.id.uuidString)")
+                            .frame(minHeight: minHeight)
                         }
                         .padding(.vertical, 8)
                     }

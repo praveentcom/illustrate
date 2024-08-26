@@ -12,9 +12,9 @@ struct PendingConnectionView: View {
     
     let columns: [GridItem] = {
         #if os(macOS)
-        return Array(repeating: GridItem(.flexible(), spacing: 12), count: 4)
+        return Array(repeating: GridItem(.flexible(), spacing: 8), count: 4)
         #else
-        return Array(repeating: GridItem(.flexible(), spacing: 16), count: UIDevice.current.userInterfaceIdiom == .pad ? 4 : 1)
+        return Array(repeating: GridItem(.flexible(), spacing: 12), count: UIDevice.current.userInterfaceIdiom == .pad ? 4 : 1)
         #endif
     }()
     
@@ -35,14 +35,14 @@ struct PendingConnectionView: View {
                     Label("Manage Connections", systemImage: "link")
                 }
             }
-            Section("Supported Connections") {
+            Section("Supported Models") {
                 VStack (alignment: .leading) {
                     if (connectionsWithSetTypeSupport.isEmpty) {
                         Text("No connections that support \(labelForSetType(setType)) are available yet.")
                     } else {
-                        LazyVGrid(columns: columns, spacing: 12) {
+                        LazyVGrid(columns: columns, spacing: 8) {
                             ForEach(connectionsWithSetTypeSupport, id: \.self) { item in
-                                WorkspaceConnectionShortcut(item: item)
+                                WorkspaceConnectionShortcut(item: item, setType: setType, showModels: true)
                             }
                         }
                     }

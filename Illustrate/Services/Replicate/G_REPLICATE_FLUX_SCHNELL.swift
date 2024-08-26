@@ -82,8 +82,11 @@ class G_REPLICATE_FLUX_SCHNELL: ImageGenerationProtocol {
             )
         }
         
-        print("Invalid response: \(response)")
-        throw NSError(domain: "Invalid response", code: -1, userInfo: nil)
+        return ImageGenerationResponse(
+                status: .FAILED,
+                errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+                errorMessage: "Invalid response"
+            )
     }
     
     func pollForResult(requestId: String, url: URL, headers: [String: String], maxAttempts: Int = 10) async throws -> NetworkResponseData {
@@ -122,7 +125,11 @@ class G_REPLICATE_FLUX_SCHNELL: ImageGenerationProtocol {
 
     func makeRequest(request: ImageGenerationRequest) async throws -> ImageGenerationResponse {
         guard let url = URL(string: model.modelGenerateBaseURL) else {
-            throw NSError(domain: "Invalid URL", code: -1, userInfo: nil)
+            return ImageGenerationResponse(
+                status: .FAILED,
+                errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+                errorMessage: "Invalid URL"
+            )
         }
 
         let transformedRequest = transformRequest(request: request)
@@ -158,11 +165,19 @@ class G_REPLICATE_FLUX_SCHNELL: ImageGenerationProtocol {
                 }
                 
                 guard let requestId = requestId else {
-                    throw NSError(domain: "Failed to initiate request", code: -1, userInfo: nil)
+                    return ImageGenerationResponse(
+                        status: .FAILED,
+                        errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+                        errorMessage: "Failed to initiate request"
+                    )
                 }
                 
                 guard let statusUrl = URL(string: model.modelStatusBaseURL!) else {
-                    throw NSError(domain: "Invalid URL", code: -1, userInfo: nil)
+                    return ImageGenerationResponse(
+                        status: .FAILED,
+                        errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+                        errorMessage: "Invalid URL for status check"
+                    )
                 }
 
                 let finalResponse = try await pollForResult(requestId: requestId, url: statusUrl, headers: headers)

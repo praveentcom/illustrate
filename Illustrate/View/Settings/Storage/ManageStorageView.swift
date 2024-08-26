@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-struct ClearStorageView: View {
+struct ManageStorageView: View {
     @Environment (\.modelContext) private var modelContext
     @State private var showConfirmation = false
     
@@ -54,6 +54,6 @@ struct ClearStorageView: View {
                 secondaryButton: .cancel()
             )
         }
-        .navigationTitle(labelForItem(.settingsClearStorage))
+        .navigationTitle(labelForItem(.settingsManageStorage))
     }
 }

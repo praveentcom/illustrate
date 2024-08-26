@@ -52,13 +52,20 @@ class G_HUGGING_FACE_FLUX_SCHNELL: ImageGenerationProtocol {
             )
         }
         
-        print("Invalid response: \(response)")
-        throw NSError(domain: "Invalid response", code: -1, userInfo: nil)
+        return ImageGenerationResponse(
+            status: .FAILED,
+            errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+            errorMessage: "Invalid response"
+        )
     }
 
     func makeRequest(request: ImageGenerationRequest) async throws -> ImageGenerationResponse {
         guard let url = URL(string: model.modelGenerateBaseURL) else {
-            throw NSError(domain: "Invalid URL", code: -1, userInfo: nil)
+            return ImageGenerationResponse(
+                status: .FAILED,
+                errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+                errorMessage: "Invalid URL"
+            )
         }
 
         let transformedRequest = transformRequest(request: request)

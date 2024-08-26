@@ -131,15 +131,11 @@ class GenerateImageAdapter {
         do {
             let generation = try await generationAdapter.makeRequest(request: imageGenerationRequest)
             if (generation.base64 == nil) {
-                if (generation.errorCode != nil) {
-                    return ImageGenerationResponse(
-                        status: EnumGenerationStatus.FAILED,
-                        errorCode: generation.errorCode,
-                        errorMessage: generation.errorMessage
-                    )
-                }
-                
-                throw NSError(domain: "Failed to generate image", code: -1, userInfo: nil)
+                return ImageGenerationResponse(
+                    status: EnumGenerationStatus.FAILED,
+                    errorCode: generation.errorCode != nil ? generation.errorCode : EnumGenerateImageAdapterErrorCode.GENERATOR_ERROR,
+                    errorMessage: generation.errorMessage != nil ? generation.errorMessage : "Failed with unknown error"
+                )
             }
             
             if let imageData = Data(base64Encoded: generation.base64!) {
@@ -201,10 +197,18 @@ class GenerateImageAdapter {
                         colorPalette: getDominantColors(imageURL: fileUrl!)
                     )
                 } else {
-                    throw NSError(domain: "Could not save image", code: -1, userInfo: nil)
+                    return ImageGenerationResponse(
+                        status: EnumGenerationStatus.FAILED,
+                        errorCode: EnumGenerateImageAdapterErrorCode.GENERATOR_ERROR,
+                        errorMessage: "Could not save image"
+                    )
                 }
             } else {
-                throw NSError(domain: "Could not decode base64", code: -1, userInfo: nil)
+                return ImageGenerationResponse(
+                    status: EnumGenerationStatus.FAILED,
+                    errorCode: EnumGenerateImageAdapterErrorCode.GENERATOR_ERROR,
+                    errorMessage: "Could not decode base64"
+                )
             }
         } catch {
             return ImageGenerationResponse(

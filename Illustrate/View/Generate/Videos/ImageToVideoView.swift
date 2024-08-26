@@ -53,21 +53,23 @@ struct ImageToVideoView: View {
     
     // MARK: Generation States
     @State private var isGenerating: Bool = false
-    @State private var showErrorToast = false
-    @State private var errorMessage = ""
+    @State private var errorState = ErrorState(message: "", isShowing: false)
     func generateVideo() async -> VideoSetResponse? {
         if (!isGenerating) {
-            isGenerating = true
-            
             let keychain = KeychainSwift()
             keychain.accessGroup = keychainAccessGroup
             keychain.synchronizable = true
             
             let connectionSecret: String? = keychain.get(getSelectedModel()!.connectionId.uuidString)
             if (connectionSecret == nil) {
-                isGenerating = false
-                return nil
+                return VideoSetResponse(
+                    status: .FAILED,
+                    errorCode: EnumGenerateVideoAdapterErrorCode.ADAPTER_ERROR,
+                    errorMessage: "Keychain record not found"
+                )
             }
+            
+            isGenerating = true
             
             let adapter = GenerateVideoAdapter(
                 videoGenerationRequest: VideoGenerationRequest(
@@ -85,6 +87,10 @@ struct ImageToVideoView: View {
             let response: VideoSetResponse = await adapter.makeRequest()
             
             isGenerating = false
+            #if !os(macOS)
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            #endif
+            
             return response;
         }
         
@@ -323,12 +329,14 @@ struct ImageToVideoView: View {
                                 selectedSetId = response!.set!.id
                                 isNavigationActive = true
                             } else if (response?.status == EnumGenerationStatus.FAILED) {
-                                errorMessage = response?.errorMessage ?? "Something went wrong"
-                                showErrorToast = true
+                                errorState = ErrorState(
+                                    message: response?.errorMessage ?? "Something went wrong",
+                                    isShowing: true
+                                )
                             }
                         }
                     }
-                    .disabled(isGenerating)
+                    .disabled(isGenerating || selectedImage == nil)
                 }
                 .formStyle(.grouped)
                 .photosPicker(isPresented: $isPhotoPickerOpen, selection: $selectedImageItem, matching: .all(of: [
@@ -398,22 +406,58 @@ struct ImageToVideoView: View {
                 }
             }
         }
-        .toast(isPresenting: $showErrorToast, duration: 4, offsetY: 16) {
-            AlertToast(
-                displayMode: .hud,
-                type: .systemImage("exclamationmark.triangle", Color.red),
-                title: errorMessage,
-                subTitle: "Tap to dismiss"
-            )
+#if os(macOS)
+.toast(isPresenting: $errorState.isShowing, duration: 12, offsetY: 16) {
+    AlertToast(
+        displayMode: .hud,
+        type: .systemImage("exclamationmark.triangle", Color.red),
+        title: errorState.message,
+        subTitle: "Tap to dismiss"
+    )
+}
+.toast(isPresenting: $isGenerating, offsetY: 16) {
+    AlertToast(
+        displayMode: .hud,
+        type: .loading,
+        title: "Generating video",
+        subTitle: "This might take a while, hang on."
+    )
+}
+#else
+.sheet(isPresented: $errorState.isShowing) { [errorState] in
+    VStack (alignment: .center, spacing: 24) {
+        VStack (alignment: .center, spacing: 8) {
+            Image(systemName: "exclamationmark.triangle")
+                .resizable()
+                .frame(width: 40, height: 40)
+            VStack (alignment: .center) {
+                Text(errorState.message)
+                    .multilineTextAlignment(.center)
+                Text("Dismiss to try again")
+                    .multilineTextAlignment(.center)
+                    .opacity(0.6)
+            }
         }
-        .toast(isPresenting: $isGenerating, offsetY: 16) {
-            AlertToast(
-                displayMode: .hud,
-                type: .loading,
-                title: "Generating image",
-                subTitle: "This might take a while, hang on."
-            )
+    }
+    .padding(.all, 32)
+}
+.sheet(isPresented: $isGenerating) {
+    VStack (alignment: .center, spacing: 24) {
+        VStack (alignment: .center, spacing: 8) {
+            ProgressView()
+                .frame(width: 24, height: 24)
+            VStack (alignment: .center) {
+                Text("Generating video")
+                    .multilineTextAlignment(.center)
+                Text("This might take a while, hang on.")
+                    .multilineTextAlignment(.center)
+                    .opacity(0.6)
+            }
         }
+    }
+    .padding(.all, 32)
+}
+#endif
         .navigationDestination(isPresented: $isNavigationActive) {
             if (selectedSetId != nil) {
                 GenerationVideoView(setId: selectedSetId!)

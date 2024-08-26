@@ -153,17 +153,17 @@ let connections = [
         creditCurrency: EnumConnectionCreditCurrency.CREDITS,
         active: true
     ),
-    Connection(
-        connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-        connectionCode: EnumConnectionCode.GOOGLE_CLOUD,
-        connectionName: "Google Cloud",
-        connectionDescription: "High-performance infrastructure for cloud.",
-        keyStructure: "\"project_id\":\\s*\"[a-z0-9\\-]+\",\\s*\"private_key\":\\s*\"-----BEGIN PRIVATE KEY-----\\\\n(?:[^\\\\n]+\\\\n)+-----END PRIVATE KEY-----\\\\n\",\\s*\"client_email\":\\s*\"[a-z0-9\\-]+@[a-z0-9\\-]+\\.iam\\.gserviceaccount\\.com\"",
-        keyPlaceholder: "Enter JSON key",
-        keyType: EnumConnectionKeyType.JSON,
-        creditCurrency: EnumConnectionCreditCurrency.USD,
-        active: true
-    ),
+//    Connection(
+//        connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
+//        connectionCode: EnumConnectionCode.GOOGLE_CLOUD,
+//        connectionName: "Google Cloud",
+//        connectionDescription: "High-performance infrastructure for cloud.",
+//        keyStructure: "\"project_id\":\\s*\"[a-z0-9\\-]+\",\\s*\"private_key\":\\s*\"-----BEGIN PRIVATE KEY-----\\\\n(?:[^\\\\n]+\\\\n)+-----END PRIVATE KEY-----\\\\n\",\\s*\"client_email\":\\s*\"[a-z0-9\\-]+@[a-z0-9\\-]+\\.iam\\.gserviceaccount\\.com\"",
+//        keyPlaceholder: "Enter JSON key",
+//        keyType: EnumConnectionKeyType.JSON,
+//        creditCurrency: EnumConnectionCreditCurrency.USD,
+//        active: true
+//    ),
     Connection(
         connectionId: EnumConnectionCode.REPLICATE.connectionId,
         connectionCode: EnumConnectionCode.REPLICATE,

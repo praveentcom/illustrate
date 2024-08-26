@@ -82,15 +82,11 @@ class GenerateVideoAdapter {
         do {
             let generation = try await generationAdapter.makeRequest(request: videoGenerationRequest)
             if (generation.base64 == nil) {
-                if (generation.errorCode != nil) {
-                    return VideoGenerationResponse(
-                        status: EnumGenerationStatus.FAILED,
-                        errorCode: generation.errorCode,
-                        errorMessage: generation.errorMessage
-                    )
-                }
-                
-                throw NSError(domain: "Failed to generate image", code: -1, userInfo: nil)
+                return VideoGenerationResponse(
+                    status: EnumGenerationStatus.FAILED,
+                    errorCode: generation.errorCode != nil ? generation.errorCode : EnumGenerateVideoAdapterErrorCode.GENERATOR_ERROR,
+                    errorMessage: generation.errorMessage != nil ? generation.errorMessage : "Failed with unknown error"
+                )
             }
             
             if let videoData = Data(base64Encoded: generation.base64!) {
@@ -165,10 +161,18 @@ class GenerateVideoAdapter {
                         colorPalette: []
                     )
                 } else {
-                    throw NSError(domain: "Could not save image", code: -1, userInfo: nil)
+                    return VideoGenerationResponse(
+                        status: EnumGenerationStatus.FAILED,
+                        errorCode: EnumGenerateVideoAdapterErrorCode.GENERATOR_ERROR,
+                        errorMessage: "Could not save image"
+                    )
                 }
             } else {
-                throw NSError(domain: "Could not decode base64", code: -1, userInfo: nil)
+                return VideoGenerationResponse(
+                    status: EnumGenerationStatus.FAILED,
+                    errorCode: EnumGenerateVideoAdapterErrorCode.GENERATOR_ERROR,
+                    errorMessage: "Could not decode base64"
+                )
             }
         } catch {
             return VideoGenerationResponse(

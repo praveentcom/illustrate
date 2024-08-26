@@ -95,15 +95,34 @@ class G_STABILITY_IMAGE_TO_VIDEO: VideoGenerationProtocol {
                 )
             }
         default:
-            throw NSError(domain: "Invalid response format", code: -1, userInfo: nil)
+            return VideoGenerationResponse(
+                status: .FAILED,
+                errorCode: EnumGenerateVideoAdapterErrorCode.MODEL_ERROR,
+                errorMessage: "Unexpected response"
+            )
         }
         
-        throw NSError(domain: "Invalid response", code: -1, userInfo: nil)
+        return VideoGenerationResponse(
+            status: .FAILED,
+            errorCode: EnumGenerateVideoAdapterErrorCode.MODEL_ERROR,
+            errorMessage: "Invalid response"
+        )
     }
     
     func makeRequest(request: VideoGenerationRequest) async throws -> VideoGenerationResponse {
         guard let url = URL(string: model.modelGenerateBaseURL) else {
-            throw NSError(domain: "Invalid URL", code: -1, userInfo: nil)
+            return VideoGenerationResponse(
+                status: .FAILED,
+                errorCode: EnumGenerateVideoAdapterErrorCode.MODEL_ERROR,
+                errorMessage: "Invalid URL"
+            )
+        }
+        guard let clientImage = request.clientImage else {
+            return VideoGenerationResponse(
+                status: .FAILED,
+                errorCode: EnumGenerateVideoAdapterErrorCode.MODEL_ERROR,
+                errorMessage: "Select an image"
+            )
         }
         
         let transformedRequest = transformRequest(request: request)
@@ -161,11 +180,19 @@ class G_STABILITY_IMAGE_TO_VIDEO: VideoGenerationProtocol {
                 requestId = data[0]["id"] as? String
             }
         default:
-            throw NSError(domain: "Invalid response format", code: -1, userInfo: nil)
+            return VideoGenerationResponse(
+                status: .FAILED,
+                errorCode: EnumGenerateVideoAdapterErrorCode.MODEL_ERROR,
+                errorMessage: "Unexpected response"
+            )
         }
         
         guard let requestId = requestId else {
-            throw NSError(domain: "Failed to initiate request", code: -1, userInfo: nil)
+            return VideoGenerationResponse(
+                status: .FAILED,
+                errorCode: EnumGenerateVideoAdapterErrorCode.MODEL_ERROR,
+                errorMessage: "Failed to initiate request"
+            )
         }
         
         let finalResponse = try await pollForResult(requestId: requestId, url: url, headers: headers)

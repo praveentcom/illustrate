@@ -8,6 +8,14 @@
 import Foundation
 import SwiftUI
 
+var label: Color {
+#if os(macOS)
+    Color(NSColor.labelColor)
+#else
+    Color(UIColor.label)
+#endif
+}
+
 var secondaryLabel: Color {
 #if os(macOS)
     Color(NSColor.secondaryLabelColor)

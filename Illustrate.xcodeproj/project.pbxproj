@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AC111F1B2C7D017300170D4F /* OnboardingUI in Frameworks */ = {isa = PBXBuildFile; productRef = AC111F1A2C7D017300170D4F /* OnboardingUI */; };
+		AC111F1E2C7D01B600170D4F /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC111F1D2C7D01B600170D4F /* WelcomeView.swift */; };
+		AC111F212C7D2C2200170D4F /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC111F202C7D2C2200170D4F /* OnboardingView.swift */; };
 		AC2CE30D2C69478300893DC2 /* IllustrateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE30C2C69478300893DC2 /* IllustrateApp.swift */; };
 		AC2CE3132C69478400893DC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC2CE3122C69478400893DC2 /* Assets.xcassets */; };
 		AC2CE3172C69478400893DC2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC2CE3162C69478400893DC2 /* Preview Assets.xcassets */; };
@@ -80,7 +83,7 @@
 		ACE44C332C78D4A00008BB9D /* Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C322C78D4A00008BB9D /* Navigation.swift */; };
 		ACE44C352C78DDFA0008BB9D /* MobileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C342C78DDFA0008BB9D /* MobileView.swift */; };
 		ACE44C372C78DF2E0008BB9D /* DesktopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C362C78DF2E0008BB9D /* DesktopView.swift */; };
-		ACE44C3A2C79BB100008BB9D /* ClearStorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C392C79BB100008BB9D /* ClearStorageView.swift */; };
+		ACE44C3A2C79BB100008BB9D /* ManageStorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C392C79BB100008BB9D /* ManageStorageView.swift */; };
 		ACE44C3F2C79CFD50008BB9D /* PendingConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C3E2C79CFD50008BB9D /* PendingConnectionView.swift */; };
 		ACE44C422C79F3640008BB9D /* ConnectionDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C412C79F3640008BB9D /* ConnectionDetailsView.swift */; };
 		ACEC4D8C2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D8B2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift */; };
@@ -104,6 +107,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AC111F1D2C7D01B600170D4F /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		AC111F202C7D2C2200170D4F /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		AC2CE3092C69478300893DC2 /* Illustrate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Illustrate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC2CE30C2C69478300893DC2 /* IllustrateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IllustrateApp.swift; sourceTree = "<group>"; };
 		AC2CE3122C69478400893DC2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -175,7 +180,7 @@
 		ACE44C322C78D4A00008BB9D /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
 		ACE44C342C78DDFA0008BB9D /* MobileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileView.swift; sourceTree = "<group>"; };
 		ACE44C362C78DF2E0008BB9D /* DesktopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopView.swift; sourceTree = "<group>"; };
-		ACE44C392C79BB100008BB9D /* ClearStorageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearStorageView.swift; sourceTree = "<group>"; };
+		ACE44C392C79BB100008BB9D /* ManageStorageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageStorageView.swift; sourceTree = "<group>"; };
 		ACE44C3E2C79CFD50008BB9D /* PendingConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingConnectionView.swift; sourceTree = "<group>"; };
 		ACE44C412C79F3640008BB9D /* ConnectionDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDetailsView.swift; sourceTree = "<group>"; };
 		ACEC4D8B2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_FLUX_SCHNELL.swift; sourceTree = "<group>"; };
@@ -191,6 +196,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC48BD382C7B69860054F1AC /* AlertToast in Frameworks */,
+				AC111F1B2C7D017300170D4F /* OnboardingUI in Frameworks */,
 				AC48BD312C7B22810054F1AC /* KeychainSwift in Frameworks */,
 				ACA0FF6A2C6E242900A8C1D5 /* ImageCropper in Frameworks */,
 			);
@@ -199,6 +205,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AC111F1C2C7D01AB00170D4F /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				AC111F1D2C7D01B600170D4F /* WelcomeView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		AC111F1F2C7D2BD800170D4F /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				AC111F202C7D2C2200170D4F /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		AC2CE3002C69478300893DC2 = {
 			isa = PBXGroup;
 			children = (
@@ -257,6 +279,7 @@
 		AC2CE3242C69509100893DC2 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				AC111F1C2C7D01AB00170D4F /* Onboarding */,
 				AC2CE3272C69C7C000893DC2 /* Navigation */,
 				ACE44C2F2C78D2F00008BB9D /* Dashboard */,
 				ACE257FE2C738A5C00A989CA /* Metrics */,
@@ -513,6 +536,7 @@
 		ACE44C2F2C78D2F00008BB9D /* Dashboard */ = {
 			isa = PBXGroup;
 			children = (
+				AC111F1F2C7D2BD800170D4F /* Onboarding */,
 				ACE44C402C79F3570008BB9D /* Workspace */,
 			);
 			path = Dashboard;
@@ -521,7 +545,7 @@
 		ACE44C382C79BAF30008BB9D /* Storage */ = {
 			isa = PBXGroup;
 			children = (
-				ACE44C392C79BB100008BB9D /* ClearStorageView.swift */,
+				ACE44C392C79BB100008BB9D /* ManageStorageView.swift */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
@@ -593,6 +617,7 @@
 				ACA0FF692C6E242900A8C1D5 /* ImageCropper */,
 				AC48BD302C7B22810054F1AC /* KeychainSwift */,
 				AC48BD372C7B69860054F1AC /* AlertToast */,
+				AC111F1A2C7D017300170D4F /* OnboardingUI */,
 			);
 			productName = illustrate;
 			productReference = AC2CE3092C69478300893DC2 /* Illustrate.app */;
@@ -626,6 +651,7 @@
 				ACA0FF682C6E242900A8C1D5 /* XCRemoteSwiftPackageReference "ImageCropper" */,
 				AC48BD2F2C7B22810054F1AC /* XCRemoteSwiftPackageReference "keychain-swift" */,
 				AC48BD362C7B69860054F1AC /* XCRemoteSwiftPackageReference "AlertToast" */,
+				AC111F192C7D017300170D4F /* XCRemoteSwiftPackageReference "OnboardingUI" */,
 			);
 			productRefGroup = AC2CE30A2C69478300893DC2 /* Products */;
 			projectDirPath = "";
@@ -661,7 +687,7 @@
 				ACCAC5C12C70E7CA009A2EA8 /* G_STABILITY_ERASE.swift in Sources */,
 				ACA0FF5D2C6D4A2500A8C1D5 /* G_STABILITY_SD3.swift in Sources */,
 				ACAB786C2C6BB62E00EED0E8 /* GenerateView.swift in Sources */,
-				ACE44C3A2C79BB100008BB9D /* ClearStorageView.swift in Sources */,
+				ACE44C3A2C79BB100008BB9D /* ManageStorageView.swift in Sources */,
 				AC2CE34D2C6A375600893DC2 /* GenerateImageAdapter.swift in Sources */,
 				ACCAC5D52C72235E009A2EA8 /* GenerationVideoView.swift in Sources */,
 				AC48BD2A2C7A6A280054F1AC /* iCloudViewModel.swift in Sources */,
@@ -671,6 +697,7 @@
 				AC48BD352C7B54680054F1AC /* FieldAdapter.swift in Sources */,
 				ACA0FF6E2C6E57E300A8C1D5 /* G_STABILITY_CONSERVATIVE_UPSCALE.swift in Sources */,
 				ACA0FF702C6E8CC000A8C1D5 /* DrawingAdapter.swift in Sources */,
+				AC111F1E2C7D01B600170D4F /* WelcomeView.swift in Sources */,
 				ACCAC5B72C70A6F3009A2EA8 /* EraseMaskImageView.swift in Sources */,
 				ACA0FF672C6E1EB600A8C1D5 /* ImageCropAdapter.swift in Sources */,
 				ACA0FF5F2C6D4D1400A8C1D5 /* G_STABILITY_CREATIVE_UPSCALE.swift in Sources */,
@@ -701,6 +728,7 @@
 				AC48BD412C7B84A00054F1AC /* StorageAdapter.swift in Sources */,
 				ACCAC5BF2C70DC8A009A2EA8 /* G_STABILITY_INPAINT.swift in Sources */,
 				AC2CE3232C69504800893DC2 /* ConnectionKey.swift in Sources */,
+				AC111F212C7D2C2200170D4F /* OnboardingView.swift in Sources */,
 				ACCAC5D32C721F01009A2EA8 /* VideoAdapter.swift in Sources */,
 				ACCAC5BB2C70A71F009A2EA8 /* RemoveBackgroundImageView.swift in Sources */,
 				ACCAC5B32C70A6C0009A2EA8 /* EditExpandImageView.swift in Sources */,
@@ -959,6 +987,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		AC111F192C7D017300170D4F /* XCRemoteSwiftPackageReference "OnboardingUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/KC-2001MS/OnboardingUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		AC48BD2F2C7B22810054F1AC /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/evgenyneu/keychain-swift";
@@ -986,6 +1022,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		AC111F1A2C7D017300170D4F /* OnboardingUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AC111F192C7D017300170D4F /* XCRemoteSwiftPackageReference "OnboardingUI" */;
+			productName = OnboardingUI;
+		};
 		AC48BD302C7B22810054F1AC /* KeychainSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = AC48BD2F2C7B22810054F1AC /* XCRemoteSwiftPackageReference "keychain-swift" */;

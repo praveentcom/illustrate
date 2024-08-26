@@ -37,7 +37,7 @@ struct UsageMetricsView: View {
             }()
 
             if let _ = selectedConnectionKey {
-                LazyVGrid(columns: columns, spacing: 20) {
+                LazyVGrid(columns: columns, spacing: 8) {
                     Chart(dailyMetrics) { metric in
                         LineMark(
                             x: .value("Date", metric.date),
@@ -86,7 +86,6 @@ struct UsageMetricsView: View {
             } else {
                 Text("Please select a Connection to view metrics")
                     .foregroundColor(.gray)
-                    .padding()
             }
         }
         .navigationTitle("Usage Metrics")

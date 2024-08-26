@@ -21,7 +21,7 @@ enum EnumNavigationItem: Identifiable, Hashable {
     case historyVideoGallery
     
     case settingsConnections
-    case settingsClearStorage
+    case settingsManageStorage
     
     // Secondary Views
     case generationImage(setId: UUID)
@@ -59,9 +59,13 @@ func sectionItems(section: EnumNavigationSection) -> [EnumNavigationItem] {
     case .VideoGenerations:
         return [.generateVideoImage]
     case .History:
+        #if os(macOS)
         return [.historyRequests, .historyImageGallery, .historyVideoGallery]
+        #else
+        return [.historyImageGallery, .historyVideoGallery]
+        #endif
     case .Settings:
-        return [.settingsConnections, .settingsClearStorage]
+        return [.settingsConnections, .settingsManageStorage]
     }
 }
 
@@ -95,8 +99,8 @@ func labelForItem(_ item: EnumNavigationItem) -> String {
         return "Video Gallery"
     case .settingsConnections:
         return "Manage Connections"
-    case .settingsClearStorage:
-        return "Clear Storage"
+    case .settingsManageStorage:
+        return "Manage Storage"
     case .generationImage:
         return "Image Generation"
     case .generationVideo:
@@ -134,7 +138,7 @@ func subLabelForItem(_ item: EnumNavigationItem) -> String {
         return "Gallery for your generated videos"
     case .settingsConnections:
         return "Link and manage your connections"
-    case .settingsClearStorage:
+    case .settingsManageStorage:
         return "Clear your Illustrate iCloud storage"
     case .generationImage:
         return "View the generated image"
@@ -173,7 +177,7 @@ func iconForItem(_ item: EnumNavigationItem) -> String {
         return "film"
     case .settingsConnections:
         return "link"
-    case .settingsClearStorage:
+    case .settingsManageStorage:
         return "trash"
     case .generationImage:
         return "paintbrush"
@@ -213,8 +217,8 @@ func viewForItem(_ item: EnumNavigationItem) -> some View {
         GalleryVideoView()
     case .settingsConnections:
         ConnectionsView()
-    case .settingsClearStorage:
-        ClearStorageView()
+    case .settingsManageStorage:
+        ManageStorageView()
     case .generationImage(let setId):
         GenerationImageView(setId: setId)
     case .generationVideo(let setId):

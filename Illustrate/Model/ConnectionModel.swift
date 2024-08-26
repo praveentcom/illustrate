@@ -596,30 +596,30 @@ let connectionModels = [
         modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Image-to-Video",
         active: true
     ),
-    ConnectionModel(
-        connectionId:EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-        modelId: EnumConnectionModelCode.GCLOUD_IMAGEN2.modelId,
-        modelCode: EnumConnectionModelCode.GCLOUD_IMAGEN2,
-        modelSetType: EnumSetType.GENERATE,
-        modelName: "Imagen 2",
-        modelDescription: "Text-to-image diffusion technology, delivering photorealistic outputs that are aligned and consistent with the user’s prompt.",
-        modelSupportedParams: ConnectionModelSupportParams(
-            prompt: true,
-            negativePrompt: true,
-            maxPromptLength: 256,
-            dimensions: ["1024x1024","576x1024","1024x576","768x1024","1024x768"],
-            quality: false,
-            variant: true,
-            style: false,
-            count: 6,
-            autoEnhance: true
-        ),
-        modelLaunchDate: getDateFromString("2023-07-26"),
-        modelDeprecationDate: nil,
-        modelGenerateBaseURL: "us-central1-aiplatform.googleapis.com",
-        modelAPIDocumentationURL: "https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/image-generation",
-        active: true
-    ),
+//    ConnectionModel(
+//        connectionId:EnumConnectionCode.GOOGLE_CLOUD.connectionId,
+//        modelId: EnumConnectionModelCode.GCLOUD_IMAGEN2.modelId,
+//        modelCode: EnumConnectionModelCode.GCLOUD_IMAGEN2,
+//        modelSetType: EnumSetType.GENERATE,
+//        modelName: "Imagen 2",
+//        modelDescription: "Text-to-image diffusion technology, delivering photorealistic outputs that are aligned and consistent with the user’s prompt.",
+//        modelSupportedParams: ConnectionModelSupportParams(
+//            prompt: true,
+//            negativePrompt: true,
+//            maxPromptLength: 256,
+//            dimensions: ["1024x1024","576x1024","1024x576","768x1024","1024x768"],
+//            quality: false,
+//            variant: true,
+//            style: false,
+//            count: 6,
+//            autoEnhance: true
+//        ),
+//        modelLaunchDate: getDateFromString("2023-07-26"),
+//        modelDeprecationDate: nil,
+//        modelGenerateBaseURL: "us-central1-aiplatform.googleapis.com",
+//        modelAPIDocumentationURL: "https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/image-generation",
+//        active: true
+//    ),
     ConnectionModel(
         connectionId: EnumConnectionCode.REPLICATE.connectionId,
         modelId: EnumConnectionModelCode.REPLICATE_FLUX_SCHNELL.modelId,
