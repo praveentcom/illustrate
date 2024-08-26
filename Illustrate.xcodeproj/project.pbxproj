@@ -10,6 +10,8 @@
 		AC111F1B2C7D017300170D4F /* OnboardingUI in Frameworks */ = {isa = PBXBuildFile; productRef = AC111F1A2C7D017300170D4F /* OnboardingUI */; };
 		AC111F1E2C7D01B600170D4F /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC111F1D2C7D01B600170D4F /* WelcomeView.swift */; };
 		AC111F212C7D2C2200170D4F /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC111F202C7D2C2200170D4F /* OnboardingView.swift */; };
+		AC111F232C7D3B5700170D4F /* ImageCropper in Frameworks */ = {isa = PBXBuildFile; productRef = AC111F222C7D3B5700170D4F /* ImageCropper */; };
+		AC111F242C7D3BD800170D4F /* ImageCropper in Embed Frameworks */ = {isa = PBXBuildFile; productRef = AC111F222C7D3B5700170D4F /* ImageCropper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		AC2CE30D2C69478300893DC2 /* IllustrateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE30C2C69478300893DC2 /* IllustrateApp.swift */; };
 		AC2CE3132C69478400893DC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC2CE3122C69478400893DC2 /* Assets.xcassets */; };
 		AC2CE3172C69478400893DC2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC2CE3162C69478400893DC2 /* Preview Assets.xcassets */; };
@@ -48,7 +50,6 @@
 		ACA0FF5F2C6D4D1400A8C1D5 /* G_STABILITY_CREATIVE_UPSCALE.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0FF5E2C6D4D1400A8C1D5 /* G_STABILITY_CREATIVE_UPSCALE.swift */; };
 		ACA0FF612C6D5A6E00A8C1D5 /* EditUpscaleImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0FF602C6D5A6E00A8C1D5 /* EditUpscaleImageView.swift */; };
 		ACA0FF672C6E1EB600A8C1D5 /* ImageCropAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0FF662C6E1EB600A8C1D5 /* ImageCropAdapter.swift */; };
-		ACA0FF6A2C6E242900A8C1D5 /* ImageCropper in Frameworks */ = {isa = PBXBuildFile; productRef = ACA0FF692C6E242900A8C1D5 /* ImageCropper */; };
 		ACA0FF6C2C6E307300A8C1D5 /* MathAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0FF6B2C6E307300A8C1D5 /* MathAdapter.swift */; };
 		ACA0FF6E2C6E57E300A8C1D5 /* G_STABILITY_CONSERVATIVE_UPSCALE.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0FF6D2C6E57E300A8C1D5 /* G_STABILITY_CONSERVATIVE_UPSCALE.swift */; };
 		ACA0FF702C6E8CC000A8C1D5 /* DrawingAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0FF6F2C6E8CC000A8C1D5 /* DrawingAdapter.swift */; };
@@ -59,7 +60,6 @@
 		ACAB786A2C6B899500EED0E8 /* SectionKeyValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB78692C6B899500EED0E8 /* SectionKeyValueView.swift */; };
 		ACAB786C2C6BB62E00EED0E8 /* GenerateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB786B2C6BB62E00EED0E8 /* GenerateView.swift */; };
 		ACAB78702C6BB6B700EED0E8 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB786F2C6BB6B700EED0E8 /* HistoryView.swift */; };
-		ACCAC5B02C6FF10C009A2EA8 /* ImageCropper in Embed Frameworks */ = {isa = PBXBuildFile; productRef = ACA0FF692C6E242900A8C1D5 /* ImageCropper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		ACCAC5B32C70A6C0009A2EA8 /* EditExpandImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCAC5B22C70A6C0009A2EA8 /* EditExpandImageView.swift */; };
 		ACCAC5B52C70A6CB009A2EA8 /* EditMaskImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCAC5B42C70A6CB009A2EA8 /* EditMaskImageView.swift */; };
 		ACCAC5B72C70A6F3009A2EA8 /* EraseMaskImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCAC5B62C70A6F3009A2EA8 /* EraseMaskImageView.swift */; };
@@ -99,7 +99,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				ACCAC5B02C6FF10C009A2EA8 /* ImageCropper in Embed Frameworks */,
+				AC111F242C7D3BD800170D4F /* ImageCropper in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -197,8 +197,8 @@
 			files = (
 				AC48BD382C7B69860054F1AC /* AlertToast in Frameworks */,
 				AC111F1B2C7D017300170D4F /* OnboardingUI in Frameworks */,
+				AC111F232C7D3B5700170D4F /* ImageCropper in Frameworks */,
 				AC48BD312C7B22810054F1AC /* KeychainSwift in Frameworks */,
-				ACA0FF6A2C6E242900A8C1D5 /* ImageCropper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -614,10 +614,10 @@
 			);
 			name = Illustrate;
 			packageProductDependencies = (
-				ACA0FF692C6E242900A8C1D5 /* ImageCropper */,
 				AC48BD302C7B22810054F1AC /* KeychainSwift */,
 				AC48BD372C7B69860054F1AC /* AlertToast */,
 				AC111F1A2C7D017300170D4F /* OnboardingUI */,
+				AC111F222C7D3B5700170D4F /* ImageCropper */,
 			);
 			productName = illustrate;
 			productReference = AC2CE3092C69478300893DC2 /* Illustrate.app */;
@@ -1027,6 +1027,11 @@
 			package = AC111F192C7D017300170D4F /* XCRemoteSwiftPackageReference "OnboardingUI" */;
 			productName = OnboardingUI;
 		};
+		AC111F222C7D3B5700170D4F /* ImageCropper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ACA0FF682C6E242900A8C1D5 /* XCRemoteSwiftPackageReference "ImageCropper" */;
+			productName = ImageCropper;
+		};
 		AC48BD302C7B22810054F1AC /* KeychainSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = AC48BD2F2C7B22810054F1AC /* XCRemoteSwiftPackageReference "keychain-swift" */;
@@ -1036,11 +1041,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AC48BD362C7B69860054F1AC /* XCRemoteSwiftPackageReference "AlertToast" */;
 			productName = AlertToast;
-		};
-		ACA0FF692C6E242900A8C1D5 /* ImageCropper */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = ACA0FF682C6E242900A8C1D5 /* XCRemoteSwiftPackageReference "ImageCropper" */;
-			productName = ImageCropper;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

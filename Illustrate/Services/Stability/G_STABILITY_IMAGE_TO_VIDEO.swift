@@ -117,7 +117,7 @@ class G_STABILITY_IMAGE_TO_VIDEO: VideoGenerationProtocol {
                 errorMessage: "Invalid URL"
             )
         }
-        guard let clientImage = request.clientImage else {
+        guard request.clientImage != nil else {
             return VideoGenerationResponse(
                 status: .FAILED,
                 errorCode: EnumGenerateVideoAdapterErrorCode.MODEL_ERROR,

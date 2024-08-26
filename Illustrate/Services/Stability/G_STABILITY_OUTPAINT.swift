@@ -84,7 +84,7 @@ class G_STABILITY_OUTPAINT: ImageGenerationProtocol {
                 errorMessage: "Invalid URL"
             )
         }
-        guard let clientImage = request.clientImage else {
+        guard request.clientImage != nil else {
             return ImageGenerationResponse(
                 status: .FAILED,
                 errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,

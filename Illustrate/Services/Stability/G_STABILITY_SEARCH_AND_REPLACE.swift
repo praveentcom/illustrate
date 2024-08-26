@@ -78,7 +78,7 @@ class G_STABILITY_SEARCH_AND_REPLACE: ImageGenerationProtocol {
                 errorMessage: "Invalid URL"
             )
         }
-        guard let clientImage = request.clientImage else {
+        guard request.clientImage != nil else {
             return ImageGenerationResponse(
                 status: .FAILED,
                 errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,

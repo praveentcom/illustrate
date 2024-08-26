@@ -111,7 +111,7 @@ class G_STABILITY_CREATIVE_UPSCALE: ImageGenerationProtocol {
                 errorMessage: "Invalid URL"
             )
         }
-        guard let clientImage = request.clientImage else {
+        guard request.clientImage != nil else {
             return ImageGenerationResponse(
                 status: .FAILED,
                 errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,

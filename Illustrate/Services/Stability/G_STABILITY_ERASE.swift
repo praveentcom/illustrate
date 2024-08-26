@@ -68,14 +68,14 @@ class G_STABILITY_ERASE: ImageGenerationProtocol {
                 errorMessage: "Invalid URL"
             )
         }
-        guard let clientImage = request.clientImage else {
+        guard request.clientImage != nil else {
             return ImageGenerationResponse(
                 status: .FAILED,
                 errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
                 errorMessage: "Select an image"
             )
         }
-        guard let clientMask = request.clientMask else {
+        guard request.clientMask != nil else {
             return ImageGenerationResponse(
                 status: .FAILED,
                 errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
