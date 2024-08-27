@@ -61,6 +61,7 @@ struct MaskView: View {
 }
 
 struct GenerationImageView: View {
+    @Environment(\.openURL) var openURL
     @Environment(\.modelContext) private var modelContext
     @Environment(\.presentationMode) private var presentationMode
 
@@ -260,13 +261,13 @@ struct GenerationImageView: View {
                     }
                     if let model = getModel(modelId: getSelectedGeneration()!.modelId) {
                         SectionKeyValueView(
-                            icon: "link",
+                            icon: "network",
                             key: "Model",
                             value: "",
                             customValueView: ModelLabel(model: model)
                         )
                     }
-                    SectionKeyValueView(icon: "sparkles", key: "Auto-enhance Opted", value: getSelectedGeneration()!.promptEnhanceOpted ? "Yes" : "No")
+                    SectionKeyValueView(icon: "sparkles", key: "Auto-enhance opted", value: getSelectedGeneration()!.promptEnhanceOpted ? "Yes" : "No")
                     if let promptEnhanceOpted = getSelectedGeneration()?.promptEnhanceOpted,
                        let promptAfterEnhance = getSelectedGeneration()?.promptAfterEnhance,
                        !promptAfterEnhance.isEmpty,
@@ -304,6 +305,13 @@ struct GenerationImageView: View {
                         date: .abbreviated,
                         time: .shortened
                     ))
+                }
+                Section("Notice something wrong?") {
+                    HStack {
+                        Text("Send an email")
+                        Spacer()
+                        Link("Submit feedback", destination: getFeedbackLink())
+                    }
                 }
             } else {
                 Section("Image Details") {

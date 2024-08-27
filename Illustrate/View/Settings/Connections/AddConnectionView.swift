@@ -100,8 +100,7 @@ struct AddConnectionView: View {
 
         if keychain.set(keyValue, forKey: selectedConnection.connectionId.uuidString) {
             let newKey = ConnectionKey(
-                connectionId: selectedConnection.connectionId,
-                creditCurrency: selectedConnection.creditCurrency
+                connectionId: selectedConnection.connectionId
             )
 
             modelContext.insert(newKey)

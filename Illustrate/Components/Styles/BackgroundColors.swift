@@ -17,6 +17,22 @@ var secondaryLabel: Color {
     #endif
 }
 
+var systemBackground: Color {
+    #if os(macOS)
+        Color(NSColor.windowBackgroundColor)
+    #else
+        Color(UIColor.systemBackground)
+    #endif
+}
+
+var systemFill: Color {
+    #if os(macOS)
+        Color(NSColor.systemFill)
+    #else
+        Color(UIColor.systemFill)
+    #endif
+}
+
 var secondarySystemFill: Color {
     #if os(macOS)
         Color(NSColor.secondarySystemFill)

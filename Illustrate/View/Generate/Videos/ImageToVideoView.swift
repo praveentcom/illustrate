@@ -301,11 +301,21 @@ struct ImageToVideoView: View {
                     }
 
                     Section("Video Preferences") {
-                        Slider(value: $motion, in: 15 ... 255, step: 15) {
-                            Text("Motion: \(Int(motion / 255 * 100))% (\(Int(motion)))")
+                        VStack {
+                            #if os(iOS)
+                                Text("Motion: \(Int(motion / 255 * 100))% (\(Int(motion)))")
+                            #endif
+                            Slider(value: $motion, in: 15 ... 255, step: 15) {
+                                Text("Motion: \(Int(motion / 255 * 100))% (\(Int(motion)))")
+                            }
                         }
-                        Slider(value: $stickyness, in: 0 ... 10, step: 0.5) {
-                            Text("Stickyness: \(Int(stickyness * 10))% \(stickyness, specifier: "%.1f")")
+                        VStack {
+                            #if os(iOS)
+                                Text("Stickyness: \(Int(stickyness * 10))% \(stickyness, specifier: "%.1f")")
+                            #endif
+                            Slider(value: $stickyness, in: 0 ... 10, step: 0.5) {
+                                Text("Stickyness: \(Int(stickyness * 10))% \(stickyness, specifier: "%.1f")")
+                            }
                         }
                     }
                     .disabled(isGenerating)

@@ -19,6 +19,7 @@ enum EnumNavigationItem: Identifiable, Hashable {
     case historyRequests
     case historyImageGallery
     case historyVideoGallery
+    case historyUsageMetrics
 
     case settingsConnections
     case settingsManageStorage
@@ -60,9 +61,9 @@ func sectionItems(section: EnumNavigationSection) -> [EnumNavigationItem] {
         return [.generateVideoImage]
     case .History:
         #if os(macOS)
-            return [.historyRequests, .historyImageGallery, .historyVideoGallery]
+            return [.historyRequests, .historyImageGallery, .historyVideoGallery, .historyUsageMetrics]
         #else
-            return [.historyImageGallery, .historyVideoGallery]
+            return [.historyImageGallery, .historyVideoGallery, .historyUsageMetrics]
         #endif
     case .Settings:
         return [.settingsConnections, .settingsManageStorage]
@@ -97,6 +98,8 @@ func labelForItem(_ item: EnumNavigationItem) -> String {
         return "Image Gallery"
     case .historyVideoGallery:
         return "Video Gallery"
+    case .historyUsageMetrics:
+        return "Usage Metrics"
     case .settingsConnections:
         return "Manage Connections"
     case .settingsManageStorage:
@@ -136,6 +139,8 @@ func subLabelForItem(_ item: EnumNavigationItem) -> String {
         return "Gallery for your generated images"
     case .historyVideoGallery:
         return "Gallery for your generated videos"
+    case .historyUsageMetrics:
+        return "View your generation usage metrics"
     case .settingsConnections:
         return "Link and manage your connections"
     case .settingsManageStorage:
@@ -172,13 +177,15 @@ func iconForItem(_ item: EnumNavigationItem) -> String {
     case .historyRequests:
         return "note.text"
     case .historyImageGallery:
-        return "photo"
+        return "photo.stack"
     case .historyVideoGallery:
-        return "film"
+        return "film.stack"
+    case .historyUsageMetrics:
+        return "chart.bar.xaxis"
     case .settingsConnections:
         return "link"
     case .settingsManageStorage:
-        return "trash"
+        return "lock.icloud"
     case .generationImage:
         return "paintbrush"
     case .generationVideo:
@@ -215,6 +222,8 @@ func viewForItem(_ item: EnumNavigationItem) -> some View {
         GalleryImageView()
     case .historyVideoGallery:
         GalleryVideoView()
+    case .historyUsageMetrics:
+        UsageMetricsView()
     case .settingsConnections:
         ConnectionsView()
     case .settingsManageStorage:

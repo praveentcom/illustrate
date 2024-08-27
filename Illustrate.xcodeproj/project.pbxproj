@@ -60,6 +60,7 @@
 		ACAB786A2C6B899500EED0E8 /* SectionKeyValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB78692C6B899500EED0E8 /* SectionKeyValueView.swift */; };
 		ACAB786C2C6BB62E00EED0E8 /* GenerateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB786B2C6BB62E00EED0E8 /* GenerateView.swift */; };
 		ACAB78702C6BB6B700EED0E8 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB786F2C6BB6B700EED0E8 /* HistoryView.swift */; };
+		ACBAB1712C7E073600769F79 /* CommonAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBAB1702C7E073600769F79 /* CommonAdapter.swift */; };
 		ACCAC5B32C70A6C0009A2EA8 /* EditExpandImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCAC5B22C70A6C0009A2EA8 /* EditExpandImageView.swift */; };
 		ACCAC5B52C70A6CB009A2EA8 /* EditMaskImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCAC5B42C70A6CB009A2EA8 /* EditMaskImageView.swift */; };
 		ACCAC5B72C70A6F3009A2EA8 /* EraseMaskImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCAC5B62C70A6F3009A2EA8 /* EraseMaskImageView.swift */; };
@@ -157,6 +158,7 @@
 		ACAB78692C6B899500EED0E8 /* SectionKeyValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionKeyValueView.swift; sourceTree = "<group>"; };
 		ACAB786B2C6BB62E00EED0E8 /* GenerateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateView.swift; sourceTree = "<group>"; };
 		ACAB786F2C6BB6B700EED0E8 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		ACBAB1702C7E073600769F79 /* CommonAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonAdapter.swift; sourceTree = "<group>"; };
 		ACCAC5B22C70A6C0009A2EA8 /* EditExpandImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditExpandImageView.swift; sourceTree = "<group>"; };
 		ACCAC5B42C70A6CB009A2EA8 /* EditMaskImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMaskImageView.swift; sourceTree = "<group>"; };
 		ACCAC5B62C70A6F3009A2EA8 /* EraseMaskImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraseMaskImageView.swift; sourceTree = "<group>"; };
@@ -505,6 +507,7 @@
 				AC48BD322C7B49700054F1AC /* DateAdapter.swift */,
 				AC48BD342C7B54680054F1AC /* FieldAdapter.swift */,
 				AC48BD402C7B84A00054F1AC /* StorageAdapter.swift */,
+				ACBAB1702C7E073600769F79 /* CommonAdapter.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -734,6 +737,7 @@
 				ACCAC5B32C70A6C0009A2EA8 /* EditExpandImageView.swift in Sources */,
 				ACCAC5D72C722540009A2EA8 /* GalleryVideoView.swift in Sources */,
 				AC2CE3412C69F77B00893DC2 /* NetworkAdapter.swift in Sources */,
+				ACBAB1712C7E073600769F79 /* CommonAdapter.swift in Sources */,
 				ACEC4D922C77D1D700928688 /* EditPromptImageView.swift in Sources */,
 				AC48BD462C7B99870054F1AC /* G_HUGGING_FACE_FLUX_SCHNELL.swift in Sources */,
 				ACAB78652C6B53FC00EED0E8 /* GenerationImageView.swift in Sources */,

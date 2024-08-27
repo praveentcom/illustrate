@@ -2,21 +2,104 @@ import Charts
 import SwiftData
 import SwiftUI
 
-struct UsageMetricsView: View {
-    @Query var connectionKeys: [ConnectionKey]
-    @State private var selectedConnectionKey: ConnectionKey?
+struct UsageMetricsUnit: Identifiable {
+    var id: UUID = .init()
+    var date: Date
+    var sizeUtilized: Double
+    var costIncurred: Double
+    var totalGenerations: Int
+}
 
-    // Sample Data
-    @State private var dailyMetrics: [DailyMetric] = [
-        DailyMetric(date: Date(), sizeUtilized: 500, costIncurred: 20, totalGenerations: 10),
-        DailyMetric(date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, sizeUtilized: 300, costIncurred: 15, totalGenerations: 8),
-        // Add more sample data here
-    ]
+struct UsageMetrics {
+    var dailyMetrics: [UsageMetricsUnit]
+    var generationMetrics: [UsageMetricsUnit]
+    var overallMetrics: UsageMetricsUnit?
+}
+
+struct UsageMetricsView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \ConnectionKey.createdAt, order: .reverse) private var connectionKeys: [ConnectionKey]
+
+    @State private var selectedConnectionKey: ConnectionKey? = nil
+
+    func getMetrics() -> UsageMetrics {
+        if let connection = connections.first(where: { $0.connectionId == selectedConnectionKey?.connectionId }) {
+            let models: [ConnectionModel] = connectionModels.filter { $0.connectionId == connection.connectionId }
+            let modelIds: [String] = models.map { $0.modelId.uuidString }
+            let dateLimit = Date().addingTimeInterval(-30 * 24 * 60 * 60)
+            let fetchDescriptor = FetchDescriptor<Generation>(
+                predicate: #Predicate { modelIds.contains($0.modelId) },
+                sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+            )
+
+            do {
+                let generations = try modelContext.fetch(fetchDescriptor)
+                let generationMetrics: [UsageMetricsUnit] = generations
+                    .filter { $0.createdAt >= dateLimit }
+                    .compactMap {
+                        .init(
+                            date: $0.createdAt,
+                            sizeUtilized: Double(String(format: "%.2f", Double($0.size) / 1_000_000.0)) ?? 0.0,
+                            costIncurred: $0.creditUsed,
+                            totalGenerations: 1
+                        )
+                    }
+
+                let dailyMetrics: [UsageMetricsUnit] = Dictionary(grouping: generationMetrics, by: { Calendar.current.startOfDay(for: $0.date) })
+                    .map { date, metrics in
+                        UsageMetricsUnit(
+                            date: date,
+                            sizeUtilized: metrics.reduce(0) { $0 + $1.sizeUtilized },
+                            costIncurred: metrics.reduce(0) { $0 + $1.costIncurred },
+                            totalGenerations: metrics.reduce(0) { $0 + $1.totalGenerations }
+                        )
+                    }
+                    .sorted(by: { $0.date > $1.date })
+
+                let overallMetrics: [UsageMetricsUnit] = generations
+                    .compactMap {
+                        .init(
+                            date: $0.createdAt,
+                            sizeUtilized: Double(String(format: "%.2f", Double($0.size) / 1_000_000.0)) ?? 0.0,
+                            costIncurred: $0.creditUsed,
+                            totalGenerations: 1
+                        )
+                    }
+
+                return UsageMetrics(
+                    dailyMetrics: dailyMetrics,
+                    generationMetrics: generationMetrics,
+                    overallMetrics: .init(
+                        date: Date(),
+                        sizeUtilized: overallMetrics.reduce(0) { $0 + $1.sizeUtilized },
+                        costIncurred: overallMetrics.reduce(0) { $0 + $1.costIncurred },
+                        totalGenerations: overallMetrics.reduce(0) { $0 + $1.totalGenerations }
+                    )
+                )
+            } catch {
+                print("Error fetching data: \(error)")
+            }
+        }
+
+        return UsageMetrics(dailyMetrics: [], generationMetrics: [], overallMetrics: nil)
+    }
+
+    let columns: [GridItem] = {
+        #if os(macOS)
+            return Array(repeating: GridItem(.flexible(), spacing: 8), count: 2)
+        #else
+            return Array(repeating: GridItem(.flexible(), spacing: 12), count: UIDevice.current.userInterfaceIdiom == .pad ? 2 : 1)
+        #endif
+    }()
 
     var body: some View {
-        ScrollView {
-            Form {
-                Section("Select Connection") {
+        Form {
+            Section("Select Connection") {
+                if connectionKeys.isEmpty {
+                    Text("No connections available to select.")
+                        .foregroundStyle(secondaryLabel)
+                        .padding()
+                } else {
                     Picker("Connection", selection: $selectedConnectionKey) {
                         ForEach(connectionKeys, id: \.connectionId) { connectionKey in
                             let connection = getConnection(connectionId: connectionKey.connectionId)
@@ -25,77 +108,125 @@ struct UsageMetricsView: View {
                         }
                     }
                 }
-            }
-            .formStyle(.grouped)
 
-            let columns: [GridItem] = {
-                #if os(macOS)
-                    return Array(repeating: GridItem(.flexible(), spacing: 20), count: 2)
-                #else
-                    return Array(repeating: GridItem(.flexible(), spacing: 20), count: UIDevice.current.userInterfaceIdiom == .pad ? 2 : 1)
-                #endif
-            }()
-
-            if let _ = selectedConnectionKey {
-                LazyVGrid(columns: columns, spacing: 8) {
-                    Chart(dailyMetrics) { metric in
-                        LineMark(
-                            x: .value("Date", metric.date),
-                            y: .value("Size Utilized", metric.sizeUtilized)
-                        )
+                if selectedConnectionKey != nil {
+                    HStack {
+                        Text("Overall Generations")
+                        Spacer()
+                        Text(getMetrics().overallMetrics?.totalGenerations.formatted() ?? "")
                     }
-                    .chartYAxis {
-                        AxisMarks(position: .leading)
+                    HStack {
+                        Text("Overall Cost")
+                        Spacer()
+                        if let doubleValue = getMetrics().overallMetrics?.costIncurred {
+                            if getConnection(connectionId: selectedConnectionKey!.connectionId)!.creditCurrency == .USD {
+                                Text("$\(doubleValue, specifier: "%.2f")")
+                            } else if getConnection(connectionId: selectedConnectionKey!.connectionId)!.creditCurrency == .CREDITS {
+                                Text("\(doubleValue, specifier: "%.0f") credits")
+                            }
+                        }
                     }
-                    .frame(height: 200)
-                    .padding(.all, 24)
-                    .background(quaternarySystemFill)
-                    .cornerRadius(8)
-
-                    // Cost Incurred Chart
-                    Chart(dailyMetrics) { metric in
-                        BarMark(
-                            x: .value("Date", metric.date),
-                            y: .value("Cost Incurred", metric.costIncurred)
-                        )
+                    HStack {
+                        Text("Overall Storage")
+                        Spacer()
+                        if let doubleValue = getMetrics().overallMetrics?.sizeUtilized {
+                            Text("\(doubleValue, specifier: "%.0f") MB")
+                        }
                     }
-                    .chartYAxis {
-                        AxisMarks(position: .leading)
-                    }
-                    .frame(height: 200)
-                    .padding(.all, 24)
-                    .background(quaternarySystemFill)
-                    .cornerRadius(8)
-
-                    // Total Generations Chart
-                    Chart(dailyMetrics) { metric in
-                        AreaMark(
-                            x: .value("Date", metric.date),
-                            y: .value("Total Generations", metric.totalGenerations)
-                        )
-                    }
-                    .chartYAxis {
-                        AxisMarks(position: .leading)
-                    }
-                    .frame(height: 200)
-                    .padding(.all, 24)
-                    .background(quaternarySystemFill)
-                    .cornerRadius(8)
                 }
-                .padding(.horizontal, 20)
-            } else {
-                Text("Please select a Connection to view metrics")
-                    .foregroundColor(.gray)
             }
+
+            if selectedConnectionKey != nil {
+                Section("Metrics for last 30 days") {
+                    VStack(alignment: .leading, spacing: 24) {
+                        Text("Total Generations")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        Chart(getMetrics().dailyMetrics) { metric in
+                            BarMark(
+                                x: .value("Date", metric.date),
+                                y: .value("Count", metric.totalGenerations)
+                            )
+                        }
+                        .chartYAxis {
+                            AxisMarks(position: .leading)
+                        }
+                        .padding(.bottom, 8)
+                        .frame(height: 200)
+                    }
+                    .padding(.all, 12)
+                    .frame(alignment: .topLeading)
+
+                    VStack(alignment: .leading, spacing: 24) {
+                        Text("Cost Incurred")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        Chart(getMetrics().dailyMetrics) { metric in
+                            BarMark(
+                                x: .value("Date", metric.date),
+                                y: .value("Cost", metric.costIncurred)
+                            )
+                        }
+                        .chartYAxis {
+                            AxisMarks(position: .leading) { value in
+                                AxisGridLine()
+                                AxisTick()
+                                AxisValueLabel {
+                                    if let doubleValue = value.as(Double.self) {
+                                        if getConnection(connectionId: selectedConnectionKey!.connectionId)!.creditCurrency == .USD {
+                                            Text("$\(doubleValue, specifier: "%.2f")")
+                                        } else if getConnection(connectionId: selectedConnectionKey!.connectionId)!.creditCurrency == .CREDITS {
+                                            Text("\(doubleValue, specifier: "%.0f") credits")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.bottom, 8)
+                        .frame(height: 200)
+                    }
+                    .padding(.all, 12)
+                    .frame(alignment: .topLeading)
+
+                    VStack(alignment: .leading, spacing: 24) {
+                        Text("Storage Utilized")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        Chart(getMetrics().dailyMetrics) { metric in
+                            BarMark(
+                                x: .value("Date", metric.date),
+                                y: .value("Storage", metric.sizeUtilized)
+                            )
+                        }
+                        .chartYAxis {
+                            AxisMarks(position: .leading) { value in
+                                AxisGridLine()
+                                AxisTick()
+                                AxisValueLabel {
+                                    if let doubleValue = value.as(Double.self) {
+                                        Text("\(doubleValue, specifier: "%.0f") MB")
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.bottom, 8)
+                        .frame(height: 200)
+                    }
+                    .padding(.all, 12)
+                    .frame(alignment: .topLeading)
+                }
+            }
+        }
+        .formStyle(.grouped)
+        .onAppear {
+            loadData()
         }
         .navigationTitle("Usage Metrics")
     }
-}
 
-struct DailyMetric: Identifiable {
-    var id: UUID = .init()
-    var date: Date
-    var sizeUtilized: Double
-    var costIncurred: Double
-    var totalGenerations: Int
+    func loadData() {
+        if !connectionKeys.isEmpty {
+            selectedConnectionKey = connectionKeys.first
+        }
+    }
 }
