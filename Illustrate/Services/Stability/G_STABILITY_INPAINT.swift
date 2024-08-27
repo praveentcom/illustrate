@@ -1,24 +1,24 @@
 import Foundation
 
 class G_STABILITY_INPAINT: ImageGenerationProtocol {
-    func getCreditsUsed(request: ImageGenerationRequest) -> Double {
+    func getCreditsUsed(request _: ImageGenerationRequest) -> Double {
         return 3.0
     }
-    
+
     let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.STABILITY_INPAINT })!
-    
+
     struct ServiceRequest: Codable {
         let prompt: String
         let negative_prompt: String?
         let user: String
-        
-        init(prompt: String, negativePrompt: String?, editDirection: ImageEditDirection?) {
+
+        init(prompt: String, negativePrompt: String?, editDirection _: ImageEditDirection?) {
             self.prompt = prompt
-            self.negative_prompt = negativePrompt
-            self.user = "illustrate_user"
+            negative_prompt = negativePrompt
+            user = "illustrate_user"
         }
     }
-    
+
     func transformRequest(request: ImageGenerationRequest) -> ServiceRequest {
         return ServiceRequest(
             prompt: request.prompt,
@@ -26,10 +26,10 @@ class G_STABILITY_INPAINT: ImageGenerationProtocol {
             editDirection: request.editDirection
         )
     }
-    
+
     func transformResponse(request: ImageGenerationRequest, response: NetworkResponseData) throws -> ImageGenerationResponse {
         switch response {
-        case .dictionary(_, let data):
+        case let .dictionary(_, data):
             if let imageData = data["image"] as? String {
                 return ImageGenerationResponse(
                     status: .GENERATED,
@@ -37,16 +37,15 @@ class G_STABILITY_INPAINT: ImageGenerationProtocol {
                     cost: getCreditsUsed(request: request),
                     modelPrompt: request.prompt
                 )
-            }
-            else if let errors = data["errors"] as? [String],
-                    let message = errors.first {
+            } else if let errors = data["errors"] as? [String],
+                      let message = errors.first
+            {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
                     errorMessage: message
                 )
-            }
-            else if let message = data["message"] as? String {
+            } else if let message = data["message"] as? String {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
@@ -60,14 +59,14 @@ class G_STABILITY_INPAINT: ImageGenerationProtocol {
                 errorMessage: "Unexpected response"
             )
         }
-        
+
         return ImageGenerationResponse(
             status: .FAILED,
             errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
             errorMessage: "Invalid response"
         )
     }
-    
+
     func makeRequest(request: ImageGenerationRequest) async throws -> ImageGenerationResponse {
         guard let url = URL(string: model.modelGenerateBaseURL) else {
             return ImageGenerationResponse(
@@ -90,15 +89,15 @@ class G_STABILITY_INPAINT: ImageGenerationProtocol {
                 errorMessage: "Draw the mask area on the image"
             )
         }
-        
+
         let transformedRequest = transformRequest(request: request)
-        
+
         let headers: [String: String] = [
             "Authorization": "\(request.connectionSecret)",
             "Content-Type": "multipart/form-data",
-            "Accept": "application/json"
+            "Accept": "application/json",
         ]
-        
+
         let response = try await NetworkAdapter.shared.performRequest(
             url: url,
             method: "POST",
@@ -126,10 +125,10 @@ class G_STABILITY_INPAINT: ImageGenerationProtocol {
                             options: .regularExpression
                         )
                     )!
-                )
+                ),
             ]
         )
-        
+
         return try transformResponse(request: request, response: response)
     }
 }

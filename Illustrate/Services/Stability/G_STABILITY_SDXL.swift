@@ -1,7 +1,7 @@
 import Foundation
 
 class G_STABILITY_SDXL: ImageGenerationProtocol {
-    func getCreditsUsed(request: ImageGenerationRequest) -> Double {
+    func getCreditsUsed(request _: ImageGenerationRequest) -> Double {
         return 0.2
     }
 
@@ -21,13 +21,13 @@ class G_STABILITY_SDXL: ImageGenerationProtocol {
         }
 
         init(prompt: String, width: Int, height: Int) {
-            self.text_prompts = [TextPrompt(text: prompt)]
-            self.cfg_scale = 7.0
+            text_prompts = [TextPrompt(text: prompt)]
+            cfg_scale = 7.0
             self.width = width
             self.height = height
-            self.steps = 30
-            self.samples = 1
-            self.user = "illustrate_user"
+            steps = 30
+            samples = 1
+            user = "illustrate_user"
         }
     }
 
@@ -65,52 +65,52 @@ class G_STABILITY_SDXL: ImageGenerationProtocol {
 
     func transformResponse(request: ImageGenerationRequest, response: NetworkResponseData) throws -> ImageGenerationResponse {
         switch response {
-        case .dictionary(_, let data):
+        case let .dictionary(_, data):
             if let artifacts = data["artifacts"] as? [[String: Any]],
                let firstArtifact = artifacts.first,
-               let base64String = firstArtifact["base64"] as? String {
+               let base64String = firstArtifact["base64"] as? String
+            {
                 return ImageGenerationResponse(
                     status: .GENERATED,
                     base64: base64String,
                     cost: getCreditsUsed(request: request),
                     modelPrompt: request.prompt
                 )
-            }
-            else if let errors = data["errors"] as? [String],
-                let message = errors.first {
+            } else if let errors = data["errors"] as? [String],
+                      let message = errors.first
+            {
+                return ImageGenerationResponse(
+                    status: .FAILED,
+                    errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+                    errorMessage: message
+                )
+            } else if let message = data["message"] as? String {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
                     errorMessage: message
                 )
             }
-            else if let message = data["message"] as? String {
-                return ImageGenerationResponse(
-                    status: .FAILED,
-                    errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
-                    errorMessage: message
-                )
-            }
-        case .array(_, let data):
+        case let .array(_, data):
             if let firstDict = data.first,
                let artifacts = firstDict["artifacts"] as? [[String: Any]],
-               let base64String = artifacts.first?["base64"] as? String {
+               let base64String = artifacts.first?["base64"] as? String
+            {
                 return ImageGenerationResponse(
                     status: .GENERATED,
                     base64: base64String,
                     cost: getCreditsUsed(request: request),
                     modelPrompt: request.prompt
                 )
-            }
-            else if let errors = data.first?["errors"] as? [String],
-                let message = errors.first {
+            } else if let errors = data.first?["errors"] as? [String],
+                      let message = errors.first
+            {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
                     errorMessage: message
                 )
-            }
-            else if let message = data.first?["message"] as? String {
+            } else if let message = data.first?["message"] as? String {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
@@ -124,7 +124,7 @@ class G_STABILITY_SDXL: ImageGenerationProtocol {
                 errorMessage: "Unexpected response"
             )
         }
-        
+
         return ImageGenerationResponse(
             status: .FAILED,
             errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
@@ -150,7 +150,7 @@ class G_STABILITY_SDXL: ImageGenerationProtocol {
                 body: transformedRequest,
                 headers: [
                     "Authorization": "\(request.connectionSecret)",
-                    "Accept": "application/json"
+                    "Accept": "application/json",
                 ]
             )
 

@@ -1,13 +1,13 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct GalleryVideoView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \ImageSet.createdAt, order: .reverse) private var sets: [ImageSet]
     @Query(sort: \Generation.createdAt, order: .reverse) private var generations: [Generation]
-    
+
     @State private var selectedSetType: EnumSetType? = nil
-    
+
     private var filteredSets: [ImageSet] {
         if let selectedSetType = selectedSetType {
             return sets.filter { $0.setType == selectedSetType }
@@ -35,7 +35,7 @@ struct GalleryVideoView: View {
         .toolbar {
             ToolbarItem {
                 Menu {
-                    Button("All Generations", systemImage: "slider.horizontal.3", action: { 
+                    Button("All Generations", systemImage: "slider.horizontal.3", action: {
                         DispatchQueue.main.async {
                             selectedSetType = nil
                         }

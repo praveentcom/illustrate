@@ -1,18 +1,18 @@
-import SwiftUI
-import SwiftData
 import Charts
+import SwiftData
+import SwiftUI
 
 struct UsageMetricsView: View {
     @Query var connectionKeys: [ConnectionKey]
     @State private var selectedConnectionKey: ConnectionKey?
-    
+
     // Sample Data
     @State private var dailyMetrics: [DailyMetric] = [
         DailyMetric(date: Date(), sizeUtilized: 500, costIncurred: 20, totalGenerations: 10),
         DailyMetric(date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, sizeUtilized: 300, costIncurred: 15, totalGenerations: 8),
         // Add more sample data here
     ]
-    
+
     var body: some View {
         ScrollView {
             Form {
@@ -20,19 +20,19 @@ struct UsageMetricsView: View {
                     Picker("Connection", selection: $selectedConnectionKey) {
                         ForEach(connectionKeys, id: \.connectionId) { connectionKey in
                             let connection = getConnection(connectionId: connectionKey.connectionId)
-                            
+
                             Text(connection?.connectionName ?? "").tag(connectionKey as ConnectionKey?)
                         }
                     }
                 }
             }
             .formStyle(.grouped)
-            
+
             let columns: [GridItem] = {
                 #if os(macOS)
-                return Array(repeating: GridItem(.flexible(), spacing: 20), count: 2)
+                    return Array(repeating: GridItem(.flexible(), spacing: 20), count: 2)
                 #else
-                return Array(repeating: GridItem(.flexible(), spacing: 20), count: UIDevice.current.userInterfaceIdiom == .pad ? 2 : 1)
+                    return Array(repeating: GridItem(.flexible(), spacing: 20), count: UIDevice.current.userInterfaceIdiom == .pad ? 2 : 1)
                 #endif
             }()
 
@@ -93,7 +93,7 @@ struct UsageMetricsView: View {
 }
 
 struct DailyMetric: Identifiable {
-    var id: UUID = UUID()
+    var id: UUID = .init()
     var date: Date
     var sizeUtilized: Double
     var costIncurred: Double

@@ -1,13 +1,13 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct RequestsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \ImageSet.createdAt, order: .reverse) private var sets: [ImageSet]
     @Query(sort: \Generation.createdAt, order: .reverse) private var generations: [Generation]
-    
+
     @State private var selectedSetType: EnumSetType? = nil
-    
+
     private var filteredSets: [ImageSet] {
         if let selectedSetType = selectedSetType {
             return sets.filter { $0.setType == selectedSetType }
@@ -17,29 +17,28 @@ struct RequestsView: View {
     }
 
     @State private var filteredGenerations: [Generation] = []
-    
+
     struct ImageCellView: View {
         let image: PlatformImage
         let generation: Generation
-        
+
         var body: some View {
             #if os(macOS)
-            Image(nsImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: 20)
+                Image(nsImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 20)
             #else
-            Image(uiImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: 20)
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 20)
             #endif
-            
         }
     }
-    
+
     @State private var sortOrder = [KeyPathComparator(\Generation.createdAt)]
-    
+
     @TableColumnBuilder<Generation, KeyPathComparator<Generation>>
     var prefixColumns: some TableColumnContent<Generation, KeyPathComparator<Generation>> {
         TableColumn("Spot", value: \.id) { generation in
@@ -59,7 +58,7 @@ struct RequestsView: View {
         }
         .width(min: 180, ideal: 180, max: 180)
     }
-    
+
     @TableColumnBuilder<Generation, KeyPathComparator<Generation>>
     var modelInfoColumns: some TableColumnContent<Generation, KeyPathComparator<Generation>> {
         TableColumn("Connection", value: \.modelId) { generation in
@@ -79,7 +78,7 @@ struct RequestsView: View {
         }
         .width(min: 160, ideal: 160, max: 200)
     }
-    
+
     @TableColumnBuilder<Generation, KeyPathComparator<Generation>>
     var promptColumns: some TableColumnContent<Generation, KeyPathComparator<Generation>> {
         TableColumn("Prompt", value: \.prompt) { generation in
@@ -92,7 +91,7 @@ struct RequestsView: View {
         }
         .width(min: 400, ideal: 400, max: 800)
     }
-    
+
     @TableColumnBuilder<Generation, KeyPathComparator<Generation>>
     var generationInfoColumns: some TableColumnContent<Generation, KeyPathComparator<Generation>> {
         TableColumn("Dimensions", value: \.artDimensions) { generation in
@@ -101,7 +100,7 @@ struct RequestsView: View {
         }
         .width(min: 160, ideal: 160, max: 160)
         TableColumn("Size", value: \.size) { generation in
-            Text(String(format: "%.2f MB", Double(generation.size) / 1000000.0))
+            Text(String(format: "%.2f MB", Double(generation.size) / 1_000_000.0))
                 .monospaced()
         }
         .width(min: 120, ideal: 120, max: 120)
@@ -119,19 +118,19 @@ struct RequestsView: View {
         }
         .width(min: 80, ideal: 80, max: 80)
     }
-    
+
     @TableColumnBuilder<Generation, KeyPathComparator<Generation>>
     var otherColumns: some TableColumnContent<Generation, KeyPathComparator<Generation>> {
         TableColumn("Status", value: \.status.rawValue)
             .width(min: 120, ideal: 120, max: 120)
     }
-    
+
     @TableColumnBuilder<Generation, KeyPathComparator<Generation>>
     var actionColumns: some TableColumnContent<Generation, KeyPathComparator<Generation>> {
         TableColumn("Actions", value: \.id) { generation in
             NavigationLink(value: generation.contentType == .IMAGE_2D ? EnumNavigationItem.generationImage(setId: generation.setId) : EnumNavigationItem.generationVideo(setId: generation.setId)) {
                 Button("View") {}
-                .buttonStyle(BorderedButtonStyle())
+                    .buttonStyle(BorderedButtonStyle())
             }
         }
         .width(min: 120, ideal: 120, max: 120)
@@ -139,7 +138,7 @@ struct RequestsView: View {
 
     var body: some View {
         VStack {
-            if (filteredGenerations.isEmpty) {
+            if filteredGenerations.isEmpty {
                 Text("No requests.")
                     .opacity(0.5)
             } else {
@@ -161,13 +160,13 @@ struct RequestsView: View {
                     }
                 }
                 .onChange(of: sortOrder) {
-                     filteredGenerations.sort(using: sortOrder)
+                    filteredGenerations.sort(using: sortOrder)
                 }
             }
         }
         .onAppear {
             let filteredSetIds = filteredSets.map { $0.id }
-            
+
             DispatchQueue.main.async {
                 filteredGenerations = generations.filter { filteredSetIds.contains($0.setId) }
             }

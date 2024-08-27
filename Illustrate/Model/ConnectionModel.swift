@@ -3,8 +3,8 @@ import SwiftData
 import SwiftUI
 
 enum EnumConnectionModelCode: String, Codable, CaseIterable, Identifiable {
-    var id : String { UUID().uuidString }
-    
+    var id: String { UUID().uuidString }
+
     case OPENAI_DALLE3
     case STABILITY_SDXL
     case STABILITY_SD3
@@ -28,7 +28,7 @@ enum EnumConnectionModelCode: String, Codable, CaseIterable, Identifiable {
     case FAL_FLUX_PRO
     case HUGGING_FACE_FLUX_SCHNELL
     case HUGGING_FACE_FLUX_DEV
-    
+
     var modelId: UUID {
         switch self {
         case .OPENAI_DALLE3:
@@ -93,7 +93,7 @@ struct ConnectionModelSupportParams: Codable {
         case count
         case autoEnhance
     }
-    
+
     var prompt: Bool = false
     var negativePrompt: Bool = false
     var maxPromptLength: Int = 256
@@ -103,7 +103,7 @@ struct ConnectionModelSupportParams: Codable {
     var style: Bool = false
     var count: Int = 1
     var autoEnhance: Bool = false
-    
+
     init(
         prompt: Bool,
         negativePrompt: Bool,
@@ -125,7 +125,7 @@ struct ConnectionModelSupportParams: Codable {
         self.count = count
         self.autoEnhance = autoEnhance
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(prompt, forKey: .prompt)
@@ -157,7 +157,7 @@ final class ConnectionModel: Codable {
         case modelAPIDocumentationURL
         case active
     }
-    
+
     var connectionId: UUID = UUID()
     var modelId: UUID = UUID()
     var modelCode: EnumConnectionModelCode = EnumConnectionModelCode.OPENAI_DALLE3
@@ -181,7 +181,7 @@ final class ConnectionModel: Codable {
     var modelStatusBaseURL: String? = nil
     var modelAPIDocumentationURL: String = ""
     var active: Bool = true
-    
+
     init(
         connectionId: UUID,
         modelId: UUID,
@@ -211,7 +211,7 @@ final class ConnectionModel: Codable {
         self.modelAPIDocumentationURL = modelAPIDocumentationURL
         self.active = active
     }
-    
+
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         connectionId = try container.decode(UUID.self, forKey: .connectionId)
@@ -228,7 +228,7 @@ final class ConnectionModel: Codable {
         modelAPIDocumentationURL = try container.decode(String.self, forKey: .modelAPIDocumentationURL)
         active = try container.decode(Bool.self, forKey: .active)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(connectionId, forKey: .connectionId)
@@ -253,7 +253,7 @@ func getModel(modelId: String) -> ConnectionModel? {
 
 struct ModelLabel: View {
     var model: ConnectionModel
-    
+
     var body: some View {
         Text(model.modelName)
     }
@@ -271,7 +271,7 @@ let connectionModels = [
             prompt: true,
             negativePrompt: false,
             maxPromptLength: 4000,
-            dimensions: ["1024x1024","1792x1024","1024x1792"],
+            dimensions: ["1024x1024", "1792x1024", "1024x1792"],
             quality: true,
             variant: true,
             style: true,
@@ -295,7 +295,7 @@ let connectionModels = [
             prompt: true,
             negativePrompt: true,
             maxPromptLength: 1024,
-            dimensions: ["1024x1024","576x1024","1024x576","1344x576","576x1344","1536x1024","1024x1536","1280x1024","1024x1280"],
+            dimensions: ["1024x1024", "576x1024", "1024x576", "1344x576", "576x1344", "1536x1024", "1024x1536", "1280x1024", "1024x1280"],
             quality: false,
             variant: true,
             style: false,
@@ -319,7 +319,7 @@ let connectionModels = [
             prompt: true,
             negativePrompt: true,
             maxPromptLength: 1024,
-            dimensions: ["1024x1024","576x1024","1024x576","1344x576","576x1344","1536x1024","1024x1536","1280x1024","1024x1280"],
+            dimensions: ["1024x1024", "576x1024", "1024x576", "1344x576", "576x1344", "1536x1024", "1024x1536", "1280x1024", "1024x1280"],
             quality: false,
             variant: true,
             style: false,
@@ -343,7 +343,7 @@ let connectionModels = [
             prompt: true,
             negativePrompt: true,
             maxPromptLength: 1024,
-            dimensions: ["1024x1024","1152x896","896x1152","1216x832","1344x768","768x1344","1536x640","640x1536"],
+            dimensions: ["1024x1024", "1152x896", "896x1152", "1216x832", "1344x768", "768x1344", "1536x640", "640x1536"],
             quality: false,
             variant: true,
             style: false,
@@ -367,7 +367,7 @@ let connectionModels = [
             prompt: true,
             negativePrompt: true,
             maxPromptLength: 1024,
-            dimensions: ["1024x1024","576x1024","1024x576","1344x576","576x1344","1536x1024","1024x1536","1280x1024","1024x1280"],
+            dimensions: ["1024x1024", "576x1024", "1024x576", "1344x576", "576x1344", "1536x1024", "1024x1536", "1280x1024", "1024x1280"],
             quality: false,
             variant: true,
             style: false,
@@ -391,7 +391,7 @@ let connectionModels = [
             prompt: true,
             negativePrompt: true,
             maxPromptLength: 1024,
-            dimensions: ["1024x1024","576x1024","1024x576","1344x576","576x1344","1536x1024","1024x1536","1280x1024","1024x1280"],
+            dimensions: ["1024x1024", "576x1024", "1024x576", "1344x576", "576x1344", "1536x1024", "1024x1536", "1280x1024", "1024x1280"],
             quality: false,
             variant: true,
             style: false,
@@ -415,7 +415,7 @@ let connectionModels = [
             prompt: true,
             negativePrompt: true,
             maxPromptLength: 1024,
-            dimensions: ["1024x1024","576x1024","1024x576","768x1024","1024x768"],
+            dimensions: ["1024x1024", "576x1024", "1024x576", "768x1024", "1024x768"],
             quality: false,
             variant: false,
             style: false,
@@ -439,7 +439,7 @@ let connectionModels = [
             prompt: true,
             negativePrompt: true,
             maxPromptLength: 1024,
-            dimensions: ["1024x1024","576x1024","1024x576","768x1024","1024x768"],
+            dimensions: ["1024x1024", "576x1024", "1024x576", "768x1024", "1024x768"],
             quality: false,
             variant: false,
             style: false,
@@ -463,7 +463,7 @@ let connectionModels = [
             prompt: true,
             negativePrompt: true,
             maxPromptLength: 1024,
-            dimensions: ["1024x1024","576x1024","1024x576","768x1024","1024x768"],
+            dimensions: ["1024x1024", "576x1024", "1024x576", "768x1024", "1024x768"],
             quality: false,
             variant: false,
             style: false,
@@ -487,7 +487,7 @@ let connectionModels = [
             prompt: true,
             negativePrompt: true,
             maxPromptLength: 1024,
-            dimensions: ["1024x1024","576x1024","1024x576","768x1024","1024x768"],
+            dimensions: ["1024x1024", "576x1024", "1024x576", "768x1024", "1024x768"],
             quality: false,
             variant: false,
             style: false,
@@ -511,7 +511,7 @@ let connectionModels = [
             prompt: true,
             negativePrompt: true,
             maxPromptLength: 1024,
-            dimensions: ["1024x1024","576x1024","1024x576","768x1024","1024x768"],
+            dimensions: ["1024x1024", "576x1024", "1024x576", "768x1024", "1024x768"],
             quality: false,
             variant: false,
             style: false,
@@ -535,7 +535,7 @@ let connectionModels = [
             prompt: true,
             negativePrompt: true,
             maxPromptLength: 1024,
-            dimensions: ["1024x1024","576x1024","1024x576","768x1024","1024x768"],
+            dimensions: ["1024x1024", "576x1024", "1024x576", "768x1024", "1024x768"],
             quality: false,
             variant: false,
             style: false,
@@ -559,7 +559,7 @@ let connectionModels = [
             prompt: true,
             negativePrompt: true,
             maxPromptLength: 1024,
-            dimensions: ["1024x1024","576x1024","1024x576","768x1024","1024x768"],
+            dimensions: ["1024x1024", "576x1024", "1024x576", "768x1024", "1024x768"],
             quality: false,
             variant: false,
             style: false,
@@ -583,7 +583,7 @@ let connectionModels = [
             prompt: true,
             negativePrompt: true,
             maxPromptLength: 1024,
-            dimensions: ["768x768","576x1024","1024x576"],
+            dimensions: ["768x768", "576x1024", "1024x576"],
             quality: false,
             variant: false,
             style: false,
@@ -819,5 +819,5 @@ let connectionModels = [
         modelStatusBaseURL: "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-dev",
         modelAPIDocumentationURL: "https://huggingface.co/spaces/black-forest-labs/FLUX.1-dev",
         active: true
-    )
+    ),
 ]

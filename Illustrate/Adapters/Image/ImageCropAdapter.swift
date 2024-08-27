@@ -1,75 +1,76 @@
-import SwiftUI
 import Foundation
 import ImageCropper
+import SwiftUI
 
 #if canImport(UIKit)
-import UIKit
+    import UIKit
 #elseif canImport(AppKit)
-import AppKit
-import Cocoa
+    import AppKit
+    import Cocoa
 #endif
 
 #if os(macOS)
-private func crop(image: NSImage, from: CGPoint, to: CGPoint) -> NSImage? {
-    let cropWidth = to.x - from.x
-    let cropHeight = to.y - from.y
-    
-    let cropRect = CGRect(
-        x: from.x,
-        y: image.size.height - from.y - cropHeight,
-        width: cropWidth,
-        height: cropHeight
-    )
-    
-    guard let tiffData = image.tiffRepresentation,
-          let sourceImageRep = NSBitmapImageRep(data: tiffData),
-          let cgImage = sourceImageRep.cgImage else {
-        return nil
+    private func crop(image: NSImage, from: CGPoint, to: CGPoint) -> NSImage? {
+        let cropWidth = to.x - from.x
+        let cropHeight = to.y - from.y
+
+        let cropRect = CGRect(
+            x: from.x,
+            y: image.size.height - from.y - cropHeight,
+            width: cropWidth,
+            height: cropHeight
+        )
+
+        guard let tiffData = image.tiffRepresentation,
+              let sourceImageRep = NSBitmapImageRep(data: tiffData),
+              let cgImage = sourceImageRep.cgImage
+        else {
+            return nil
+        }
+
+        let scale = image.size.width / CGFloat(cgImage.width)
+
+        let scaledCropRect = CGRect(
+            x: cropRect.origin.x / scale,
+            y: cropRect.origin.y / scale,
+            width: cropRect.size.width / scale,
+            height: cropRect.size.height / scale
+        )
+
+        guard let croppedCGImage = cgImage.cropping(to: scaledCropRect) else {
+            return nil
+        }
+
+        let croppedImage = NSImage(cgImage: croppedCGImage, size: NSSize(width: cropWidth, height: cropHeight))
+        return croppedImage
     }
-    
-    let scale = image.size.width / CGFloat(cgImage.width)
-    
-    let scaledCropRect = CGRect(
-        x: cropRect.origin.x / scale,
-        y: cropRect.origin.y / scale,
-        width: cropRect.size.width / scale,
-        height: cropRect.size.height / scale
-    )
-    
-    guard let croppedCGImage = cgImage.cropping(to: scaledCropRect) else {
-        return nil
-    }
-    
-    let croppedImage = NSImage(cgImage: croppedCGImage, size: NSSize(width: cropWidth, height: cropHeight))
-    return croppedImage
-}
 #else
-private func crop(image: UIImage, from: CGPoint, to: CGPoint) -> UIImage? {
-    let cropWidth = to.x - from.x
-    let cropHeight = to.y - from.y
-    
-    let cropRect = CGRect(x: from.x, y: from.y, width: cropWidth, height: cropHeight)
-    
-    guard let cgImage = image.cgImage else {
-        return nil
+    private func crop(image: UIImage, from: CGPoint, to: CGPoint) -> UIImage? {
+        let cropWidth = to.x - from.x
+        let cropHeight = to.y - from.y
+
+        let cropRect = CGRect(x: from.x, y: from.y, width: cropWidth, height: cropHeight)
+
+        guard let cgImage = image.cgImage else {
+            return nil
+        }
+
+        let scale = image.scale
+
+        let scaledCropRect = CGRect(
+            x: cropRect.origin.x / scale,
+            y: cropRect.origin.y / scale,
+            width: cropRect.size.width / scale,
+            height: cropRect.size.height / scale
+        )
+
+        guard let croppedCGImage = cgImage.cropping(to: scaledCropRect) else {
+            return nil
+        }
+
+        let croppedImage = UIImage(cgImage: croppedCGImage, scale: 1, orientation: image.imageOrientation)
+        return croppedImage
     }
-    
-    let scale = image.scale
-    
-    let scaledCropRect = CGRect(
-        x: cropRect.origin.x / scale,
-        y: cropRect.origin.y / scale,
-        width: cropRect.size.width / scale,
-        height: cropRect.size.height / scale
-    )
-    
-    guard let croppedCGImage = cgImage.cropping(to: scaledCropRect) else {
-        return nil
-    }
-    
-    let croppedImage = UIImage(cgImage: croppedCGImage, scale: 1, orientation: image.imageOrientation)
-    return croppedImage
-}
 #endif
 
 func cropImage(
@@ -85,14 +86,14 @@ func cropImage(
 struct ImageCropAdapter: View {
     var image: PlatformImage
     var cropDimensions: String
-    
+
     @State private var cropRect: CGRect = .zero
-    
+
     var onCropConfirm: (PlatformImage) -> Void
     var onCropCancel: () -> Void
-    
+
     var body: some View {
-        VStack (spacing: 8) {
+        VStack(spacing: 8) {
             ImageCropperView(
                 image: image.toImage(),
                 cropRect: nil,

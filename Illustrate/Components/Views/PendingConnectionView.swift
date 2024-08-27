@@ -1,27 +1,27 @@
-import SwiftUI
 import Foundation
+import SwiftUI
 
 struct PendingConnectionView: View {
     var setType: EnumSetType
-    
+
     var connectionsWithSetTypeSupport: [Connection] {
         return connections.filter { connection in
             connectionModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == setType }
         }
     }
-    
+
     let columns: [GridItem] = {
         #if os(macOS)
-        return Array(repeating: GridItem(.flexible(), spacing: 8), count: 4)
+            return Array(repeating: GridItem(.flexible(), spacing: 8), count: 4)
         #else
-        return Array(repeating: GridItem(.flexible(), spacing: 12), count: UIDevice.current.userInterfaceIdiom == .pad ? 4 : 1)
+            return Array(repeating: GridItem(.flexible(), spacing: 12), count: UIDevice.current.userInterfaceIdiom == .pad ? 4 : 1)
         #endif
     }()
-    
+
     var body: some View {
         Form {
             Section("Connection pending") {
-                VStack (spacing: 8) {
+                VStack(spacing: 8) {
                     Text("No connections that support \(labelForSetType(setType)) are linked yet.")
                         .font(.headline)
                         .multilineTextAlignment(.center)
@@ -36,8 +36,8 @@ struct PendingConnectionView: View {
                 }
             }
             Section("Supported Models") {
-                VStack (alignment: .leading) {
-                    if (connectionsWithSetTypeSupport.isEmpty) {
+                VStack(alignment: .leading) {
+                    if connectionsWithSetTypeSupport.isEmpty {
                         Text("No connections that support \(labelForSetType(setType)) are available yet.")
                     } else {
                         LazyVGrid(columns: columns, spacing: 8) {

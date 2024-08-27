@@ -1,27 +1,27 @@
 import Foundation
 
 class G_STABILITY_REMOVE_BACKGROUND: ImageGenerationProtocol {
-    func getCreditsUsed(request: ImageGenerationRequest) -> Double {
+    func getCreditsUsed(request _: ImageGenerationRequest) -> Double {
         return 2.0
     }
-    
+
     let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.STABILITY_REMOVE_BACKGROUND })!
-    
+
     struct ServiceRequest: Codable {
         let user: String
-        
+
         init() {
-            self.user = "illustrate_user"
+            user = "illustrate_user"
         }
     }
-    
-    func transformRequest(request: ImageGenerationRequest) -> ServiceRequest {
+
+    func transformRequest(request _: ImageGenerationRequest) -> ServiceRequest {
         return ServiceRequest()
     }
-    
+
     func transformResponse(request: ImageGenerationRequest, response: NetworkResponseData) throws -> ImageGenerationResponse {
         switch response {
-        case .dictionary(_, let data):
+        case let .dictionary(_, data):
             if let imageData = data["image"] as? String {
                 return ImageGenerationResponse(
                     status: .GENERATED,
@@ -29,16 +29,15 @@ class G_STABILITY_REMOVE_BACKGROUND: ImageGenerationProtocol {
                     cost: getCreditsUsed(request: request),
                     modelPrompt: request.prompt
                 )
-            }
-            else if let errors = data["errors"] as? [String],
-                    let message = errors.first {
+            } else if let errors = data["errors"] as? [String],
+                      let message = errors.first
+            {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
                     errorMessage: message
                 )
-            }
-            else if let message = data["message"] as? String {
+            } else if let message = data["message"] as? String {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
@@ -52,15 +51,14 @@ class G_STABILITY_REMOVE_BACKGROUND: ImageGenerationProtocol {
                 errorMessage: "Unexpected response"
             )
         }
-        
+
         return ImageGenerationResponse(
             status: .FAILED,
             errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
             errorMessage: "Invalid response"
         )
-        
     }
-    
+
     func makeRequest(request: ImageGenerationRequest) async throws -> ImageGenerationResponse {
         guard let url = URL(string: model.modelGenerateBaseURL) else {
             return ImageGenerationResponse(
@@ -76,15 +74,15 @@ class G_STABILITY_REMOVE_BACKGROUND: ImageGenerationProtocol {
                 errorMessage: "Select an image"
             )
         }
-        
+
         let transformedRequest = transformRequest(request: request)
-        
+
         let headers: [String: String] = [
             "Authorization": "\(request.connectionSecret)",
             "Content-Type": "multipart/form-data",
-            "Accept": "application/json"
+            "Accept": "application/json",
         ]
-        
+
         let response = try await NetworkAdapter.shared.performRequest(
             url: url,
             method: "POST",
@@ -101,10 +99,10 @@ class G_STABILITY_REMOVE_BACKGROUND: ImageGenerationProtocol {
                             options: .regularExpression
                         )
                     )!
-                )
+                ),
             ]
         )
-        
+
         return try transformResponse(request: request, response: response)
     }
 }

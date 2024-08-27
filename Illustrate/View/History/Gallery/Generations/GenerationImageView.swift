@@ -1,105 +1,105 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 import UniformTypeIdentifiers
 
 #if os(macOS)
-import AppKit
+    import AppKit
 #else
-import UIKit
+    import UIKit
 
-struct UIImageFileDocument: FileDocument {
-    static var readableContentTypes: [UTType] { [.png] }
-    
-    var image: UIImage
-    
-    init(image: UIImage) {
-        self.image = image
-    }
-    
-    init(configuration: ReadConfiguration) throws {
-        self.image = UIImage()
-    }
-    
-    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
-        let data = image.pngData()!
-        return FileWrapper(regularFileWithContents: data)
-    }
-}
+    struct UIImageFileDocument: FileDocument {
+        static var readableContentTypes: [UTType] { [.png] }
 
-struct ImageShareSheet: UIViewControllerRepresentable {
-    var activityItems: [Any]
-    var applicationActivities: [UIActivity]? = nil
+        var image: UIImage
 
-    func makeUIViewController(context: UIViewControllerRepresentableContext<ImageShareSheet>) -> UIActivityViewController {
-        return UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
+        init(image: UIImage) {
+            self.image = image
+        }
+
+        init(configuration _: ReadConfiguration) throws {
+            image = UIImage()
+        }
+
+        func fileWrapper(configuration _: WriteConfiguration) throws -> FileWrapper {
+            let data = image.pngData()!
+            return FileWrapper(regularFileWithContents: data)
+        }
     }
 
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: UIViewControllerRepresentableContext<ImageShareSheet>) {}
-}
+    struct ImageShareSheet: UIViewControllerRepresentable {
+        var activityItems: [Any]
+        var applicationActivities: [UIActivity]? = nil
+
+        func makeUIViewController(context _: UIViewControllerRepresentableContext<ImageShareSheet>) -> UIActivityViewController {
+            return UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
+        }
+
+        func updateUIViewController(_: UIActivityViewController, context _: UIViewControllerRepresentableContext<ImageShareSheet>) {}
+    }
 #endif
 
 struct MaskView: View {
     var maskImage: PlatformImage
-    
+
     var body: some View {
-#if os(macOS)
-        Image(nsImage: maskImage)
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .frame(maxHeight: 400)
-            .frame(maxWidth: .infinity)
-            .opacity(0.4)
-#else
-        Image(uiImage: maskImage)
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .opacity(0.4)
-#endif
+        #if os(macOS)
+            Image(nsImage: maskImage)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .frame(maxHeight: 400)
+                .frame(maxWidth: .infinity)
+                .opacity(0.4)
+        #else
+            Image(uiImage: maskImage)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .opacity(0.4)
+        #endif
     }
 }
 
 struct GenerationImageView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.presentationMode) private var presentationMode
-    
+
     @State var setId: UUID
     @State private var imageSet: ImageSet? = nil
     @State private var generations: [Generation] = []
     @State private var generationIndex: Int = 0
     @State private var minHeight: CGFloat = 0
-    
+
     @State private var showMask: Bool = false
     @State private var showDeleteConfirmation = false
     @State private var showDocumentPicker = false
     @State private var showShareSheet = false
-    
+
     func getSelectedGeneration() -> Generation? {
         if generationIndex >= 0 && generationIndex < generations.count {
             return generations[generationIndex]
         }
-        
+
         return nil
     }
-    
-    func deleteImageSet() async -> Void {
+
+    func deleteImageSet() async {
         modelContext.delete(imageSet!)
         for generation in generations {
             modelContext.delete(generation)
-            
+
             deleteICloudDocuments(containingSubstring: generation.id.uuidString)
         }
         try? modelContext.save()
-        
+
         DispatchQueue.main.async {
             presentationMode.wrappedValue.dismiss()
         }
     }
-    
+
     var body: some View {
         Form {
-            if (getSelectedGeneration() != nil || imageSet != nil) {
+            if getSelectedGeneration() != nil || imageSet != nil {
                 Section {
                     ZStack {
                         if let colorPalette = getSelectedGeneration()?.colorPalette {
@@ -107,108 +107,108 @@ struct GenerationImageView: View {
                                 Color(getUniversalColorFromHex(hexString: hex))
                             })
                         }
-                        
-                        HStack (spacing: 16) {
-#if os(macOS)
-                            ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_client") { requestImage in
-                                if let requestImage = requestImage {
-                                    ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_mask") { maskImage in
-                                        VStack (spacing: 16) {
-                                            Image(nsImage: requestImage)
+
+                        HStack(spacing: 16) {
+                            #if os(macOS)
+                                ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_client") { requestImage in
+                                    if let requestImage = requestImage {
+                                        ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_mask") { maskImage in
+                                            VStack(spacing: 16) {
+                                                Image(nsImage: requestImage)
+                                                    .resizable()
+                                                    .aspectRatio(contentMode: .fit)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                                    .frame(maxHeight: 400)
+                                                    .overlay {
+                                                        if showMask && maskImage != nil {
+                                                            MaskView(maskImage: maskImage!)
+                                                        }
+                                                    }
+                                                    .shadow(color: .black.opacity(0.4), radius: 8)
+                                                    .frame(maxWidth: .infinity)
+                                                HStack(spacing: 8) {
+                                                    HStack {
+                                                        Image(systemName: "info.circle")
+                                                        Text("Request Image")
+                                                    }
+                                                    .padding(.vertical, 4)
+                                                    .padding(.horizontal, 8)
+                                                    .background(.thinMaterial)
+                                                    .cornerRadius(8)
+
+                                                    if maskImage != nil {
+                                                        Toggle(isOn: $showMask) {
+                                                            Text("Show Mask")
+                                                        }
+                                                        .toggleStyle(IllustrateToggleStyle())
+                                                        .padding(.vertical, 4)
+                                                        .padding(.horizontal, 8)
+                                                        .background(.thinMaterial)
+                                                        .cornerRadius(8)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        .id("mask_\(getSelectedGeneration()!.id.uuidString)")
+                                    }
+                                }
+                                .id("client_\(getSelectedGeneration()!.id.uuidString)")
+                            #endif
+
+                            ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_o50") { image in
+                                if let image = image {
+                                    VStack(spacing: 16) {
+                                        #if os(macOS)
+                                            Image(nsImage: image)
                                                 .resizable()
                                                 .aspectRatio(contentMode: .fit)
                                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                                                 .frame(maxHeight: 400)
-                                                .overlay {
-                                                    if (showMask && maskImage != nil) {
-                                                        MaskView(maskImage: maskImage!)
-                                                    }
-                                                }
                                                 .shadow(color: .black.opacity(0.4), radius: 8)
                                                 .frame(maxWidth: .infinity)
-                                            HStack (spacing: 8) {
-                                                HStack {
-                                                    Image(systemName: "info.circle")
-                                                    Text("Request Image")
-                                                }
-                                                .padding(.vertical, 4)
-                                                .padding(.horizontal, 8)
-                                                .background(.thinMaterial)
-                                                .cornerRadius(8)
-                                                
-                                                if (maskImage != nil) {
-                                                    Toggle(isOn: $showMask) {
-                                                        Text("Show Mask")
+                                                .contextMenu {
+                                                    Button("Download", systemImage: "arrow.down") {
+                                                        image.saveImageToDownloads(fileName: getSelectedGeneration()!.id.uuidString)
                                                     }
-                                                    .toggleStyle(IllustrateToggleStyle())
-                                                    .padding(.vertical, 4)
-                                                    .padding(.horizontal, 8)
-                                                    .background(.thinMaterial)
-                                                    .cornerRadius(8)
-                                                }
-                                            }
-                                        }
-                                    }
-                                    .id("mask_\(getSelectedGeneration()!.id.uuidString)")
-                                }
-                            }
-                            .id("client_\(getSelectedGeneration()!.id.uuidString)")
-#endif
-                            
-                            ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_o50") { image in
-                                if let image = image {
-                                    VStack (spacing: 16) {
-#if os(macOS)
-                                        Image(nsImage: image)
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                                            .frame(maxHeight: 400)
-                                            .shadow(color: .black.opacity(0.4), radius: 8)
-                                            .frame(maxWidth: .infinity)
-                                            .contextMenu {
-                                                Button("Download", systemImage: "arrow.down") {
-                                                    image.saveImageToDownloads(fileName: getSelectedGeneration()!.id.uuidString)
-                                                }
-                                                Button("Share", systemImage: "square.and.arrow.up") {
-                                                    image.shareImage()
-                                                }
-                                                Divider()
-                                                Button("Delete", systemImage: "trash", role: .destructive) {
-                                                    DispatchQueue.main.async {
-                                                        showDeleteConfirmation = true
+                                                    Button("Share", systemImage: "square.and.arrow.up") {
+                                                        image.shareImage()
+                                                    }
+                                                    Divider()
+                                                    Button("Delete", systemImage: "trash", role: .destructive) {
+                                                        DispatchQueue.main.async {
+                                                            showDeleteConfirmation = true
+                                                        }
                                                     }
                                                 }
-                                            }
-                                            .onAppear {
-                                                if (min(image.size.height, 400) > minHeight) {
-                                                    DispatchQueue.main.async {
-                                                        minHeight = min(image.size.height, 400)
+                                                .onAppear {
+                                                    if min(image.size.height, 400) > minHeight {
+                                                        DispatchQueue.main.async {
+                                                            minHeight = min(image.size.height, 400)
+                                                        }
                                                     }
                                                 }
-                                            }
-                                        ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_client") { requestImage in
-                                            ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_mask") { maskImage in
-                                                if (requestImage != nil || maskImage != nil) {
-                                                    HStack {
-                                                        Image(systemName: "info.circle")
-                                                        Text("Generated Image")
+                                            ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_client") { requestImage in
+                                                ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_mask") { maskImage in
+                                                    if requestImage != nil || maskImage != nil {
+                                                        HStack {
+                                                            Image(systemName: "info.circle")
+                                                            Text("Generated Image")
+                                                        }
+                                                        .padding(.vertical, 4)
+                                                        .padding(.horizontal, 8)
+                                                        .background(.thinMaterial)
+                                                        .cornerRadius(8)
                                                     }
-                                                    .padding(.vertical, 4)
-                                                    .padding(.horizontal, 8)
-                                                    .background(.thinMaterial)
-                                                    .cornerRadius(8)
                                                 }
+                                                .id("image_mask_\(getSelectedGeneration()!.id.uuidString)")
                                             }
-                                            .id("image_mask_\(getSelectedGeneration()!.id.uuidString)")
-                                        }
-                                        .id("image_client_\(getSelectedGeneration()!.id.uuidString)")
-#else
-                                        Image(uiImage: image)
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .clipShape(RoundedRectangle(cornerRadius: 8))
-#endif
+                                            .id("image_client_\(getSelectedGeneration()!.id.uuidString)")
+                                        #else
+                                            Image(uiImage: image)
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        #endif
                                     }
                                 }
                             }
@@ -217,10 +217,10 @@ struct GenerationImageView: View {
                         }
                         .padding(.vertical, 8)
                     }
-                    
+
                     if generations.count > 1 {
                         Picker("Select Image", selection: $generationIndex) {
-                            ForEach(0..<generations.count, id: \.self) { index in
+                            ForEach(0 ..< generations.count, id: \.self) { index in
                                 Text("\(index + 1)")
                                     .monospaced()
                                     .tag(index)
@@ -230,22 +230,25 @@ struct GenerationImageView: View {
                         .padding()
                     }
                 }
-                
+
                 if let prompt = getSelectedGeneration()?.prompt,
-                   !prompt.isEmpty {
+                   !prompt.isEmpty
+                {
                     Section("User Prompts") {
                         SectionKeyValueView(icon: "text.quote", key: "Requested Prompt", value: prompt)
                         if let negativePrompt = getSelectedGeneration()?.negativePrompt,
-                           !negativePrompt.isEmpty {
+                           !negativePrompt.isEmpty
+                        {
                             SectionKeyValueView(icon: "text.badge.minus", key: "Negative Prompt", value: negativePrompt)
                         }
                         if let searchPrompt = getSelectedGeneration()?.searchPrompt,
-                           !searchPrompt.isEmpty {
+                           !searchPrompt.isEmpty
+                        {
                             SectionKeyValueView(icon: "rectangle.and.text.magnifyingglass", key: "Search Prompt", value: searchPrompt)
                         }
                     }
                 }
-                
+
                 Section("Model Response") {
                     if let connection = getConnection(modelId: getSelectedGeneration()!.modelId) {
                         SectionKeyValueView(
@@ -267,16 +270,18 @@ struct GenerationImageView: View {
                     if let promptEnhanceOpted = getSelectedGeneration()?.promptEnhanceOpted,
                        let promptAfterEnhance = getSelectedGeneration()?.promptAfterEnhance,
                        !promptAfterEnhance.isEmpty,
-                       promptEnhanceOpted {
+                       promptEnhanceOpted
+                    {
                         SectionKeyValueView(icon: "text.quote", key: "Enhanced Prompt", value: getSelectedGeneration()!.promptAfterEnhance)
                     }
                     if let modelRevisedPrompt = getSelectedGeneration()?.modelRevisedPrompt,
-                       !modelRevisedPrompt.isEmpty {
+                       !modelRevisedPrompt.isEmpty
+                    {
                         SectionKeyValueView(icon: "text.quote", key: "Response Prompt", value: modelRevisedPrompt)
                     }
                     SectionKeyValueView(icon: "dollarsign", key: "Cost", value: "\(String(format: "%.3f", getSelectedGeneration()!.creditUsed).replacingOccurrences(of: ".000", with: "")) \(getConnection(modelId: getSelectedGeneration()!.modelId)?.creditCurrency.rawValue ?? "Credits")")
                 }
-                
+
                 Section("Image Metadata") {
                     SectionKeyValueView(
                         icon: "aspectratio.fill",
@@ -287,7 +292,7 @@ struct GenerationImageView: View {
                     SectionKeyValueView(
                         icon: "internaldrive.fill",
                         key: "Image Size",
-                        value: String(format: "%.2f MB", Double(getSelectedGeneration()!.size) / 1000000.0),
+                        value: String(format: "%.2f MB", Double(getSelectedGeneration()!.size) / 1_000_000.0),
                         monospaced: true
                     )
                     SectionKeyValueView(icon: "paintpalette.fill", key: "Color Style", value: getSelectedGeneration()!.artStyle.rawValue)
@@ -311,18 +316,18 @@ struct GenerationImageView: View {
         }
         .formStyle(.grouped)
         .toolbar {
-            if (imageSet != nil) {
+            if imageSet != nil {
                 ToolbarItem(placement: .automatic) {
                     Button("Download", systemImage: "arrow.down") {
                         let image = loadImageFromiCloud("\(getSelectedGeneration()!.id.uuidString)")
                         if let image = image {
                             Task {
                                 #if os(macOS)
-                                image.saveImageToDownloads(fileName: getSelectedGeneration()!.id.uuidString)
+                                    image.saveImageToDownloads(fileName: getSelectedGeneration()!.id.uuidString)
                                 #else
-                                DispatchQueue.main.async {
-                                    showDocumentPicker = true
-                                }
+                                    DispatchQueue.main.async {
+                                        showDocumentPicker = true
+                                    }
                                 #endif
                             }
                         }
@@ -334,11 +339,11 @@ struct GenerationImageView: View {
                         if let image = image {
                             Task {
                                 #if os(macOS)
-                                image.shareImage()
+                                    image.shareImage()
                                 #else
-                                DispatchQueue.main.async {
-                                    showShareSheet = true
-                                }
+                                    DispatchQueue.main.async {
+                                        showShareSheet = true
+                                    }
                                 #endif
                             }
                         }
@@ -363,14 +368,14 @@ struct GenerationImageView: View {
             defaultFilename: "illustrate_\(getSelectedGeneration()?.id.uuidString ?? "")"
         ) { result in
             switch result {
-            case .success(let url):
+            case let .success(url):
                 print("Saved to \(url)")
-            case .failure(let error):
+            case let .failure(error):
                 print("Failed to save image: \(error.localizedDescription)")
             }
         }
         .sheet(isPresented: $showShareSheet) {
-            if (imageSet != nil) {
+            if imageSet != nil {
                 let image = loadImageFromiCloud("\(getSelectedGeneration()?.id.uuidString ?? "")")
                 if let image = image {
                     ImageShareSheet(activityItems: [image])
@@ -392,7 +397,7 @@ struct GenerationImageView: View {
         }
         .navigationTitle(labelForItem(.generationImage(setId: setId)))
     }
-    
+
     private func loadData() {
         let imageSetDescriptor = FetchDescriptor<ImageSet>(predicate: #Predicate { $0.id == setId })
         let generationsDescriptor = FetchDescriptor<Generation>(

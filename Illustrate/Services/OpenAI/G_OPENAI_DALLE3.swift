@@ -2,9 +2,9 @@ import Foundation
 
 class G_OPENAI_DALLE3: ImageGenerationProtocol {
     func getCreditsUsed(request: ImageGenerationRequest) -> Double {
-        switch (request.artQuality) {
+        switch request.artQuality {
         case .STANDARD:
-            switch (request.artDimensions) {
+            switch request.artDimensions {
             case "1024x1024":
                 return 0.04
             case "1792x1024":
@@ -15,7 +15,7 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
                 return 0.08
             }
         case .HD:
-            switch (request.artDimensions) {
+            switch request.artDimensions {
             case "1024x1024":
                 return 0.08
             case "1792x1024":
@@ -39,16 +39,16 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
         let style: String?
         let response_format: String?
         let user: String
-        
+
         init(prompt: String, aspectRatio: String, artQuality: String, stylePreset: String) {
-            self.model = "dall-e-3"
+            model = "dall-e-3"
             self.prompt = prompt
-            self.n = 1
-            self.size = aspectRatio
-            self.quality = artQuality
-            self.style = stylePreset
-            self.response_format = "b64_json"
-            self.user = "illustrate_user"
+            n = 1
+            size = aspectRatio
+            quality = artQuality
+            style = stylePreset
+            response_format = "b64_json"
+            user = "illustrate_user"
         }
     }
 
@@ -112,41 +112,41 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
 
     func transformResponse(request: ImageGenerationRequest, response: NetworkResponseData) throws -> ImageGenerationResponse {
         switch response {
-        case .dictionary(_, let data):
+        case let .dictionary(_, data):
             if let nestedData = data["data"] as? [[String: Any]],
-               let imageData = nestedData.first?["b64_json"] as? String {
+               let imageData = nestedData.first?["b64_json"] as? String
+            {
                 return ImageGenerationResponse(
                     status: .GENERATED,
                     base64: imageData,
                     cost: getCreditsUsed(request: request),
                     modelPrompt: nestedData.first?["revised_prompt"] as? String? ?? request.prompt
                 )
-            }
-            else if let errors = data["errors"] as? [String],
-                let message = errors.first {
+            } else if let errors = data["errors"] as? [String],
+                      let message = errors.first
+            {
+                return ImageGenerationResponse(
+                    status: .FAILED,
+                    errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+                    errorMessage: message
+                )
+            } else if let message = data["message"] as? String {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
                     errorMessage: message
                 )
             }
-            else if let message = data["message"] as? String {
-                return ImageGenerationResponse(
-                    status: .FAILED,
-                    errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
-                    errorMessage: message
-                )
-            }
-        case .array(_, let data):
+        case let .array(_, data):
             if let errors = data.first?["errors"] as? [String],
-                let message = errors.first {
+               let message = errors.first
+            {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
                     errorMessage: message
                 )
-            }
-            else if let message = data.first?["message"] as? String {
+            } else if let message = data.first?["message"] as? String {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
@@ -160,7 +160,7 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
                 errorMessage: "Unexpected response"
             )
         }
-        
+
         return ImageGenerationResponse(
             status: .FAILED,
             errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
@@ -187,7 +187,7 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
                 headers: [
                     "Authorization": "Bearer \(request.connectionSecret)",
                     "Content-Type": "application/json",
-                    "Accept": "application/json"
+                    "Accept": "application/json",
                 ]
             )
 

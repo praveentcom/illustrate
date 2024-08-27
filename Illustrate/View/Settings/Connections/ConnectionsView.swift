@@ -1,15 +1,15 @@
-import SwiftUI
-import SwiftData
 import KeychainSwift
+import SwiftData
+import SwiftUI
 
 struct ConnectedConnectionCell: View {
     @Environment(\.modelContext) private var modelContext
     @State private var isLongPressActive = false
     @State private var showDeleteConfirmation = false
-    
+
     let connectionName: String
     let connectionKey: ConnectionKey
-    
+
     var body: some View {
         HStack {
             Text(connectionName)
@@ -31,7 +31,7 @@ struct ConnectedConnectionCell: View {
             Button("Disconnect", role: .destructive) {
                 deleteConnectionKey(connectionKey)
             }
-            
+
             Button("Cancel", role: .cancel) {
                 DispatchQueue.main.async {
                     showDeleteConfirmation = false
@@ -39,18 +39,18 @@ struct ConnectedConnectionCell: View {
             }
         }
     }
-    
+
     private func deleteConnectionKey(_ connectionKey: ConnectionKey) {
         let keychain = KeychainSwift()
         keychain.accessGroup = keychainAccessGroup
         keychain.synchronizable = true
-        
+
         if keychain.get(connectionKey.connectionId.uuidString) != nil {
             keychain.delete(connectionKey.connectionId.uuidString)
         }
-        
+
         modelContext.delete(connectionKey)
-        
+
         try? modelContext.save()
     }
 }
@@ -58,11 +58,11 @@ struct ConnectedConnectionCell: View {
 struct ConnectionsView: View {
     @Query(sort: \ConnectionKey.createdAt, order: .reverse) private var connectionKeys: [ConnectionKey]
     @State private var showingAddConnection = false
-    
+
     var body: some View {
         Form {
             Section("Enabled Connections") {
-                if (connectionKeys.isEmpty) {
+                if connectionKeys.isEmpty {
                     Text("Tap the 'Add Connection' button to add one.")
                 } else {
                     ForEach(connectionKeys) { connectionKey in

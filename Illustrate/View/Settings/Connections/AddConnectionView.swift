@@ -1,5 +1,5 @@
-import SwiftUI
 import KeychainSwift
+import SwiftUI
 
 struct AddConnectionView: View {
     @Environment(\.modelContext) private var modelContext
@@ -7,7 +7,7 @@ struct AddConnectionView: View {
     @State var connectionKeys: [ConnectionKey]
     @State private var selectedConnection: Connection?
     @State private var keyValue: String = ""
-    
+
     private var availableConnections: [Connection] {
         connections.filter { connection in
             !connectionKeys.contains { connectionKey in
@@ -15,7 +15,7 @@ struct AddConnectionView: View {
             }
         }
     }
-    
+
     var body: some View {
         NavigationStack {
             Form {
@@ -30,7 +30,7 @@ struct AddConnectionView: View {
                         }
                         if selectedConnection!.keyType == EnumConnectionKeyType.JSON {
                             TextField("JSON Key", text: $keyValue, prompt: Text(selectedConnection!.keyPlaceholder), axis: .vertical)
-                                .lineLimit(3...8)
+                                .lineLimit(3 ... 8)
                         } else {
                             TextField("API Key", text: $keyValue, prompt: Text(selectedConnection!.keyPlaceholder))
                         }
@@ -53,67 +53,67 @@ struct AddConnectionView: View {
             #endif
         }
     }
-    
+
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         #if os(macOS)
-        ToolbarItem(placement: .cancellationAction) {
-            Button("Cancel") {
-                DispatchQueue.main.async {
-                    isPresented = false
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") {
+                    DispatchQueue.main.async {
+                        isPresented = false
+                    }
                 }
             }
-        }
-        ToolbarItem(placement: .confirmationAction) {
-            Button("Save") {
-                addConnectionKey()
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save") {
+                    addConnectionKey()
+                }
+                .disabled(selectedConnection == nil || keyValue.isEmpty)
             }
-            .disabled(selectedConnection == nil || keyValue.isEmpty)
-        }
         #else
-        ToolbarItem(placement: .navigationBarLeading) {
-            Button("Cancel") {
-                DispatchQueue.main.async {
-                    isPresented = false
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Cancel") {
+                    DispatchQueue.main.async {
+                        isPresented = false
+                    }
                 }
             }
-        }
-        ToolbarItem(placement: .navigationBarTrailing) {
-            Button("Save") {
-                addConnectionKey()
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Save") {
+                    addConnectionKey()
+                }
+                .disabled(selectedConnection == nil || keyValue.isEmpty)
             }
-            .disabled(selectedConnection == nil || keyValue.isEmpty)
-        }
         #endif
     }
-    
+
     private func addConnectionKey() {
         guard let selectedConnection else { return }
-        
+
         let keychain = KeychainSwift()
         keychain.accessGroup = keychainAccessGroup
         keychain.synchronizable = true
-        
+
         if keychain.get(selectedConnection.connectionId.uuidString) != nil {
             keychain.delete(selectedConnection.connectionId.uuidString)
         }
-        
+
         if keychain.set(keyValue, forKey: selectedConnection.connectionId.uuidString) {
             let newKey = ConnectionKey(
                 connectionId: selectedConnection.connectionId,
                 creditCurrency: selectedConnection.creditCurrency
             )
-            
+
             modelContext.insert(newKey)
             try? modelContext.save()
         } else {
             print("Failed to save key.")
-            
+
             if keychain.lastResultCode != noErr {
                 print("Keychain error: \(keychain.lastResultCode)")
             }
         }
-        
+
         DispatchQueue.main.async {
             isPresented = false
         }

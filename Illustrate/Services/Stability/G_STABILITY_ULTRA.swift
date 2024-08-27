@@ -1,7 +1,7 @@
 import Foundation
 
 class G_STABILITY_ULTRA: ImageGenerationProtocol {
-    func getCreditsUsed(request: ImageGenerationRequest) -> Double {
+    func getCreditsUsed(request _: ImageGenerationRequest) -> Double {
         return 8.0
     }
 
@@ -13,13 +13,13 @@ class G_STABILITY_ULTRA: ImageGenerationProtocol {
         let style_preset: String?
         let negative_prompt: String?
         let user: String
-        
+
         init(prompt: String, aspectRatio: String, stylePreset: String?, negativePrompt: String?) {
             self.prompt = prompt
-            self.aspect_ratio = aspectRatio
-            self.style_preset = stylePreset
-            self.negative_prompt = negativePrompt
-            self.user = "illustrate_user"
+            aspect_ratio = aspectRatio
+            style_preset = stylePreset
+            negative_prompt = negativePrompt
+            user = "illustrate_user"
         }
     }
 
@@ -87,7 +87,7 @@ class G_STABILITY_ULTRA: ImageGenerationProtocol {
 
     func transformResponse(request: ImageGenerationRequest, response: NetworkResponseData) throws -> ImageGenerationResponse {
         switch response {
-        case .dictionary(_, let data):
+        case let .dictionary(_, data):
             if let imageData = data["image"] as? String {
                 return ImageGenerationResponse(
                     status: .GENERATED,
@@ -95,41 +95,40 @@ class G_STABILITY_ULTRA: ImageGenerationProtocol {
                     cost: getCreditsUsed(request: request),
                     modelPrompt: request.prompt
                 )
-            }
-            else if let errors = data["errors"] as? [String],
-                let message = errors.first {
+            } else if let errors = data["errors"] as? [String],
+                      let message = errors.first
+            {
+                return ImageGenerationResponse(
+                    status: .FAILED,
+                    errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+                    errorMessage: message
+                )
+            } else if let message = data["message"] as? String {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
                     errorMessage: message
                 )
             }
-            else if let message = data["message"] as? String {
-                return ImageGenerationResponse(
-                    status: .FAILED,
-                    errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
-                    errorMessage: message
-                )
-            }
-        case .array(_, let data):
+        case let .array(_, data):
             if let firstDict = data.first,
-               let imageData = firstDict["image"] as? String {
+               let imageData = firstDict["image"] as? String
+            {
                 return ImageGenerationResponse(
                     status: .GENERATED,
                     base64: imageData,
                     cost: getCreditsUsed(request: request),
                     modelPrompt: request.prompt
                 )
-            }
-            else if let errors = data.first?["errors"] as? [String],
-                let message = errors.first {
+            } else if let errors = data.first?["errors"] as? [String],
+                      let message = errors.first
+            {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
                     errorMessage: message
                 )
-            }
-            else if let message = data.first?["message"] as? String {
+            } else if let message = data.first?["message"] as? String {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
@@ -170,7 +169,7 @@ class G_STABILITY_ULTRA: ImageGenerationProtocol {
                 headers: [
                     "Authorization": "\(request.connectionSecret)",
                     "Content-Type": "multipart/form-data",
-                    "Accept": "application/json"
+                    "Accept": "application/json",
                 ]
             )
 

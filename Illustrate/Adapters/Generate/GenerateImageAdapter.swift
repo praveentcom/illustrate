@@ -1,5 +1,5 @@
-import Foundation
 import CloudKit
+import Foundation
 import SwiftData
 
 enum EnumGenerateImageAdapterErrorCode: String, Codable {
@@ -21,9 +21,9 @@ struct ImageGenerationRequest: Codable {
     var prompt: String
     var searchPrompt: String?
     var negativePrompt: String?
-    var artVariant: EnumArtVariant = EnumArtVariant.NORMAL
-    var artQuality: EnumArtQuality = EnumArtQuality.HD
-    var artStyle: EnumArtStyle = EnumArtStyle.VIVID
+    var artVariant: EnumArtVariant = .NORMAL
+    var artQuality: EnumArtQuality = .HD
+    var artStyle: EnumArtStyle = .VIVID
     var artDimensions: String
     var clientImage: String?
     var clientMask: String?
@@ -55,9 +55,9 @@ struct ImageSetResponse: Codable {
 
 protocol ImageGenerationProtocol {
     var model: ConnectionModel { get }
-    
+
     associatedtype ServiceRequest
-    
+
     func transformRequest(request: ImageGenerationRequest) -> ServiceRequest
     func transformResponse(request: ImageGenerationRequest, response: NetworkResponseData) throws -> ImageGenerationResponse
     func getCreditsUsed(request: ImageGenerationRequest) -> Double
@@ -66,10 +66,10 @@ protocol ImageGenerationProtocol {
 
 func getImageGenerationAdapter(imageGenerationRequest: ImageGenerationRequest) throws -> any ImageGenerationProtocol {
     let model = connectionModels.first(where: { $0.modelId.uuidString == imageGenerationRequest.modelId })
-    if (model == nil) {
+    if model == nil {
         throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
     }
-    
+
     switch model!.modelCode {
     case EnumConnectionModelCode.OPENAI_DALLE3:
         return G_OPENAI_DALLE3()
@@ -121,72 +121,72 @@ func getImageGenerationAdapter(imageGenerationRequest: ImageGenerationRequest) t
 class GenerateImageAdapter {
     let imageGenerationRequest: ImageGenerationRequest
     let modelContext: ModelContext
-    
+
     init(imageGenerationRequest: ImageGenerationRequest, modelContext: ModelContext) {
         self.imageGenerationRequest = imageGenerationRequest
         self.modelContext = modelContext
     }
-    
+
     func atomicRequest(imageGenerationRequest: ImageGenerationRequest, generationAdapter: any ImageGenerationProtocol) async -> ImageGenerationResponse {
         do {
             let generation = try await generationAdapter.makeRequest(request: imageGenerationRequest)
-            if (generation.base64 == nil) {
+            if generation.base64 == nil {
                 return ImageGenerationResponse(
                     status: EnumGenerationStatus.FAILED,
                     errorCode: generation.errorCode != nil ? generation.errorCode : EnumGenerateImageAdapterErrorCode.GENERATOR_ERROR,
                     errorMessage: generation.errorMessage != nil ? generation.errorMessage : "Failed with unknown error"
                 )
             }
-            
+
             if let imageData = Data(base64Encoded: generation.base64!) {
                 let uuid = UUID()
                 let image: PlatformImage? = toPlatformImage(base64: generation.base64!)
                 image?.saveToiCloud(fileName: uuid.uuidString)
-                
+
                 let fileUrl: URL? = saveImageToDocumentsDirectory(imageData: imageData, withName: uuid.uuidString)
-                if (fileUrl != nil && image != nil) {
+                if fileUrl != nil && image != nil {
                     let optimised50 = image!.resizeImage(scale: 0.50)
-                    if (optimised50 != nil) {
+                    if optimised50 != nil {
                         if let optimised50Data = Data(base64Encoded: optimised50!) {
                             _ = saveImageToDocumentsDirectory(imageData: optimised50Data, withName: ".\(uuid)_o50")
                             toPlatformImage(base64: optimised50!)?.saveToiCloud(fileName: ".\(uuid)_o50")
                         }
                     }
-                    
+
                     let optimised20 = image!.resizeImage(scale: 0.20)
-                    if (optimised20 != nil) {
+                    if optimised20 != nil {
                         if let optimised20Data = Data(base64Encoded: optimised20!) {
                             _ = saveImageToDocumentsDirectory(imageData: optimised20Data, withName: ".\(uuid)_o20")
                             toPlatformImage(base64: optimised20!)?.saveToiCloud(fileName: ".\(uuid)_o20")
                         }
                     }
-                    
+
                     let optimised04 = image!.resizeImage(scale: 0.04)
-                    if (optimised04 != nil) {
+                    if optimised04 != nil {
                         if let optimised04Data = Data(base64Encoded: optimised04!) {
                             _ = saveImageToDocumentsDirectory(imageData: optimised04Data, withName: ".\(uuid)_o04")
                             toPlatformImage(base64: optimised04!)?.saveToiCloud(fileName: ".\(uuid)_o04")
                         }
                     }
-                    
+
                     // Save client image
-                    if (imageGenerationRequest.clientImage != nil) {
+                    if imageGenerationRequest.clientImage != nil {
                         let _: URL? = saveImageToDocumentsDirectory(
                             imageData: Data(base64Encoded: imageGenerationRequest.clientImage!)!,
                             withName: ".\(uuid)_client"
                         )
                         toPlatformImage(base64: imageGenerationRequest.clientImage!)?.saveToiCloud(fileName: ".\(uuid)_client")
                     }
-                    
+
                     // Save client mask
-                    if (imageGenerationRequest.clientMask != nil) {
+                    if imageGenerationRequest.clientMask != nil {
                         let _: URL? = saveImageToDocumentsDirectory(
                             imageData: Data(base64Encoded: imageGenerationRequest.clientMask!)!,
                             withName: ".\(uuid)_mask"
                         )
                         toPlatformImage(base64: imageGenerationRequest.clientMask!)?.saveToiCloud(fileName: ".\(uuid)_mask")
                     }
-                    
+
                     return ImageGenerationResponse(
                         generationId: uuid,
                         status: EnumGenerationStatus.GENERATED,
@@ -222,35 +222,35 @@ class GenerateImageAdapter {
     func makeRequest() async -> ImageSetResponse {
         do {
             let generationAdapter: any ImageGenerationProtocol = try getImageGenerationAdapter(imageGenerationRequest: imageGenerationRequest)
-            
+
             var imageGenerationResponses: [ImageGenerationResponse] = []
             await withTaskGroup(of: ImageGenerationResponse?.self) { group in
-                for _ in 0..<imageGenerationRequest.numberOfImages {
+                for _ in 0 ..< imageGenerationRequest.numberOfImages {
                     group.addTask {
-                        return await self.atomicRequest(
+                        await self.atomicRequest(
                             imageGenerationRequest: self.imageGenerationRequest,
                             generationAdapter: generationAdapter
                         )
                     }
                 }
-                
+
                 for await generation in group {
                     if let generation = generation {
                         imageGenerationResponses.append(generation)
                     }
                 }
             }
-            
-            if (imageGenerationResponses.isEmpty) {
+
+            if imageGenerationResponses.isEmpty {
                 return ImageSetResponse(
                     status: EnumGenerationStatus.FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.GENERATOR_ERROR,
                     errorMessage: "No generation was successful"
                 )
             }
-            
+
             for generation in imageGenerationResponses {
-                if (generation.status == EnumGenerationStatus.FAILED || generation.generationId == nil) {
+                if generation.status == EnumGenerationStatus.FAILED || generation.generationId == nil {
                     return ImageSetResponse(
                         status: EnumGenerationStatus.FAILED,
                         errorCode: generation.errorCode ?? EnumGenerateImageAdapterErrorCode.GENERATOR_ERROR,
@@ -258,10 +258,10 @@ class GenerateImageAdapter {
                     )
                 }
             }
-            
+
             let usedModel = connectionModels.first(where: { $0.modelId.uuidString == imageGenerationRequest.modelId })
-            
-            let set: ImageSet = ImageSet(
+
+            let set: ImageSet = .init(
                 prompt: imageGenerationRequest.prompt,
                 modelId: imageGenerationRequest.modelId,
                 artStyle: imageGenerationRequest.artStyle,
@@ -271,10 +271,10 @@ class GenerateImageAdapter {
                 negativePrompt: imageGenerationRequest.negativePrompt,
                 searchPrompt: nil
             )
-            
+
             modelContext.insert(set)
             try? modelContext.save()
-            
+
             let generations: [Generation] = imageGenerationResponses.map { generation in
                 let generation = Generation(
                     id: generation.generationId!,
@@ -298,19 +298,19 @@ class GenerateImageAdapter {
                     searchPrompt: nil,
                     contentType: EnumGenerationContentType.IMAGE_2D
                 )
-            
+
                 modelContext.insert(generation)
                 return generation
             }
-            
+
             try? modelContext.save()
-            
+
             return ImageSetResponse(
                 status: EnumGenerationStatus.GENERATED,
                 set: set,
                 generations: generations
             )
-            
+
         } catch {
             return ImageSetResponse(
                 status: EnumGenerationStatus.FAILED,
@@ -319,5 +319,4 @@ class GenerateImageAdapter {
             )
         }
     }
-
 }

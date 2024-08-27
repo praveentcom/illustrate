@@ -17,10 +17,10 @@ struct SectionKeyValueView<T: View>: View {
 
         if let customValueView = customValueView {
             self.customValueView = customValueView
-            self.useCustomValueView = true
+            useCustomValueView = true
         } else {
             self.customValueView = EmptyView() as! T
-            self.useCustomValueView = false
+            useCustomValueView = false
         }
     }
 
@@ -30,52 +30,52 @@ struct SectionKeyValueView<T: View>: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-#if os(iOS)
+            #if os(iOS)
 
-            HStack (alignment: .top) {
-                if let icon = icon {
-                    Image(systemName: icon)
-                        .font(.body)
-                        .foregroundStyle(Color(UIColor.secondaryLabel))
-                        .padding(.top, 4)
+                HStack(alignment: .top) {
+                    if let icon = icon {
+                        Image(systemName: icon)
+                            .font(.body)
+                            .foregroundStyle(Color(UIColor.secondaryLabel))
+                            .padding(.top, 4)
+                    }
+                    VStack(alignment: .leading) {
+                        Text(key)
+                            .font(.body)
+                            .multilineTextAlignment(.leading)
+                            .foregroundStyle(Color(UIColor.secondaryLabel))
+                        if useCustomValueView {
+                            customValueView
+                        } else {
+                            Text(value)
+                                .font(.body)
+                                .monospaced(monospaced ?? false)
+                        }
+                    }
+                    Spacer()
                 }
-                VStack(alignment: .leading) {
+            #else
+                HStack(alignment: .center) {
+                    if let icon = icon {
+                        Image(systemName: icon)
+                            .font(.body)
+                            .foregroundStyle(Color(NSColor.secondaryLabelColor))
+                    }
                     Text(key)
                         .font(.body)
                         .multilineTextAlignment(.leading)
-                        .foregroundStyle(Color(UIColor.secondaryLabel))
+                        .foregroundStyle(Color(NSColor.secondaryLabelColor))
+                    Spacer()
                     if useCustomValueView {
                         customValueView
                     } else {
                         Text(value)
                             .font(.body)
+                            .multilineTextAlignment(.trailing)
                             .monospaced(monospaced ?? false)
                     }
                 }
-                Spacer()
-            }
-#else
-            HStack (alignment: .center) {
-                if let icon = icon {
-                    Image(systemName: icon)
-                        .font(.body)
-                        .foregroundStyle(Color(NSColor.secondaryLabelColor))
-                }
-                Text(key)
-                    .font(.body)
-                    .multilineTextAlignment(.leading)
-                    .foregroundStyle(Color(NSColor.secondaryLabelColor))
-                Spacer()
-                if useCustomValueView {
-                    customValueView
-                } else {
-                    Text(value)
-                        .font(.body)
-                        .multilineTextAlignment(.trailing)
-                        .monospaced(monospaced ?? false)
-                }
-            }
-#endif
+            #endif
         }
     }
 }

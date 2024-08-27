@@ -13,7 +13,7 @@ final class ConnectionKey: Codable {
         case creditUsed
         case totalRequests
     }
-    
+
     var connectionId: UUID = UUID()
     var createdAt: Date = Date()
     var active: Bool = true
@@ -29,7 +29,7 @@ final class ConnectionKey: Codable {
         self.creditUsed = creditUsed
         self.totalRequests = totalRequests
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(connectionId, forKey: .connectionId)
@@ -39,7 +39,7 @@ final class ConnectionKey: Codable {
         try container.encode(creditUsed, forKey: .creditUsed)
         try container.encode(totalRequests, forKey: .totalRequests)
     }
-    
+
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         connectionId = try container.decode(UUID.self, forKey: .connectionId)

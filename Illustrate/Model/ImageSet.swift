@@ -1,10 +1,10 @@
-import SwiftData
 import CloudKit
+import SwiftData
 import SwiftUI
 
 enum EnumSetType: String, Codable, CaseIterable, Identifiable {
-    var id : String { UUID().uuidString }
-    
+    var id: String { UUID().uuidString }
+
     case GENERATE
     case EDIT_UPSCALE
     case EDIT_EXPAND
@@ -125,7 +125,7 @@ class ImageSet: Identifiable, Codable {
         case negativePrompt
         case searchPrompt
     }
-    
+
     var id: UUID = UUID()
     var createdAt: Date = Date()
     var prompt: String = ""
@@ -139,10 +139,10 @@ class ImageSet: Identifiable, Codable {
     var searchPrompt: String? = nil
 
     init(prompt: String, modelId: String, artStyle: EnumArtStyle = EnumArtStyle.NATURAL, artVariant: EnumArtVariant = EnumArtVariant.NORMAL, artDimensions: String, setType: EnumSetType, negativePrompt: String? = nil, searchPrompt: String? = nil) {
-        self.id = UUID()
-        self.createdAt = Date()
+        id = UUID()
+        createdAt = Date()
         self.prompt = prompt
-        self.starred = false
+        starred = false
         self.modelId = modelId
         self.artStyle = artStyle
         self.artVariant = artVariant
@@ -151,7 +151,7 @@ class ImageSet: Identifiable, Codable {
         self.negativePrompt = negativePrompt
         self.searchPrompt = searchPrompt
     }
-    
+
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
@@ -166,7 +166,7 @@ class ImageSet: Identifiable, Codable {
         negativePrompt = try container.decodeIfPresent(String.self, forKey: .negativePrompt)
         searchPrompt = try container.decodeIfPresent(String.self, forKey: .searchPrompt)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)

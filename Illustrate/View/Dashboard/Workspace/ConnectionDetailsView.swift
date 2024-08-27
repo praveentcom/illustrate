@@ -3,7 +3,7 @@ import SwiftUI
 struct ConnectionDetailsView: View {
     @Binding var isPresented: Bool
     @State var selectedConnection: Connection
-    
+
     var body: some View {
         Form {
             Section("Details") {
@@ -17,32 +17,30 @@ struct ConnectionDetailsView: View {
             }
             Section("Available Models") {
                 ForEach(EnumSetType.allCases, id: \.self) { set in
-                    let models = connectionModels.filter({ $0.modelSetType == set && $0.connectionId == selectedConnection.connectionId })
+                    let models = connectionModels.filter { $0.modelSetType == set && $0.connectionId == selectedConnection.connectionId }
                     if !models.isEmpty {
                         SectionKeyValueView(
                             icon: iconForSetType(set),
                             key: labelForSetType(set),
-                            value: models.map({ $0.modelName }).joined(separator: ", ")
+                            value: models.map { $0.modelName }.joined(separator: ", ")
                         )
                     }
                 }
             }
         }
         .formStyle(.grouped)
-#if os(macOS)
-        .toolbar {
-           
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Dismiss") {
-                    DispatchQueue.main.async {
-                        isPresented = false
+        #if os(macOS)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Dismiss") {
+                        DispatchQueue.main.async {
+                            isPresented = false
+                        }
                     }
                 }
             }
-            
-        }
-        .frame(width: 480)
-        .fixedSize()
-#endif
+            .frame(width: 480)
+            .fixedSize()
+        #endif
     }
 }

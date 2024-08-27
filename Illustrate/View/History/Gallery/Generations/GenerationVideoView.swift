@@ -1,84 +1,84 @@
-import SwiftUI
-import SwiftData
-import UniformTypeIdentifiers
-import AVKit
 import AVFoundation
+import AVKit
+import SwiftData
+import SwiftUI
+import UniformTypeIdentifiers
 
 #if os(macOS)
-import AppKit
+    import AppKit
 #else
-import UIKit
+    import UIKit
 
-struct VideoFileDocument: FileDocument {
-    static var readableContentTypes: [UTType] { [.movie] }
-    
-    var url: URL?
-    
-    init(url: URL?) {
-        self.url = url
-    }
-    
-    init(configuration: ReadConfiguration) throws {
-        self.url = URL(fileURLWithPath: "")
-    }
-    
-    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
-        let data = try Data(contentsOf: url!)
-        return FileWrapper(regularFileWithContents: data)
-    }
-}
+    struct VideoFileDocument: FileDocument {
+        static var readableContentTypes: [UTType] { [.movie] }
 
-struct VideoShareSheet: UIViewControllerRepresentable {
-    var activityItems: [Any]
-    var applicationActivities: [UIActivity]? = nil
+        var url: URL?
 
-    func makeUIViewController(context: UIViewControllerRepresentableContext<VideoShareSheet>) -> UIActivityViewController {
-        return UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
+        init(url: URL?) {
+            self.url = url
+        }
+
+        init(configuration _: ReadConfiguration) throws {
+            url = URL(fileURLWithPath: "")
+        }
+
+        func fileWrapper(configuration _: WriteConfiguration) throws -> FileWrapper {
+            let data = try Data(contentsOf: url!)
+            return FileWrapper(regularFileWithContents: data)
+        }
     }
 
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: UIViewControllerRepresentableContext<VideoShareSheet>) {}
-}
+    struct VideoShareSheet: UIViewControllerRepresentable {
+        var activityItems: [Any]
+        var applicationActivities: [UIActivity]? = nil
+
+        func makeUIViewController(context _: UIViewControllerRepresentableContext<VideoShareSheet>) -> UIActivityViewController {
+            return UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
+        }
+
+        func updateUIViewController(_: UIActivityViewController, context _: UIViewControllerRepresentableContext<VideoShareSheet>) {}
+    }
 #endif
 
 struct GenerationVideoView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.presentationMode) private var presentationMode
-    
+
     @State var setId: UUID
     @State private var imageSet: ImageSet?
     @State private var generations: [Generation] = []
     @State private var generationIndex: Int = 0
-    
+
     @State private var showMask: Bool = false
     @State private var showDeleteConfirmation = false
     @State private var showDocumentPicker = false
     @State private var showShareSheet = false
-    
+
     func getSelectedGeneration() -> Generation? {
         if generationIndex >= 0 && generationIndex < generations.count {
             return generations[generationIndex]
         }
-        
+
         return nil
     }
-    
-    func deleteImageSet() async -> Void {
+
+    func deleteImageSet() async {
         modelContext.delete(imageSet!)
         for generation in generations {
             modelContext.delete(generation)
-            
+
             deleteICloudDocuments(containingSubstring: generation.id.uuidString)
         }
         try? modelContext.save()
-        
+
         DispatchQueue.main.async {
             presentationMode.wrappedValue.dismiss()
         }
     }
-    
+
     var body: some View {
         Form {
-            if (getSelectedGeneration() != nil || imageSet != nil) {                
+            if getSelectedGeneration() != nil || imageSet != nil {
                 Section {
                     ZStack {
                         if let colorPalette = getSelectedGeneration()?.colorPalette {
@@ -86,83 +86,83 @@ struct GenerationVideoView: View {
                                 Color(getUniversalColorFromHex(hexString: hex))
                             })
                         }
-                        
-                        HStack (spacing: 16) {
-#if os(macOS)
-                            ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_client") { requestImage in
-                                if let requestImage = requestImage {
-                                    ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_mask") { maskImage in
-                                        VStack (spacing: 16) {
-                                            Image(nsImage: requestImage)
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fit)
-                                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                                                .frame(maxHeight: 400)
-                                                .overlay {
-                                                    if (showMask && maskImage != nil) {
-                                                        MaskView(maskImage: maskImage!)
+
+                        HStack(spacing: 16) {
+                            #if os(macOS)
+                                ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_client") { requestImage in
+                                    if let requestImage = requestImage {
+                                        ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_mask") { maskImage in
+                                            VStack(spacing: 16) {
+                                                Image(nsImage: requestImage)
+                                                    .resizable()
+                                                    .aspectRatio(contentMode: .fit)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                                    .frame(maxHeight: 400)
+                                                    .overlay {
+                                                        if showMask && maskImage != nil {
+                                                            MaskView(maskImage: maskImage!)
+                                                        }
                                                     }
-                                                }
-                                                .shadow(color: .black.opacity(0.4), radius: 8)
-                                                .frame(maxWidth: .infinity)
-                                            HStack (spacing: 8) {
-                                                HStack {
-                                                    Image(systemName: "info.circle")
-                                                    Text("Request Image")
-                                                }
-                                                .padding(.vertical, 4)
-                                                .padding(.horizontal, 8)
-                                                .background(.thinMaterial)
-                                                .cornerRadius(8)
-                                                if (maskImage != nil) {
-                                                    Toggle(isOn: $showMask) {
-                                                        Text("Show Mask")
-                                                    }
-                                                    .toggleStyle(IllustrateToggleStyle())
-                                                    .padding(.vertical, 4)
-                                                    .padding(.horizontal, 8)
-                                                    .background(.thinMaterial)
-                                                    .cornerRadius(8)
-                                                }
-                                            }
-                                        }
-                                    }
-                                    .id("mask_\(getSelectedGeneration()!.id.uuidString)")
-                                }
-                            }
-                            .id("client_\(getSelectedGeneration()!.id.uuidString)")
-#endif
-                            
-                            ICloudVideoLoader(videoName: "\(getSelectedGeneration()!.id.uuidString)") { videoUrl in
-                                if let videoUrl = videoUrl {
-                                    VStack (spacing: 16) {
-#if os(macOS)
-                                        VideoPlayer(player: AVPlayer(url: videoUrl))
-                                            .frame(maxHeight: 400)
-                                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                                            .shadow(color: .black.opacity(0.4), radius: 8)
-                                            .frame(maxWidth: .infinity)
-                                        ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_client") { requestImage in
-                                            ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_mask") { maskImage in
-                                                if (requestImage != nil || maskImage != nil) {
+                                                    .shadow(color: .black.opacity(0.4), radius: 8)
+                                                    .frame(maxWidth: .infinity)
+                                                HStack(spacing: 8) {
                                                     HStack {
                                                         Image(systemName: "info.circle")
-                                                        Text("Generated Video")
+                                                        Text("Request Image")
                                                     }
                                                     .padding(.vertical, 4)
                                                     .padding(.horizontal, 8)
                                                     .background(.thinMaterial)
                                                     .cornerRadius(8)
+                                                    if maskImage != nil {
+                                                        Toggle(isOn: $showMask) {
+                                                            Text("Show Mask")
+                                                        }
+                                                        .toggleStyle(IllustrateToggleStyle())
+                                                        .padding(.vertical, 4)
+                                                        .padding(.horizontal, 8)
+                                                        .background(.thinMaterial)
+                                                        .cornerRadius(8)
+                                                    }
                                                 }
                                             }
-                                            .id("video_mask_\(getSelectedGeneration()!.id.uuidString)")
                                         }
-                                        .id("video_client_\(getSelectedGeneration()!.id.uuidString)")
-#else
-                                        VideoPlayer(player: AVPlayer(url: videoUrl))
-                                            .aspectRatio(contentMode: .fill)
-                                            .clipShape(RoundedRectangle(cornerRadius: 8))
-#endif
+                                        .id("mask_\(getSelectedGeneration()!.id.uuidString)")
+                                    }
+                                }
+                                .id("client_\(getSelectedGeneration()!.id.uuidString)")
+                            #endif
+
+                            ICloudVideoLoader(videoName: "\(getSelectedGeneration()!.id.uuidString)") { videoUrl in
+                                if let videoUrl = videoUrl {
+                                    VStack(spacing: 16) {
+                                        #if os(macOS)
+                                            VideoPlayer(player: AVPlayer(url: videoUrl))
+                                                .frame(maxHeight: 400)
+                                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                                .shadow(color: .black.opacity(0.4), radius: 8)
+                                                .frame(maxWidth: .infinity)
+                                            ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_client") { requestImage in
+                                                ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_mask") { maskImage in
+                                                    if requestImage != nil || maskImage != nil {
+                                                        HStack {
+                                                            Image(systemName: "info.circle")
+                                                            Text("Generated Video")
+                                                        }
+                                                        .padding(.vertical, 4)
+                                                        .padding(.horizontal, 8)
+                                                        .background(.thinMaterial)
+                                                        .cornerRadius(8)
+                                                    }
+                                                }
+                                                .id("video_mask_\(getSelectedGeneration()!.id.uuidString)")
+                                            }
+                                            .id("video_client_\(getSelectedGeneration()!.id.uuidString)")
+                                        #else
+                                            VideoPlayer(player: AVPlayer(url: videoUrl))
+                                                .aspectRatio(contentMode: .fill)
+                                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        #endif
                                     }
                                 }
                             }
@@ -170,10 +170,10 @@ struct GenerationVideoView: View {
                         }
                         .padding(.vertical, 8)
                     }
-                    
+
                     if generations.count > 1 {
                         Picker("Select Video", selection: $generationIndex) {
-                            ForEach(0..<generations.count, id: \.self) { index in
+                            ForEach(0 ..< generations.count, id: \.self) { index in
                                 Text("\(index + 1)").tag(index)
                             }
                         }
@@ -181,22 +181,25 @@ struct GenerationVideoView: View {
                         .padding()
                     }
                 }
-                
+
                 if let prompt = getSelectedGeneration()?.prompt,
-                   !prompt.isEmpty {
+                   !prompt.isEmpty
+                {
                     Section("User Prompts") {
                         SectionKeyValueView(icon: "text.quote", key: "Requested Prompt", value: prompt)
                         if let negativePrompt = getSelectedGeneration()?.negativePrompt,
-                           !negativePrompt.isEmpty {
+                           !negativePrompt.isEmpty
+                        {
                             SectionKeyValueView(icon: "text.badge.minus", key: "Negative Prompt", value: negativePrompt)
                         }
                         if let searchPrompt = getSelectedGeneration()?.searchPrompt,
-                           !searchPrompt.isEmpty {
+                           !searchPrompt.isEmpty
+                        {
                             SectionKeyValueView(icon: "rectangle.and.text.magnifyingglass", key: "Search Prompt", value: searchPrompt)
                         }
                     }
                 }
-                
+
                 Section("Model Response") {
                     if let connection = getConnection(modelId: getSelectedGeneration()!.modelId) {
                         SectionKeyValueView(
@@ -218,26 +221,29 @@ struct GenerationVideoView: View {
                     if let promptEnhanceOpted = getSelectedGeneration()?.promptEnhanceOpted,
                        let promptAfterEnhance = getSelectedGeneration()?.promptAfterEnhance,
                        !promptAfterEnhance.isEmpty,
-                       promptEnhanceOpted {
+                       promptEnhanceOpted
+                    {
                         SectionKeyValueView(icon: "text.quote", key: "Enhanced Prompt", value: getSelectedGeneration()!.promptAfterEnhance)
                     }
                     if let modelRevisedPrompt = getSelectedGeneration()?.modelRevisedPrompt,
-                       !modelRevisedPrompt.isEmpty {
+                       !modelRevisedPrompt.isEmpty
+                    {
                         SectionKeyValueView(icon: "text.quote", key: "Response Prompt", value: modelRevisedPrompt)
                     }
                     SectionKeyValueView(icon: "dollarsign", key: "Cost", value: "\(String(format: "%.3f", getSelectedGeneration()!.creditUsed).replacingOccurrences(of: ".000", with: "")) \(getConnection(modelId: getSelectedGeneration()!.modelId)?.creditCurrency.rawValue ?? "Credits")")
                 }
-                
+
                 Section("Video Metadata") {
                     SectionKeyValueView(
                         icon: "aspectratio.fill",
                         key: "Image Dimensions",
                         value: getSelectedGeneration()!.artDimensions.replacingOccurrences(of: "x", with: " x "),
-                        monospaced: true)
+                        monospaced: true
+                    )
                     SectionKeyValueView(
                         icon: "internaldrive.fill",
                         key: "Video Size",
-                        value: String(format: "%.2f MB", Double(getSelectedGeneration()!.size) / 1000000.0),
+                        value: String(format: "%.2f MB", Double(getSelectedGeneration()!.size) / 1_000_000.0),
                         monospaced: true
                     )
                     SectionKeyValueView(icon: "paintpalette.fill", key: "Color Style", value: getSelectedGeneration()!.artStyle.rawValue)
@@ -261,18 +267,18 @@ struct GenerationVideoView: View {
         }
         .formStyle(.grouped)
         .toolbar {
-            if (imageSet != nil) {
+            if imageSet != nil {
                 ToolbarItem(placement: .automatic) {
                     Button("Download", systemImage: "arrow.down") {
                         let videoURL: URL? = loadVideoFromiCloud("\(getSelectedGeneration()!.id.uuidString)")
                         if let videoURL = videoURL {
                             Task {
                                 #if os(macOS)
-                                saveVideoToDownloads(url: videoURL, fileName: "\(getSelectedGeneration()!.id.uuidString)")
+                                    saveVideoToDownloads(url: videoURL, fileName: "\(getSelectedGeneration()!.id.uuidString)")
                                 #else
-                                DispatchQueue.main.async {
-                                    showDocumentPicker = true
-                                }
+                                    DispatchQueue.main.async {
+                                        showDocumentPicker = true
+                                    }
                                 #endif
                             }
                         }
@@ -284,11 +290,11 @@ struct GenerationVideoView: View {
                         if let videoURL = videoURL {
                             Task {
                                 #if os(macOS)
-                                shareVideo(url: videoURL)
+                                    shareVideo(url: videoURL)
                                 #else
-                                DispatchQueue.main.async {
-                                    showShareSheet = true
-                                }
+                                    DispatchQueue.main.async {
+                                        showShareSheet = true
+                                    }
                                 #endif
                             }
                         }
@@ -313,14 +319,14 @@ struct GenerationVideoView: View {
             defaultFilename: "illustrate_\(getSelectedGeneration()?.id.uuidString ?? "")"
         ) { result in
             switch result {
-            case .success(let url):
+            case let .success(url):
                 print("Saved to \(url)")
-            case .failure(let error):
+            case let .failure(error):
                 print("Failed to save video: \(error.localizedDescription)")
             }
         }
         .sheet(isPresented: $showShareSheet) {
-            if (imageSet != nil) {
+            if imageSet != nil {
                 let videoURL: URL? = loadVideoFromiCloud("\(getSelectedGeneration()?.id.uuidString ?? "")")
                 if let videoURL = videoURL {
                     VideoShareSheet(activityItems: [videoURL])
@@ -342,7 +348,7 @@ struct GenerationVideoView: View {
         }
         .navigationTitle(labelForItem(.generationVideo(setId: setId)))
     }
-    
+
     private func loadData() {
         let imageSetDescriptor = FetchDescriptor<ImageSet>(predicate: #Predicate { $0.id == setId })
         let generationsDescriptor = FetchDescriptor<Generation>(

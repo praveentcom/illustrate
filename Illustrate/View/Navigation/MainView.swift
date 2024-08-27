@@ -1,6 +1,6 @@
-import SwiftUI
-import SwiftData
 import OnboardingUI
+import SwiftData
+import SwiftUI
 
 struct MainView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
@@ -8,7 +8,7 @@ struct MainView: View {
 
     var body: some View {
         @Bindable var appVersionManager = appVersionManager
-        
+
         if horizontalSizeClass == .compact {
             MobileView()
                 .sheet(isPresented: $appVersionManager.isTheFirstLaunch) {

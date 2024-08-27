@@ -1,23 +1,23 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct OnboardingView: View {
-    @Environment (\.modelContext) private var modelContext
-    
+    @Environment(\.modelContext) private var modelContext
+
     var connectionKeysCount: Int {
         let descriptor = FetchDescriptor<ConnectionKey>()
         let count = (try? modelContext.fetchCount(descriptor)) ?? 0
-        
+
         return count
     }
-    
+
     var generationsCount: Int {
         let descriptor = FetchDescriptor<Generation>()
         let count = (try? modelContext.fetchCount(descriptor)) ?? 0
-        
+
         return count
     }
-    
+
     struct OnboardingChecklist {
         let icon: String
         let label: String
@@ -25,7 +25,7 @@ struct OnboardingView: View {
         let isCompleted: Bool
         let item: EnumNavigationItem
     }
-    
+
     func checklist() -> [OnboardingChecklist] {
         [
             OnboardingChecklist(
@@ -41,18 +41,18 @@ struct OnboardingView: View {
                 subLabel: "Go ahead and generate your first image",
                 isCompleted: generationsCount > 0,
                 item: .generateGenerate
-            )
+            ),
         ]
     }
-    
+
     let columns: [GridItem] = {
         #if os(macOS)
-        return Array(repeating: GridItem(.flexible(), spacing: 8), count: 3)
+            return Array(repeating: GridItem(.flexible(), spacing: 8), count: 3)
         #else
-        return Array(repeating: GridItem(.flexible(), spacing: 12), count: UIDevice.current.userInterfaceIdiom == .pad ? 3 : 1)
+            return Array(repeating: GridItem(.flexible(), spacing: 12), count: UIDevice.current.userInterfaceIdiom == .pad ? 3 : 1)
         #endif
     }()
-    
+
     var body: some View {
         LazyVGrid(columns: columns, spacing: 8) {
             ForEach(checklist(), id: \.item) { checklistItem in

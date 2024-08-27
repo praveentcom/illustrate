@@ -1,10 +1,10 @@
-import SwiftUI
 import Foundation
+import SwiftUI
 
 struct DesktopView: View {
     @State private var selectedItem: EnumNavigationItem? = .dashboardWorkspace
     @State private var desktopNavigationPath = NavigationPath()
-    
+
     var body: some View {
         NavigationSplitView {
             List(selection: $selectedItem) {

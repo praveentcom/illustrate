@@ -1,8 +1,8 @@
 import Foundation
 
 class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
-    func getCreditsUsed(request: ImageGenerationRequest) -> Double {
-        return 0.055;
+    func getCreditsUsed(request _: ImageGenerationRequest) -> Double {
+        return 0.055
     }
 
     let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.REPLICATE_FLUX_PRO })!
@@ -11,11 +11,11 @@ class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
         let prompt: String
         let aspect_ratio: String
         let safety_tolerance: Int
-        
+
         init(prompt: String, aspectRatio: String) {
             self.prompt = prompt
-            self.aspect_ratio = aspectRatio
-            self.safety_tolerance = 5
+            aspect_ratio = aspectRatio
+            safety_tolerance = 5
         }
     }
 
@@ -30,24 +30,25 @@ class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
 
     func transformResponse(request: ImageGenerationRequest, response: NetworkResponseData) throws -> ImageGenerationResponse {
         switch response {
-        case .dictionary(_, let data):
+        case let .dictionary(_, data):
             if let output = data["output"] as? [String],
-               let jpgUrl = output.first {
-                    let url = URL(string: jpgUrl)!
-                    let jpgData = try Data(contentsOf: url)
-                    let base64 = jpgData.base64EncodedString()
-                
-                    return ImageGenerationResponse(
-                        status: .GENERATED,
-                        base64: base64,
-                        cost: getCreditsUsed(request: request)
-                    )
-                }
+               let jpgUrl = output.first
+            {
+                let url = URL(string: jpgUrl)!
+                let jpgData = try Data(contentsOf: url)
+                let base64 = jpgData.base64EncodedString()
+
+                return ImageGenerationResponse(
+                    status: .GENERATED,
+                    base64: base64,
+                    cost: getCreditsUsed(request: request)
+                )
+            }
             if let jpgUrl = data["output"] as? String {
                 let url = URL(string: jpgUrl)!
                 let jpgData = try Data(contentsOf: url)
                 let base64 = jpgData.base64EncodedString()
-            
+
                 return ImageGenerationResponse(
                     status: .GENERATED,
                     base64: base64,
@@ -55,21 +56,21 @@ class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
                 )
             }
             if let errorList = data["error"] as? [String],
-               let error = errorList.first {
-                    return ImageGenerationResponse(
-                        status: .FAILED,
-                        errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
-                        errorMessage: error
-                    )
-                }
+               let error = errorList.first
+            {
+                return ImageGenerationResponse(
+                    status: .FAILED,
+                    errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+                    errorMessage: error
+                )
+            }
             if let error = data["error"] as? String {
-                    return ImageGenerationResponse(
-                        status: .FAILED,
-                        errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
-                        errorMessage: error
-                    )
-                }
-            break;
+                return ImageGenerationResponse(
+                    status: .FAILED,
+                    errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+                    errorMessage: error
+                )
+            }
         default:
             return ImageGenerationResponse(
                 status: .FAILED,
@@ -77,20 +78,20 @@ class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
                 errorMessage: "Invalid response"
             )
         }
-        
+
         return ImageGenerationResponse(
-                status: .FAILED,
-                errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
-                errorMessage: "Invalid response"
-            )
+            status: .FAILED,
+            errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+            errorMessage: "Invalid response"
+        )
     }
-    
+
     func pollForResult(requestId: String, url: URL, headers: [String: String], maxAttempts: Int = 10) async throws -> NetworkResponseData {
         var attempts = 0
         while attempts < maxAttempts {
             print("Polling for result \(requestId) - attempt \(attempts)/\(maxAttempts)...")
             try await Task.sleep(nanoseconds: 4_000_000_000)
-            
+
             do {
                 let response = try await NetworkAdapter.shared.performRequest(
                     url: url.appendingPathComponent("/\(requestId)"),
@@ -98,24 +99,24 @@ class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
                     body: nil as String?,
                     headers: headers
                 )
-                                                
+
                 switch response {
-                case .dictionary(_, let data):
+                case let .dictionary(_, data):
                     if let status = data["status"] as? String,
-                       status == "succeeded" || status == "failed" || status == "canceled" {
-                            return response
-                        }
-                    break;
+                       status == "succeeded" || status == "failed" || status == "canceled"
+                    {
+                        return response
+                    }
                 default:
-                    break;
+                    break
                 }
             } catch {
                 throw NSError(domain: "Polling failed", code: -1, userInfo: nil)
             }
-            
+
             attempts += 1
         }
-        
+
         throw NSError(domain: "Polling exceeded max attempts", code: -1, userInfo: nil)
     }
 
@@ -133,14 +134,14 @@ class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
         do {
             let headers: [String: String] = [
                 "Authorization": "Bearer \(request.connectionSecret)",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             ]
-            
+
             let initialResponse = try await NetworkAdapter.shared.performRequest(
                 url: url,
                 method: "POST",
                 body: [
-                    "input": transformedRequest
+                    "input": transformedRequest,
                 ],
                 headers: headers
             )
@@ -148,7 +149,7 @@ class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
             do {
                 var requestId: String? = nil
                 switch initialResponse {
-                case .dictionary(_, let data):
+                case let .dictionary(_, data):
                     if data["id"] as? String != nil {
                         requestId = data["id"] as? String
                     }
@@ -159,7 +160,7 @@ class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
                         errorMessage: "Unexpected response"
                     )
                 }
-                
+
                 guard let requestId = requestId else {
                     return ImageGenerationResponse(
                         status: .FAILED,
@@ -167,7 +168,7 @@ class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
                         errorMessage: "Failed to initiate request"
                     )
                 }
-                
+
                 guard let statusUrl = URL(string: model.modelStatusBaseURL!) else {
                     return ImageGenerationResponse(
                         status: .FAILED,
@@ -177,7 +178,7 @@ class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
                 }
 
                 let finalResponse = try await pollForResult(requestId: requestId, url: statusUrl, headers: headers)
-                
+
                 return try transformResponse(request: request, response: finalResponse)
             } catch {
                 return ImageGenerationResponse(

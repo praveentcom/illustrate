@@ -1,10 +1,10 @@
-import SwiftData
 import CloudKit
+import SwiftData
 import SwiftUI
 
 enum EnumArtVariant: String, Codable, CaseIterable, Identifiable {
-    var id : String { UUID().uuidString }
-    
+    var id: String { UUID().uuidString }
+
     case NORMAL = "Normal"
     case WATERCOLOR = "Watercolor"
     case OIL_PAINTING = "Oil Painting"
@@ -34,32 +34,32 @@ enum EnumArtVariant: String, Codable, CaseIterable, Identifiable {
     case MODEL_3D = "3D Model"
     case CINEMATIC = "Cinematic"
     case TILE_TEXTURE = "Tile Texture"
-  }
+}
 
 enum EnumArtStyle: String, Codable, CaseIterable, Identifiable {
-    var id : String { UUID().uuidString }
-    
+    var id: String { UUID().uuidString }
+
     case NATURAL = "Natural"
     case VIVID = "Vivid"
 }
 
 enum EnumArtQuality: String, Codable, CaseIterable, Identifiable {
-    var id : String { UUID().uuidString }
-    
-    case HD = "HD"
+    var id: String { UUID().uuidString }
+
+    case HD
     case STANDARD = "Standard"
 }
 
 enum EnumGenerationStatus: String, Codable, CaseIterable, Identifiable {
-    var id : String { UUID().uuidString }
-    
+    var id: String { UUID().uuidString }
+
     case GENERATED
     case FAILED
 }
 
 enum EnumGenerationContentType: String, Codable, CaseIterable, Identifiable {
-    var id : String { UUID().uuidString }
-    
+    var id: String { UUID().uuidString }
+
     case IMAGE_2D
     case VIDEO
     case IMAGE_3D
@@ -90,7 +90,7 @@ class Generation: Identifiable, Codable {
         case searchPrompt
         case contentType
     }
-    
+
     var id: UUID = UUID()
     var setId: UUID = UUID()
     var createdAt: Date = Date()
@@ -113,11 +113,10 @@ class Generation: Identifiable, Codable {
     var searchPrompt: String? = nil
     var contentType: EnumGenerationContentType = EnumGenerationContentType.IMAGE_2D
 
-    init(id: UUID, setId: UUID, modelId: String, prompt: String, promptEnhanceOpted: Bool, promptAfterEnhance: String, artStyle: EnumArtStyle = EnumArtStyle.NATURAL, artVariant: EnumArtVariant = EnumArtVariant.NORMAL, artQuality: EnumArtQuality = EnumArtQuality.HD, artDimensions: String, size: Int, creditUsed: Double, status: EnumGenerationStatus, colorPalette: [String], modelRevisedPrompt: String? = nil, clientImage: String? = nil, clientMask: String? = nil, negativePrompt: String? = nil, searchPrompt: String? = nil, contentType: EnumGenerationContentType = EnumGenerationContentType.IMAGE_2D
-    ) {
+    init(id: UUID, setId: UUID, modelId: String, prompt: String, promptEnhanceOpted: Bool, promptAfterEnhance: String, artStyle: EnumArtStyle = EnumArtStyle.NATURAL, artVariant: EnumArtVariant = EnumArtVariant.NORMAL, artQuality: EnumArtQuality = EnumArtQuality.HD, artDimensions: String, size: Int, creditUsed: Double, status: EnumGenerationStatus, colorPalette: [String], modelRevisedPrompt: String? = nil, clientImage: String? = nil, clientMask: String? = nil, negativePrompt: String? = nil, searchPrompt: String? = nil, contentType: EnumGenerationContentType = EnumGenerationContentType.IMAGE_2D) {
         self.id = id
         self.setId = setId
-        self.createdAt = Date()
+        createdAt = Date()
         self.modelId = modelId
         self.prompt = prompt
         self.promptEnhanceOpted = promptEnhanceOpted
@@ -137,7 +136,7 @@ class Generation: Identifiable, Codable {
         self.searchPrompt = searchPrompt
         self.contentType = contentType
     }
-    
+
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
@@ -162,7 +161,7 @@ class Generation: Identifiable, Codable {
         searchPrompt = try container.decodeIfPresent(String.self, forKey: .searchPrompt)
         contentType = try container.decode(EnumGenerationContentType.self, forKey: .contentType)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)

@@ -1,22 +1,21 @@
 import Foundation
 
 class G_HUGGING_FACE_FLUX_SCHNELL: ImageGenerationProtocol {
-    func getCreditsUsed(request: ImageGenerationRequest) -> Double {
-        return 0.00;
+    func getCreditsUsed(request _: ImageGenerationRequest) -> Double {
+        return 0.00
     }
 
     let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.HUGGING_FACE_FLUX_SCHNELL })!
 
     struct ServiceRequest: Codable {
         let inputs: String
-        
+
         init(inputs: String) {
             self.inputs = inputs
         }
     }
 
     func transformRequest(request: ImageGenerationRequest) -> ServiceRequest {
-
         return ServiceRequest(
             inputs: request.artVariant != EnumArtVariant.NORMAL ? "\(request.artVariant.rawValue) - \(request.prompt)" : request.prompt
         )
@@ -24,9 +23,9 @@ class G_HUGGING_FACE_FLUX_SCHNELL: ImageGenerationProtocol {
 
     func transformResponse(request: ImageGenerationRequest, response: NetworkResponseData) throws -> ImageGenerationResponse {
         print(response)
-        
+
         switch response {
-        case .image(_, let base64, _):
+        case let .image(_, base64, _):
             return ImageGenerationResponse(
                 status: .GENERATED,
                 base64: base64.replacingOccurrences(
@@ -36,7 +35,7 @@ class G_HUGGING_FACE_FLUX_SCHNELL: ImageGenerationProtocol {
                 ),
                 cost: getCreditsUsed(request: request)
             )
-        case .dictionary(_, let data):
+        case let .dictionary(_, data):
             if let message = data["error"] as? String {
                 return ImageGenerationResponse(
                     status: .FAILED,
@@ -51,7 +50,7 @@ class G_HUGGING_FACE_FLUX_SCHNELL: ImageGenerationProtocol {
                 errorMessage: "Invalid response"
             )
         }
-        
+
         return ImageGenerationResponse(
             status: .FAILED,
             errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
@@ -73,9 +72,9 @@ class G_HUGGING_FACE_FLUX_SCHNELL: ImageGenerationProtocol {
         do {
             let headers: [String: String] = [
                 "Authorization": "Bearer \(request.connectionSecret)",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             ]
-            
+
             let response = try await NetworkAdapter.shared.performRequest(
                 url: url,
                 method: "POST",

@@ -1,5 +1,5 @@
-import Foundation
 import CloudKit
+import Foundation
 import SwiftData
 
 enum EnumGenerateVideoAdapterErrorCode: String, Codable {
@@ -46,9 +46,9 @@ struct VideoSetResponse: Codable {
 
 protocol VideoGenerationProtocol {
     var model: ConnectionModel { get }
-    
+
     associatedtype ServiceRequest
-    
+
     func transformRequest(request: VideoGenerationRequest) -> ServiceRequest
     func transformResponse(request: VideoGenerationRequest, response: NetworkResponseData) throws -> VideoGenerationResponse
     func getCreditsUsed(request: VideoGenerationRequest) -> Double
@@ -57,10 +57,10 @@ protocol VideoGenerationProtocol {
 
 func getVideoGenerationAdapter(videoGenerationRequest: VideoGenerationRequest) throws -> any VideoGenerationProtocol {
     let model = connectionModels.first(where: { $0.modelId.uuidString == videoGenerationRequest.modelId })
-    if (model == nil) {
+    if model == nil {
         throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
     }
-    
+
     switch model!.modelCode {
     case EnumConnectionModelCode.STABILITY_IMAGE_TO_VIDEO:
         return G_STABILITY_IMAGE_TO_VIDEO()
@@ -72,85 +72,85 @@ func getVideoGenerationAdapter(videoGenerationRequest: VideoGenerationRequest) t
 class GenerateVideoAdapter {
     let videoGenerationRequest: VideoGenerationRequest
     let modelContext: ModelContext
-    
+
     init(videoGenerationRequest: VideoGenerationRequest, modelContext: ModelContext) {
         self.videoGenerationRequest = videoGenerationRequest
         self.modelContext = modelContext
     }
-    
+
     func atomicRequest(videoGenerationRequest: VideoGenerationRequest, generationAdapter: any VideoGenerationProtocol) async -> VideoGenerationResponse {
         do {
             let generation = try await generationAdapter.makeRequest(request: videoGenerationRequest)
-            if (generation.base64 == nil) {
+            if generation.base64 == nil {
                 return VideoGenerationResponse(
                     status: EnumGenerationStatus.FAILED,
                     errorCode: generation.errorCode != nil ? generation.errorCode : EnumGenerateVideoAdapterErrorCode.GENERATOR_ERROR,
                     errorMessage: generation.errorMessage != nil ? generation.errorMessage : "Failed with unknown error"
                 )
             }
-            
+
             if let videoData = Data(base64Encoded: generation.base64!) {
                 let uuid = UUID()
                 saveVideoToiCloud(videoData: videoData, fileName: uuid.uuidString)
-                
+
                 let fileUrl: URL? = saveVideoToDocumentsDirectory(videoData: videoData, withName: uuid.uuidString)
-                if (fileUrl != nil) {
+                if fileUrl != nil {
                     // Create thumbnail
                     let frameBase64 = extractFirstFrameFromVideo(base64Video: generation.base64!)
-                    if (frameBase64 != nil) {
+                    if frameBase64 != nil {
                         let _: URL? = saveImageToDocumentsDirectory(
                             imageData: Data(base64Encoded: frameBase64!)!,
                             withName: "\(uuid)"
                         )
                         toPlatformImage(base64: frameBase64!)?.saveToiCloud(fileName: "\(uuid)")
                     }
-                    
+
                     // Save optimised version
                     let image: PlatformImage? = toPlatformImage(base64: frameBase64!)
-                    if (image != nil) {
+                    if image != nil {
                         let optimised50 = image!.resizeImage(scale: 0.50)
-                        if (optimised50 != nil) {
+                        if optimised50 != nil {
                             if let optimised50Data = Data(base64Encoded: optimised50!) {
                                 _ = saveImageToDocumentsDirectory(imageData: optimised50Data, withName: ".\(uuid)_o50")
                                 toPlatformImage(base64: optimised50!)?.saveToiCloud(fileName: ".\(uuid)_o50")
                             }
                         }
-                        
+
                         let optimised20 = image!.resizeImage(scale: 0.20)
-                        if (optimised20 != nil) {
+                        if optimised20 != nil {
                             if let optimised20Data = Data(base64Encoded: optimised20!) {
                                 _ = saveImageToDocumentsDirectory(imageData: optimised20Data, withName: ".\(uuid)_o20")
                                 toPlatformImage(base64: optimised20!)?.saveToiCloud(fileName: ".\(uuid)_o20")
                             }
                         }
-                        
+
                         let optimised04 = image!.resizeImage(scale: 0.04)
-                        if (optimised04 != nil) {
+                        if optimised04 != nil {
                             if let optimised04Data = Data(base64Encoded: optimised04!) {
                                 _ = saveImageToDocumentsDirectory(imageData: optimised04Data, withName: ".\(uuid)_o04")
                                 toPlatformImage(base64: optimised04!)?.saveToiCloud(fileName: ".\(uuid)_o04")
                             }
                         }
                     }
-                    
+
                     // Save client image
-                    if (videoGenerationRequest.clientImage != nil) {
+                    if videoGenerationRequest.clientImage != nil {
                         let _: URL? = saveImageToDocumentsDirectory(
                             imageData: Data(base64Encoded: videoGenerationRequest.clientImage!)!,
                             withName: ".\(uuid)_client"
                         )
                         toPlatformImage(base64: videoGenerationRequest.clientImage!)?.saveToiCloud(fileName: ".\(uuid)_client")
                     }
-                    
+
                     // Save client mask
-                    if (videoGenerationRequest.clientMask != nil) {
+                    if videoGenerationRequest.clientMask != nil {
                         let _: URL? = saveImageToDocumentsDirectory(
                             imageData: Data(base64Encoded: videoGenerationRequest.clientMask!)!,
                             withName: ".\(uuid)_mask"
                         )
                         toPlatformImage(base64: videoGenerationRequest.clientMask!)?.saveToiCloud(fileName: ".\(uuid)_mask")
                     }
-                    
+
                     return VideoGenerationResponse(
                         generationId: uuid,
                         status: EnumGenerationStatus.GENERATED,
@@ -186,35 +186,35 @@ class GenerateVideoAdapter {
     func makeRequest() async -> VideoSetResponse {
         do {
             let generationAdapter: any VideoGenerationProtocol = try getVideoGenerationAdapter(videoGenerationRequest: videoGenerationRequest)
-            
+
             var videoGenerationResponses: [VideoGenerationResponse] = []
             await withTaskGroup(of: VideoGenerationResponse?.self) { group in
-                for _ in 0..<videoGenerationRequest.numberOfVideos {
+                for _ in 0 ..< videoGenerationRequest.numberOfVideos {
                     group.addTask {
-                        return await self.atomicRequest(
+                        await self.atomicRequest(
                             videoGenerationRequest: self.videoGenerationRequest,
                             generationAdapter: generationAdapter
                         )
                     }
                 }
-                
+
                 for await generation in group {
                     if let generation = generation {
                         videoGenerationResponses.append(generation)
                     }
                 }
             }
-            
-            if (videoGenerationResponses.isEmpty) {
+
+            if videoGenerationResponses.isEmpty {
                 return VideoSetResponse(
                     status: EnumGenerationStatus.FAILED,
                     errorCode: EnumGenerateVideoAdapterErrorCode.GENERATOR_ERROR,
                     errorMessage: "No generation was successful"
                 )
             }
-            
+
             for generation in videoGenerationResponses {
-                if (generation.status == EnumGenerationStatus.FAILED || generation.generationId == nil) {
+                if generation.status == EnumGenerationStatus.FAILED || generation.generationId == nil {
                     return VideoSetResponse(
                         status: EnumGenerationStatus.FAILED,
                         errorCode: generation.errorCode ?? EnumGenerateVideoAdapterErrorCode.GENERATOR_ERROR,
@@ -222,10 +222,10 @@ class GenerateVideoAdapter {
                     )
                 }
             }
-            
+
             let usedModel = connectionModels.first(where: { $0.modelId.uuidString == videoGenerationRequest.modelId })
-            
-            let set: ImageSet = ImageSet(
+
+            let set: ImageSet = .init(
                 prompt: videoGenerationRequest.prompt ?? "",
                 modelId: videoGenerationRequest.modelId,
                 artDimensions: videoGenerationRequest.artDimensions,
@@ -233,10 +233,10 @@ class GenerateVideoAdapter {
                 negativePrompt: videoGenerationRequest.negativePrompt,
                 searchPrompt: nil
             )
-            
+
             modelContext.insert(set)
             try? modelContext.save()
-            
+
             let generations: [Generation] = videoGenerationResponses.map { generation in
                 let generation = Generation(
                     id: generation.generationId!,
@@ -257,19 +257,19 @@ class GenerateVideoAdapter {
                     searchPrompt: nil,
                     contentType: EnumGenerationContentType.VIDEO
                 )
-                
+
                 modelContext.insert(generation)
                 try? modelContext.save()
-                
+
                 return generation
             }
-            
+
             return VideoSetResponse(
                 status: EnumGenerationStatus.GENERATED,
                 set: set,
                 generations: generations
             )
-            
+
         } catch {
             return VideoSetResponse(
                 status: EnumGenerationStatus.FAILED,
@@ -278,5 +278,4 @@ class GenerateVideoAdapter {
             )
         }
     }
-
 }

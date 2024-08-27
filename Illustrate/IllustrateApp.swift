@@ -1,12 +1,12 @@
 //
-//  illustrateApp.swift
+//  IllustrateApp.swift
 //  illustrate
 //
 //  Created by Praveen Thirumurugan on 12/08/24.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @main
 struct IllustrateApp: App {

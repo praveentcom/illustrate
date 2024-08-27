@@ -3,7 +3,7 @@ import Foundation
 class G_STABILITY_SD3: ImageGenerationProtocol {
     func getCreditsUsed(request: ImageGenerationRequest) -> Double {
         let model = connectionModels.first(where: { $0.modelId.uuidString == request.modelId })
-        
+
         switch model?.modelCode {
         case .STABILITY_SD3_TURBO:
             return 4.0
@@ -22,13 +22,13 @@ class G_STABILITY_SD3: ImageGenerationProtocol {
         let aspect_ratio: String
         let negative_prompt: String?
         let user: String
-        
+
         init(prompt: String, model: String, aspectRatio: String, negativePrompt: String?) {
             self.prompt = prompt
             self.model = model
-            self.aspect_ratio = aspectRatio
-            self.negative_prompt = negativePrompt
-            self.user = "illustrate_user"
+            aspect_ratio = aspectRatio
+            negative_prompt = negativePrompt
+            user = "illustrate_user"
         }
     }
 
@@ -51,7 +51,7 @@ class G_STABILITY_SD3: ImageGenerationProtocol {
 
     func transformRequest(request: ImageGenerationRequest) -> ServiceRequest {
         let aspectRatio = getImageDimensions(artDimensions: request.artDimensions)
-        
+
         let model = connectionModels.first(where: { $0.modelId.uuidString == request.modelId })
         let modelString = model?.modelCode == .STABILITY_SD3_TURBO ? "sd3-turbo" : "sd3"
 
@@ -63,9 +63,9 @@ class G_STABILITY_SD3: ImageGenerationProtocol {
         )
     }
 
-    func transformResponse(request: ImageGenerationRequest, response: NetworkResponseData) throws -> ImageGenerationResponse {        
+    func transformResponse(request: ImageGenerationRequest, response: NetworkResponseData) throws -> ImageGenerationResponse {
         switch response {
-        case .dictionary(_, let data):
+        case let .dictionary(_, data):
             if let imageData = data["image"] as? String {
                 return ImageGenerationResponse(
                     status: .GENERATED,
@@ -73,41 +73,40 @@ class G_STABILITY_SD3: ImageGenerationProtocol {
                     cost: getCreditsUsed(request: request),
                     modelPrompt: request.prompt
                 )
-            }
-            else if let errors = data["errors"] as? [String],
-                let message = errors.first {
+            } else if let errors = data["errors"] as? [String],
+                      let message = errors.first
+            {
+                return ImageGenerationResponse(
+                    status: .FAILED,
+                    errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+                    errorMessage: message
+                )
+            } else if let message = data["message"] as? String {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
                     errorMessage: message
                 )
             }
-            else if let message = data["message"] as? String {
-                return ImageGenerationResponse(
-                    status: .FAILED,
-                    errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
-                    errorMessage: message
-                )
-            }
-        case .array(_, let data):
+        case let .array(_, data):
             if let firstDict = data.first,
-               let imageData = firstDict["image"] as? String {
+               let imageData = firstDict["image"] as? String
+            {
                 return ImageGenerationResponse(
                     status: .GENERATED,
                     base64: imageData,
                     cost: getCreditsUsed(request: request),
                     modelPrompt: request.prompt
                 )
-            }
-            else if let errors = data.first?["errors"] as? [String],
-                let message = errors.first {
+            } else if let errors = data.first?["errors"] as? [String],
+                      let message = errors.first
+            {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
                     errorMessage: message
                 )
-            }
-            else if let message = data.first?["message"] as? String {
+            } else if let message = data.first?["message"] as? String {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
@@ -148,7 +147,7 @@ class G_STABILITY_SD3: ImageGenerationProtocol {
                 headers: [
                     "Authorization": "\(request.connectionSecret)",
                     "Content-Type": "multipart/form-data",
-                    "Accept": "application/json"
+                    "Accept": "application/json",
                 ]
             )
 

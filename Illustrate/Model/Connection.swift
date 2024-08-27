@@ -3,15 +3,15 @@ import SwiftData
 import SwiftUI
 
 enum EnumConnectionCode: String, Codable, CaseIterable, Identifiable {
-    var id : String { UUID().uuidString }
-    
+    var id: String { UUID().uuidString }
+
     case GOOGLE_CLOUD
     case OPENAI
     case STABILITY_AI
     case REPLICATE
     case FAL_AI
     case HUGGING_FACE
-    
+
     var connectionId: UUID {
         switch self {
         case .GOOGLE_CLOUD:
@@ -31,16 +31,16 @@ enum EnumConnectionCode: String, Codable, CaseIterable, Identifiable {
 }
 
 enum EnumConnectionKeyType: String, Codable, CaseIterable, Identifiable {
-    var id : String { UUID().uuidString }
-    
-    case JSON = "JSON"
+    var id: String { UUID().uuidString }
+
+    case JSON
     case API = "API Key"
 }
 
 enum EnumConnectionCreditCurrency: String, Codable, CaseIterable, Identifiable {
-    var id : String { UUID().uuidString }
-    
-    case USD = "USD"
+    var id: String { UUID().uuidString }
+
+    case USD
     case CREDITS = "Credits"
 }
 
@@ -57,7 +57,7 @@ final class Connection: Codable, Identifiable {
         case creditCurrency
         case active
     }
-    
+
     var connectionId: UUID = UUID()
     var connectionCode: EnumConnectionCode = EnumConnectionCode.OPENAI
     var connectionName: String = "OpenAI"
@@ -67,7 +67,7 @@ final class Connection: Codable, Identifiable {
     var keyType: EnumConnectionKeyType = EnumConnectionKeyType.JSON
     var creditCurrency: EnumConnectionCreditCurrency = EnumConnectionCreditCurrency.USD
     var active: Bool = true
-    
+
     init(connectionId: UUID, connectionCode: EnumConnectionCode, connectionName: String, connectionDescription: String, keyStructure: String, keyPlaceholder: String, keyType: EnumConnectionKeyType, creditCurrency: EnumConnectionCreditCurrency, active: Bool) {
         self.connectionId = connectionId
         self.connectionCode = connectionCode
@@ -79,7 +79,7 @@ final class Connection: Codable, Identifiable {
         self.creditCurrency = creditCurrency
         self.active = active
     }
-    
+
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         connectionId = try container.decode(UUID.self, forKey: .connectionId)
@@ -92,7 +92,7 @@ final class Connection: Codable, Identifiable {
         creditCurrency = try container.decode(EnumConnectionCreditCurrency.self, forKey: .creditCurrency)
         active = try container.decode(Bool.self, forKey: .active)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(connectionId, forKey: .connectionId)
@@ -118,7 +118,7 @@ func getConnection(connectionId: UUID) -> Connection? {
 
 struct ConnectionLabel: View {
     var connection: Connection
-    
+
     var body: some View {
         HStack {
             Image("\(connection.connectionCode)_square".lowercased())

@@ -1,10 +1,10 @@
-import SwiftUI
 import Foundation
+import SwiftUI
 
 enum EnumNavigationItem: Identifiable, Hashable {
     // Primary Views
     case dashboardWorkspace
-    
+
     case generateGenerate
     case generateEditUpscale
     case generateEditExpand
@@ -13,26 +13,26 @@ enum EnumNavigationItem: Identifiable, Hashable {
     case generateEraseMask
     case generateSearchReplace
     case generateRemoveBackground
-    
+
     case generateVideoImage
-    
+
     case historyRequests
     case historyImageGallery
     case historyVideoGallery
-    
+
     case settingsConnections
     case settingsManageStorage
-    
+
     // Secondary Views
     case generationImage(setId: UUID)
     case generationVideo(setId: UUID)
-    
+
     // Enum Meta
     var id: String {
         switch self {
-        case .generationImage(let setId):
+        case let .generationImage(setId):
             return "generationImage-\(setId.uuidString)"
-        case .generationVideo(let setId):
+        case let .generationVideo(setId):
             return "generationVideo-\(setId.uuidString)"
         default:
             return "\(self)"
@@ -41,13 +41,13 @@ enum EnumNavigationItem: Identifiable, Hashable {
 }
 
 enum EnumNavigationSection: String, Codable, CaseIterable, Identifiable {
-    var id : String { UUID().uuidString }
-    
-    case Dashboard = "Dashboard"
+    var id: String { UUID().uuidString }
+
+    case Dashboard
     case ImageGenerations = "Image Generations"
     case VideoGenerations = "Video Generations"
-    case History = "History"
-    case Settings = "Settings"
+    case History
+    case Settings
 }
 
 func sectionItems(section: EnumNavigationSection) -> [EnumNavigationItem] {
@@ -60,9 +60,9 @@ func sectionItems(section: EnumNavigationSection) -> [EnumNavigationItem] {
         return [.generateVideoImage]
     case .History:
         #if os(macOS)
-        return [.historyRequests, .historyImageGallery, .historyVideoGallery]
+            return [.historyRequests, .historyImageGallery, .historyVideoGallery]
         #else
-        return [.historyImageGallery, .historyVideoGallery]
+            return [.historyImageGallery, .historyVideoGallery]
         #endif
     case .Settings:
         return [.settingsConnections, .settingsManageStorage]
@@ -219,9 +219,9 @@ func viewForItem(_ item: EnumNavigationItem) -> some View {
         ConnectionsView()
     case .settingsManageStorage:
         ManageStorageView()
-    case .generationImage(let setId):
+    case let .generationImage(setId):
         GenerationImageView(setId: setId)
-    case .generationVideo(let setId):
+    case let .generationVideo(setId):
         GenerationVideoView(setId: setId)
     }
 }
