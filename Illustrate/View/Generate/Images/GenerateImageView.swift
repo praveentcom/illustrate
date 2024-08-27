@@ -254,17 +254,24 @@ struct GenerateImageView: View {
                     .disabled(isGenerating)
                     
                     Button(isGenerating ? "Generating, please wait..." : "Generate") {
-                        focusedField = nil
+                        DispatchQueue.main.async {
+                            focusedField = nil
+                        }
+                        
                         Task {
                             let response = await generateImage()
                             if (response?.status == EnumGenerationStatus.GENERATED && response?.set?.id != nil) {
-                                selectedSetId = response!.set!.id
-                                isNavigationActive = true
+                                DispatchQueue.main.async {
+                                    selectedSetId = response!.set!.id
+                                    isNavigationActive = true
+                                }
                             } else if (response?.status == EnumGenerationStatus.FAILED) {
-                                errorState = ErrorState(
-                                    message: response?.errorMessage ?? "Something went wrong",
-                                    isShowing: true
-                                )
+                                DispatchQueue.main.async {
+                                    errorState = ErrorState(
+                                        message: response?.errorMessage ?? "Something went wrong",
+                                        isShowing: true
+                                    )
+                                }
                             }
                         }
                     }
@@ -275,7 +282,7 @@ struct GenerateImageView: View {
                 PendingConnectionView(setType: .GENERATE)
             }
         }
-        .onAppear() {
+        .onAppear {
             if !connectionKeys.isEmpty && selectedModelId.isEmpty {
                 let supportedConnections = connections.filter { connection in
                     connectionKeys.contains { $0.connectionId == connection.connectionId } &&
@@ -347,8 +354,15 @@ struct GenerateImageView: View {
         }
         #endif
         .navigationDestination(isPresented: $isNavigationActive) {
-            if (selectedSetId != nil) {
-                GenerationImageView(setId: selectedSetId!)
+            if let _selectedSetId = selectedSetId {
+                GenerationImageView(setId: _selectedSetId)
+                    .onDisappear {
+                        DispatchQueue.main.async {
+                            focusedField = nil
+                            isNavigationActive = false
+                            selectedSetId = nil
+                        }
+                    }
             }
         }
         .navigationTitle(labelForItem(.generateGenerate))

@@ -281,7 +281,9 @@ struct EditExpandImageView: View {
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                     .frame(height: 200)
                                     .onTapGesture {
-                                        isPhotoPickerOpen = true
+                                        DispatchQueue.main.async {
+                                            isPhotoPickerOpen = true
+                                        }
                                     }
                             }
                         }
@@ -314,10 +316,12 @@ struct EditExpandImageView: View {
                         }
                         #endif
                         
-                        HStack {
+                        HStack (spacing: 24) {
                             Spacer()
                             Button(selectedImage != nil ? "Change image" : "Select image") {
-                                isPhotoPickerOpen = true
+                                DispatchQueue.main.async {
+                                    isPhotoPickerOpen = true
+                                }
                             }
                             Spacer()
                         }
@@ -361,17 +365,24 @@ struct EditExpandImageView: View {
                     Button(
                         isGenerating ? "Expanding, please wait..." : "Perform Expand"
                     ) {
-                        focusedField = nil
+                        DispatchQueue.main.async {
+                            focusedField = nil
+                        }
+                        
                         Task {
                             let response = await generateImage()
                             if (response?.status == EnumGenerationStatus.GENERATED && response?.set?.id != nil) {
-                                selectedSetId = response!.set!.id
-                                isNavigationActive = true
+                                DispatchQueue.main.async {
+                                    selectedSetId = response!.set!.id
+                                    isNavigationActive = true
+                                }
                             } else if (response?.status == EnumGenerationStatus.FAILED) {
-                                errorState = ErrorState(
-                                    message: response?.errorMessage ?? "Something went wrong",
-                                    isShowing: true
-                                )
+                                DispatchQueue.main.async {
+                                    errorState = ErrorState(
+                                        message: response?.errorMessage ?? "Something went wrong",
+                                        isShowing: true
+                                    )
+                                }
                             }
                         }
                     }
@@ -422,7 +433,7 @@ struct EditExpandImageView: View {
                 PendingConnectionView(setType: .EDIT_EXPAND)
             }
         }
-        .onAppear() {
+        .onAppear {
             if !connectionKeys.isEmpty && selectedModelId.isEmpty {
                 let supportedConnections = connections.filter { connection in
                     connectionKeys.contains { $0.connectionId == connection.connectionId } &&
@@ -494,8 +505,15 @@ struct EditExpandImageView: View {
 }
 #endif
         .navigationDestination(isPresented: $isNavigationActive) {
-            if (selectedSetId != nil) {
-                GenerationImageView(setId: selectedSetId!)
+            if let _selectedSetId = selectedSetId {
+                GenerationImageView(setId: _selectedSetId)
+                    .onDisappear {
+                        DispatchQueue.main.async {
+                            focusedField = nil
+                            isNavigationActive = false
+                            selectedSetId = nil
+                        }
+                    }
             }
         }
         .navigationTitle(labelForItem(.generateEditExpand))

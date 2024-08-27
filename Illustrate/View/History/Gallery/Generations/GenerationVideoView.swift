@@ -54,13 +54,11 @@ struct GenerationVideoView: View {
     @State private var showDocumentPicker = false
     @State private var showShareSheet = false
     
-    @Query(sort: \ImageSet.createdAt) private var allImageSets: [ImageSet]
-    @Query(sort: \Generation.createdAt, order: .reverse) private var allGenerations: [Generation]
-    
     func getSelectedGeneration() -> Generation? {
         if generationIndex >= 0 && generationIndex < generations.count {
             return generations[generationIndex]
         }
+        
         return nil
     }
     
@@ -73,7 +71,9 @@ struct GenerationVideoView: View {
         }
         try? modelContext.save()
         
-        presentationMode.wrappedValue.dismiss()
+        DispatchQueue.main.async {
+            presentationMode.wrappedValue.dismiss()
+        }
     }
     
     var body: some View {
@@ -270,7 +270,9 @@ struct GenerationVideoView: View {
                                 #if os(macOS)
                                 saveVideoToDownloads(url: videoURL, fileName: "\(getSelectedGeneration()!.id.uuidString)")
                                 #else
-                                showDocumentPicker = true
+                                DispatchQueue.main.async {
+                                    showDocumentPicker = true
+                                }
                                 #endif
                             }
                         }
@@ -284,7 +286,9 @@ struct GenerationVideoView: View {
                                 #if os(macOS)
                                 shareVideo(url: videoURL)
                                 #else
-                                showShareSheet = true
+                                DispatchQueue.main.async {
+                                    showShareSheet = true
+                                }
                                 #endif
                             }
                         }
@@ -292,7 +296,9 @@ struct GenerationVideoView: View {
                 }
                 ToolbarItem(placement: .destructiveAction) {
                     Button("Delete", systemImage: "trash") {
-                        showDeleteConfirmation = true
+                        DispatchQueue.main.async {
+                            showDeleteConfirmation = true
+                        }
                     }
                 }
             }
@@ -338,7 +344,17 @@ struct GenerationVideoView: View {
     }
     
     private func loadData() {
-        imageSet = allImageSets.first { $0.id == setId }
-        generations = allGenerations.filter { $0.setId == setId }
+        let imageSetDescriptor = FetchDescriptor<ImageSet>(predicate: #Predicate { $0.id == setId })
+        let generationsDescriptor = FetchDescriptor<Generation>(
+            predicate: #Predicate { $0.setId == setId },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+
+        do {
+            imageSet = try modelContext.fetch(imageSetDescriptor).first
+            generations = try modelContext.fetch(generationsDescriptor)
+        } catch {
+            print("Error fetching data: \(error)")
+        }
     }
 }

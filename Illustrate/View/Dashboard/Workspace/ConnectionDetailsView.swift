@@ -34,7 +34,9 @@ struct ConnectionDetailsView: View {
            
             ToolbarItem(placement: .cancellationAction) {
                 Button("Dismiss") {
-                    isPresented = false
+                    DispatchQueue.main.async {
+                        isPresented = false
+                    }
                 }
             }
             

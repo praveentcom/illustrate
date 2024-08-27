@@ -18,7 +18,9 @@ struct ConnectedConnectionCell: View {
                 .font(.headline)
                 .foregroundStyle(.red)
                 .onTapGesture {
-                    showDeleteConfirmation = true
+                    DispatchQueue.main.async {
+                        showDeleteConfirmation = true
+                    }
                 }
         }
         .confirmationDialog(
@@ -31,7 +33,9 @@ struct ConnectedConnectionCell: View {
             }
             
             Button("Cancel", role: .cancel) {
-                showDeleteConfirmation = false
+                DispatchQueue.main.async {
+                    showDeleteConfirmation = false
+                }
             }
         }
     }
@@ -73,7 +77,9 @@ struct ConnectionsView: View {
         .formStyle(.grouped)
         .toolbar {
             Button("+ Connect") {
-                showingAddConnection = true
+                DispatchQueue.main.async {
+                    showingAddConnection = true
+                }
             }
         }
         .sheet(isPresented: $showingAddConnection) {

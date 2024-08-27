@@ -53,10 +53,10 @@ class G_HUGGING_FACE_FLUX_DEV: ImageGenerationProtocol {
         }
         
         return ImageGenerationResponse(
-                status: .FAILED,
-                errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
-                errorMessage: "Invalid response"
-            )
+            status: .FAILED,
+            errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+            errorMessage: "Invalid response"
+        )
     }
 
     func makeRequest(request: ImageGenerationRequest) async throws -> ImageGenerationResponse {

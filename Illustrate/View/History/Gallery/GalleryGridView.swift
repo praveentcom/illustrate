@@ -27,9 +27,6 @@ struct GalleryGridView: View {
         }
     }
 
-    @State private var isNavigationActive: Bool = false
-    @State private var selectedGeneration: Generation? = nil
-
     var body: some View {
         let columns: [GridItem] = {
             #if os(macOS)
@@ -43,26 +40,19 @@ struct GalleryGridView: View {
             ForEach(generations.filter { $0.contentType == contentType }, id: \.id) { generation in
                 ICloudImageLoader(imageName: ".\(generation.id.uuidString)_o20") { image in
                     if let image = image {
-                        ImageCellView(image: image, generation: generation)
-                            .onTapGesture {
-                                selectedGeneration = generation
-                                isNavigationActive = true
-                            }
+                        NavigationLink(
+                            value: generation.contentType == .IMAGE_2D ? EnumNavigationItem.generationImage(setId: generation.setId) : EnumNavigationItem.generationVideo(setId: generation.setId)
+                        ) {
+                            ImageCellView(image: image, generation: generation)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     } else {
                         Color(secondaryLabel)
                             .frame(width: 20, height: 20)
                             .clipShape(RoundedRectangle(cornerRadius: 4))
                     }
                 }
-            }
-        }
-        .navigationDestination(isPresented: $isNavigationActive) {
-            if selectedGeneration != nil {
-                if selectedGeneration!.contentType == .IMAGE_2D {
-                    GenerationImageView(setId: selectedGeneration!.setId)
-                } else {
-                    GenerationVideoView(setId: selectedGeneration!.setId)
-                }
+                .id("grid_\(generation.id.uuidString)")
             }
         }
     }

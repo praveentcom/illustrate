@@ -62,6 +62,7 @@ struct ICloudVideoLoader<Content: View>: View {
     private func load() {
         DispatchQueue.global(qos: .background).async {
             let loadedUrl = loadVideoFromiCloud(videoName)
+            
             DispatchQueue.main.async {
                 if let loadedUrl = loadedUrl {
                     VideoCache.shared.set(loadedUrl, forKey: videoName)

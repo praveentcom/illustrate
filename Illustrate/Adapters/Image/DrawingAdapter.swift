@@ -54,6 +54,7 @@ func exportPathToImage(path: Path, size: CGSize) -> UIImage? {
         cgContext.fill(CGRect(origin: .zero, size: size))
         
         UIColor.white.setFill()
+        
         let cgPath = path.cgPath
         cgContext.addPath(cgPath)
         cgContext.drawPath(using: .fill)

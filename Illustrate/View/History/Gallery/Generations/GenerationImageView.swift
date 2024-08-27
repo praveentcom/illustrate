@@ -75,13 +75,11 @@ struct GenerationImageView: View {
     @State private var showDocumentPicker = false
     @State private var showShareSheet = false
     
-    @Query(sort: \ImageSet.createdAt) private var allImageSets: [ImageSet]
-    @Query(sort: \Generation.createdAt, order: .reverse) private var allGenerations: [Generation]
-    
     func getSelectedGeneration() -> Generation? {
         if generationIndex >= 0 && generationIndex < generations.count {
             return generations[generationIndex]
         }
+        
         return nil
     }
     
@@ -94,7 +92,9 @@ struct GenerationImageView: View {
         }
         try? modelContext.save()
         
-        presentationMode.wrappedValue.dismiss()
+        DispatchQueue.main.async {
+            presentationMode.wrappedValue.dismiss()
+        }
     }
     
     var body: some View {
@@ -175,12 +175,16 @@ struct GenerationImageView: View {
                                                 }
                                                 Divider()
                                                 Button("Delete", systemImage: "trash", role: .destructive) {
-                                                    showDeleteConfirmation = true
+                                                    DispatchQueue.main.async {
+                                                        showDeleteConfirmation = true
+                                                    }
                                                 }
                                             }
                                             .onAppear {
                                                 if (min(image.size.height, 400) > minHeight) {
-                                                    minHeight = min(image.size.height, 400)
+                                                    DispatchQueue.main.async {
+                                                        minHeight = min(image.size.height, 400)
+                                                    }
                                                 }
                                             }
                                         ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_client") { requestImage in
@@ -316,7 +320,9 @@ struct GenerationImageView: View {
                                 #if os(macOS)
                                 image.saveImageToDownloads(fileName: getSelectedGeneration()!.id.uuidString)
                                 #else
-                                showDocumentPicker = true
+                                DispatchQueue.main.async {
+                                    showDocumentPicker = true
+                                }
                                 #endif
                             }
                         }
@@ -330,7 +336,9 @@ struct GenerationImageView: View {
                                 #if os(macOS)
                                 image.shareImage()
                                 #else
-                                showShareSheet = true
+                                DispatchQueue.main.async {
+                                    showShareSheet = true
+                                }
                                 #endif
                             }
                         }
@@ -338,7 +346,9 @@ struct GenerationImageView: View {
                 }
                 ToolbarItem(placement: .destructiveAction) {
                     Button("Delete", systemImage: "trash", role: .destructive) {
-                        showDeleteConfirmation = true
+                        DispatchQueue.main.async {
+                            showDeleteConfirmation = true
+                        }
                     }
                 }
             }
@@ -384,7 +394,17 @@ struct GenerationImageView: View {
     }
     
     private func loadData() {
-        imageSet = allImageSets.first { $0.id == setId }
-        generations = allGenerations.filter { $0.setId == setId }
+        let imageSetDescriptor = FetchDescriptor<ImageSet>(predicate: #Predicate { $0.id == setId })
+        let generationsDescriptor = FetchDescriptor<Generation>(
+            predicate: #Predicate { $0.setId == setId },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+
+        do {
+            imageSet = try modelContext.fetch(imageSetDescriptor).first
+            generations = try modelContext.fetch(generationsDescriptor)
+        } catch {
+            print("Error fetching data: \(error)")
+        }
     }
 }

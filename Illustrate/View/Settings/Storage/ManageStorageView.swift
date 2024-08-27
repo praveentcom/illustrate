@@ -37,9 +37,11 @@ struct ManageStorageView: View {
                     Text("This action cannot be reversed as your data is not stored anywhere else apart from your iCloud account. Proceed with caution.")
                         .font(.subheadline)
                         .multilineTextAlignment(.center)
-                    Button("Clear Storage", role: .destructive, action: { showConfirmation = true })
-                        .buttonStyle(.borderedProminent)
-                        .padding(.all, 8)
+                    Button("Clear Storage", role: .destructive, action: {
+                        DispatchQueue.main.async {showConfirmation = true }
+                    })
+                    .buttonStyle(.borderedProminent)
+                    .padding(.all, 8)
                 }
                 .padding(.all, 12)
                 .frame(maxWidth: .infinity)

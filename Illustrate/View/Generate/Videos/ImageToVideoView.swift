@@ -261,15 +261,19 @@ struct ImageToVideoView: View {
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                     .frame(height: 200)
                                     .onTapGesture {
-                                        isPhotoPickerOpen = true
+                                        DispatchQueue.main.async {
+                                            isPhotoPickerOpen = true
+                                        }
                                     }
                             }
                         }
                         
-                        HStack {
+                        HStack (spacing: 24) {
                             Spacer()
                             Button(selectedImage != nil ? "Change image" : "Select image") {
-                                isPhotoPickerOpen = true
+                                DispatchQueue.main.async {
+                                    isPhotoPickerOpen = true
+                                }
                             }
                             Spacer()
                         }
@@ -323,16 +327,24 @@ struct ImageToVideoView: View {
                     Button(
                         isGenerating ? "Generating, please wait..." : "Generate Video"
                     ) {
+                        DispatchQueue.main.async {
+                            focusedField = nil
+                        }
+                        
                         Task {
                             let response = await generateVideo()
                             if (response?.status == EnumGenerationStatus.GENERATED && response?.set?.id != nil) {
-                                selectedSetId = response!.set!.id
-                                isNavigationActive = true
+                                DispatchQueue.main.async {
+                                    selectedSetId = response!.set!.id
+                                    isNavigationActive = true
+                                }
                             } else if (response?.status == EnumGenerationStatus.FAILED) {
-                                errorState = ErrorState(
-                                    message: response?.errorMessage ?? "Something went wrong",
-                                    isShowing: true
-                                )
+                                DispatchQueue.main.async {
+                                    errorState = ErrorState(
+                                        message: response?.errorMessage ?? "Something went wrong",
+                                        isShowing: true
+                                    )
+                                }
                             }
                         }
                     }
@@ -387,7 +399,7 @@ struct ImageToVideoView: View {
                 PendingConnectionView(setType: .VIDEO_IMAGE)
             }
         }
-        .onAppear() {
+        .onAppear {
             if !connectionKeys.isEmpty && selectedModelId.isEmpty {
                 let supportedConnections = connections.filter { connection in
                     connectionKeys.contains { $0.connectionId == connection.connectionId } &&
@@ -459,8 +471,15 @@ struct ImageToVideoView: View {
 }
 #endif
         .navigationDestination(isPresented: $isNavigationActive) {
-            if (selectedSetId != nil) {
-                GenerationVideoView(setId: selectedSetId!)
+            if let _selectedSetId = selectedSetId {
+                GenerationVideoView(setId: _selectedSetId)
+                    .onDisappear {
+                        DispatchQueue.main.async {
+                            focusedField = nil
+                            isNavigationActive = false
+                            selectedSetId = nil
+                        }
+                    }
             }
         }
         .navigationTitle(labelForItem(.generateVideoImage))

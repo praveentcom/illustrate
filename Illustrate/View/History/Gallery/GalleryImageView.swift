@@ -35,10 +35,16 @@ struct GalleryImageView: View {
         .toolbar {
             ToolbarItem {
                 Menu {
-                    Button("All Generations", systemImage: "slider.horizontal.3", action: { selectedSetType = nil })
+                    Button("All Generations", systemImage: "slider.horizontal.3", action: {
+                        DispatchQueue.main.async {
+                            selectedSetType = nil
+                        }
+                    })
                     ForEach(sectionItems(section: EnumNavigationSection.ImageGenerations)) { item in
                         Button(labelForItem(item), systemImage: iconForItem(item)) {
-                            selectedSetType = setTypeForItem(item)
+                            DispatchQueue.main.async {
+                                selectedSetType = setTypeForItem(item)
+                            }
                         }
                     }
                 } label: {

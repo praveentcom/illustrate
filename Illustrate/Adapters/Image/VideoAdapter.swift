@@ -130,6 +130,7 @@ func extractFirstFrameFromVideo(base64Video: String) -> String? {
         try videoData.write(to: videoURL)
     } catch {
         print("Error writing video data to file: \(error)")
+        
         return nil
     }
     
@@ -146,23 +147,28 @@ func getFirstFrameAsBase64Image(from videoURL: URL) -> String? {
         
         #if os(macOS)
         let image = NSImage(cgImage: cgImage, size: .zero)
+        
         guard let tiffData = image.tiffRepresentation,
               let bitmapImage = NSBitmapImageRep(data: tiffData),
               let pngData = bitmapImage.representation(using: .png, properties: [:]) else {
             return nil
         }
+        
         return pngData.base64EncodedString(options: .endLineWithCarriageReturn)
         
         #else
         let image = UIImage(cgImage: cgImage)
+        
         guard let pngData = image.pngData() else {
             return nil
         }
+        
         return pngData.base64EncodedString(options: .endLineWithCarriageReturn)
         #endif
         
     } catch {
         print("Error extracting first frame: \(error)")
+        
         return nil
     }
 }

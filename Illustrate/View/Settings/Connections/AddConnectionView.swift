@@ -39,7 +39,9 @@ struct AddConnectionView: View {
             }
             .formStyle(.grouped)
             .onAppear {
-                selectedConnection = selectedConnection ?? availableConnections.first
+                DispatchQueue.main.async {
+                    selectedConnection = selectedConnection ?? availableConnections.first
+                }
             }
             .navigationTitle("Add Connection")
             .toolbar {
@@ -57,7 +59,9 @@ struct AddConnectionView: View {
         #if os(macOS)
         ToolbarItem(placement: .cancellationAction) {
             Button("Cancel") {
-                isPresented = false
+                DispatchQueue.main.async {
+                    isPresented = false
+                }
             }
         }
         ToolbarItem(placement: .confirmationAction) {
@@ -69,7 +73,9 @@ struct AddConnectionView: View {
         #else
         ToolbarItem(placement: .navigationBarLeading) {
             Button("Cancel") {
-                isPresented = false
+                DispatchQueue.main.async {
+                    isPresented = false
+                }
             }
         }
         ToolbarItem(placement: .navigationBarTrailing) {
@@ -108,6 +114,8 @@ struct AddConnectionView: View {
             }
         }
         
-        isPresented = false
+        DispatchQueue.main.async {
+            isPresented = false
+        }
     }
 }

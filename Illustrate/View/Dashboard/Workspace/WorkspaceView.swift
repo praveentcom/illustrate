@@ -164,7 +164,10 @@ struct WorkspaceConnectionShortcut: View {
 #endif
         .cornerRadius(4)
         .onTapGesture {
-            isConnectionDetailsOpen = true
+            DispatchQueue.main.async {
+                isConnectionDetailsOpen = true
+            }
+            
         }
         .sheet(isPresented: $isConnectionDetailsOpen) {
             ConnectionDetailsView(isPresented: $isConnectionDetailsOpen, selectedConnection: item)

@@ -62,6 +62,7 @@ struct ICloudImageLoader<Content: View>: View {
     private func load() {
         DispatchQueue.global(qos: .background).async {
             let loadedImage = loadImageFromiCloud(imageName)
+            
             DispatchQueue.main.async {
                 if let loadedImage = loadedImage {
                     ImageCache.shared.set(loadedImage, forKey: imageName)

@@ -38,9 +38,6 @@ struct RequestsView: View {
         }
     }
     
-    @State private var isNavigationActive: Bool = false
-    @State private var selectedGeneration: Generation? = nil
-    
     @State private var sortOrder = [KeyPathComparator(\Generation.createdAt)]
     
     @TableColumnBuilder<Generation, KeyPathComparator<Generation>>
@@ -132,11 +129,10 @@ struct RequestsView: View {
     @TableColumnBuilder<Generation, KeyPathComparator<Generation>>
     var actionColumns: some TableColumnContent<Generation, KeyPathComparator<Generation>> {
         TableColumn("Actions", value: \.id) { generation in
-            Button("View") {
-                selectedGeneration = generation
-                isNavigationActive = true
+            NavigationLink(value: generation.contentType == .IMAGE_2D ? EnumNavigationItem.generationImage(setId: generation.setId) : EnumNavigationItem.generationVideo(setId: generation.setId)) {
+                Button("View") {}
+                .buttonStyle(BorderedButtonStyle())
             }
-            .buttonStyle(BorderedButtonStyle())
         }
         .width(min: 120, ideal: 120, max: 120)
     }
@@ -158,9 +154,8 @@ struct RequestsView: View {
                     ForEach(filteredGenerations) { generation in
                         TableRow(generation)
                             .contextMenu {
-                                Button("View") {
-                                    selectedGeneration = generation
-                                    isNavigationActive = true
+                                NavigationLink(value: generation.contentType == .IMAGE_2D ? EnumNavigationItem.generationImage(setId: generation.setId) : EnumNavigationItem.generationVideo(setId: generation.setId)) {
+                                    Button("View") {}
                                 }
                             }
                     }
@@ -172,15 +167,9 @@ struct RequestsView: View {
         }
         .onAppear {
             let filteredSetIds = filteredSets.map { $0.id }
-            filteredGenerations = generations.filter { filteredSetIds.contains($0.setId) }
-        }
-        .navigationDestination(isPresented: $isNavigationActive) {
-            if (selectedGeneration != nil) {
-                if (selectedGeneration!.contentType == .IMAGE_2D) {
-                    GenerationImageView(setId: selectedGeneration!.setId)
-                } else {
-                    GenerationVideoView(setId: selectedGeneration!.setId)
-                }
+            
+            DispatchQueue.main.async {
+                filteredGenerations = generations.filter { filteredSetIds.contains($0.setId) }
             }
         }
         .navigationTitle(labelForItem(.historyRequests))
