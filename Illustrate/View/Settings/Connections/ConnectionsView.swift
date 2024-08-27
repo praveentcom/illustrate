@@ -1,3 +1,4 @@
+import AppTrackingTransparency
 import KeychainSwift
 import SwiftData
 import SwiftUI
@@ -57,7 +58,28 @@ struct ConnectedConnectionCell: View {
 
 struct ConnectionsView: View {
     @Query(sort: \ConnectionKey.createdAt, order: .reverse) private var connectionKeys: [ConnectionKey]
+    @AppStorage("hasRequestedTrackingAuthorization") private var hasRequestedTrackingAuthorization = false
+
     @State private var showingAddConnection = false
+
+    func requestTrackingAuthorization() {
+        ATTrackingManager.requestTrackingAuthorization { status in
+            hasRequestedTrackingAuthorization = true
+
+            switch status {
+            case .authorized:
+                print("Tracking authorized")
+            case .denied:
+                print("Tracking denied")
+            case .notDetermined:
+                print("Tracking not determined")
+            case .restricted:
+                print("Tracking restricted")
+            @unknown default:
+                print("Unknown tracking status")
+            }
+        }
+    }
 
     var body: some View {
         Form {
@@ -75,6 +97,11 @@ struct ConnectionsView: View {
             }
         }
         .formStyle(.grouped)
+        .onAppear {
+            if !hasRequestedTrackingAuthorization {
+                requestTrackingAuthorization()
+            }
+        }
         .toolbar {
             Button("+ Connect") {
                 DispatchQueue.main.async {
