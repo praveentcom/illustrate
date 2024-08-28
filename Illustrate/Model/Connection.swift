@@ -51,6 +51,7 @@ final class Connection: Codable, Identifiable {
         case connectionCode
         case connectionName
         case connectionDescription
+        case connectionOnboardingUrl
         case keyStructure
         case keyPlaceholder
         case keyType
@@ -62,17 +63,19 @@ final class Connection: Codable, Identifiable {
     var connectionCode: EnumConnectionCode = EnumConnectionCode.OPENAI
     var connectionName: String = "OpenAI"
     var connectionDescription: String = ""
+    var connectionOnboardingUrl: String = ""
     var keyStructure: String = ""
     var keyPlaceholder: String = ""
     var keyType: EnumConnectionKeyType = EnumConnectionKeyType.JSON
     var creditCurrency: EnumConnectionCreditCurrency = EnumConnectionCreditCurrency.USD
     var active: Bool = true
 
-    init(connectionId: UUID, connectionCode: EnumConnectionCode, connectionName: String, connectionDescription: String, keyStructure: String, keyPlaceholder: String, keyType: EnumConnectionKeyType, creditCurrency: EnumConnectionCreditCurrency, active: Bool) {
+    init(connectionId: UUID, connectionCode: EnumConnectionCode, connectionName: String, connectionDescription: String, connectionOnboardingUrl: String, keyStructure: String, keyPlaceholder: String, keyType: EnumConnectionKeyType, creditCurrency: EnumConnectionCreditCurrency, active: Bool) {
         self.connectionId = connectionId
         self.connectionCode = connectionCode
         self.connectionName = connectionName
         self.connectionDescription = connectionDescription
+        self.connectionOnboardingUrl = connectionOnboardingUrl
         self.keyStructure = keyStructure
         self.keyPlaceholder = keyPlaceholder
         self.keyType = keyType
@@ -86,6 +89,7 @@ final class Connection: Codable, Identifiable {
         connectionCode = try container.decode(EnumConnectionCode.self, forKey: .connectionCode)
         connectionName = try container.decode(String.self, forKey: .connectionName)
         connectionDescription = try container.decode(String.self, forKey: .connectionDescription)
+        connectionOnboardingUrl = try container.decode(String.self, forKey: .connectionOnboardingUrl)
         keyStructure = try container.decode(String.self, forKey: .keyStructure)
         keyPlaceholder = try container.decode(String.self, forKey: .keyPlaceholder)
         keyType = try container.decode(EnumConnectionKeyType.self, forKey: .keyType)
@@ -99,6 +103,7 @@ final class Connection: Codable, Identifiable {
         try container.encode(connectionCode, forKey: .connectionCode)
         try container.encode(connectionName, forKey: .connectionName)
         try container.encode(connectionDescription, forKey: .connectionDescription)
+        try container.encode(connectionOnboardingUrl, forKey: .connectionOnboardingUrl)
         try container.encode(keyStructure, forKey: .keyStructure)
         try container.encode(keyPlaceholder, forKey: .keyPlaceholder)
         try container.encode(keyType, forKey: .keyType)
@@ -136,6 +141,7 @@ let connections = [
         connectionCode: EnumConnectionCode.OPENAI,
         connectionName: "OpenAI",
         connectionDescription: "Creating safe AGI that benefits all of humanity.",
+        connectionOnboardingUrl: "https://platform.openai.com/docs/overview",
         keyStructure: "^sk-proj-[a-zA-Z0-9]{32}$",
         keyPlaceholder: "sk-proj-************",
         keyType: EnumConnectionKeyType.API,
@@ -147,6 +153,7 @@ let connections = [
         connectionCode: EnumConnectionCode.STABILITY_AI,
         connectionName: "Stability AI",
         connectionDescription: "World’s leading open source generative AI company.",
+        connectionOnboardingUrl: "https://platform.stability.ai/docs/api-reference",
         keyStructure: "^sk-[a-zA-Z0-9]{38}$",
         keyPlaceholder: "sk-************",
         keyType: EnumConnectionKeyType.API,
@@ -169,6 +176,7 @@ let connections = [
         connectionCode: EnumConnectionCode.REPLICATE,
         connectionName: "Replicate",
         connectionDescription: "Making ML accessible to every software developer.",
+        connectionOnboardingUrl: "https://replicate.com",
         keyStructure: "^r8_[a-zA-Z0-9]{38}$",
         keyPlaceholder: "r8_************",
         keyType: EnumConnectionKeyType.API,
@@ -180,6 +188,7 @@ let connections = [
         connectionCode: EnumConnectionCode.FAL_AI,
         connectionName: "Fal AI",
         connectionDescription: "Fast, reliable, cheap. Lightning fast inference.",
+        connectionOnboardingUrl: "https://fal.ai",
         keyStructure: "^$",
         keyPlaceholder: "********-****-****-****-************:*******************",
         keyType: EnumConnectionKeyType.API,
@@ -191,6 +200,7 @@ let connections = [
         connectionCode: EnumConnectionCode.HUGGING_FACE,
         connectionName: "Hugging Face",
         connectionDescription: "The AI community building the future.",
+        connectionOnboardingUrl: "https://huggingface.co",
         keyStructure: "^hf_[a-zA-Z0-9]{38}$",
         keyPlaceholder: "hf_************",
         keyType: EnumConnectionKeyType.API,

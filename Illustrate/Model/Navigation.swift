@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 
 enum EnumNavigationItem: Identifiable, Hashable {
-    // Primary Views
     case dashboardWorkspace
 
     case generateGenerate
@@ -24,17 +23,19 @@ enum EnumNavigationItem: Identifiable, Hashable {
     case settingsConnections
     case settingsManageStorage
 
-    // Secondary Views
     case generationImage(setId: UUID)
     case generationVideo(setId: UUID)
 
-    // Enum Meta
+    case addConnection(connectionId: UUID)
+
     var id: String {
         switch self {
         case let .generationImage(setId):
             return "generationImage-\(setId.uuidString)"
         case let .generationVideo(setId):
             return "generationVideo-\(setId.uuidString)"
+        case let .addConnection(connectionId):
+            return "addConnection-\(connectionId.uuidString)"
         default:
             return "\(self)"
         }
@@ -108,6 +109,8 @@ func labelForItem(_ item: EnumNavigationItem) -> String {
         return "Image Generation"
     case .generationVideo:
         return "Video Generation"
+    case .addConnection:
+        return "Add Connection"
     }
 }
 
@@ -149,6 +152,8 @@ func subLabelForItem(_ item: EnumNavigationItem) -> String {
         return "View the generated image"
     case .generationVideo:
         return "View the generated video"
+    case .addConnection:
+        return "Add a new connection"
     }
 }
 
@@ -190,6 +195,8 @@ func iconForItem(_ item: EnumNavigationItem) -> String {
         return "paintbrush"
     case .generationVideo:
         return "video"
+    case .addConnection:
+        return "plus"
     }
 }
 
@@ -232,5 +239,7 @@ func viewForItem(_ item: EnumNavigationItem) -> some View {
         GenerationImageView(setId: setId)
     case let .generationVideo(setId):
         GenerationVideoView(setId: setId)
+    case let .addConnection(connectionId):
+        AddConnectionView(connectionId: connectionId)
     }
 }

@@ -136,17 +136,9 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
                     errorMessage: message
                 )
-            }
-        case let .array(_, data):
-            if let errors = data.first?["errors"] as? [String],
-               let message = errors.first
+            } else if let error = data["error"] as? [String: Any],
+                      let message = error["message"] as? String
             {
-                return ImageGenerationResponse(
-                    status: .FAILED,
-                    errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
-                    errorMessage: message
-                )
-            } else if let message = data.first?["message"] as? String {
                 return ImageGenerationResponse(
                     status: .FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
@@ -160,6 +152,8 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
                 errorMessage: "Unexpected response"
             )
         }
+
+        print(response)
 
         return ImageGenerationResponse(
             status: .FAILED,

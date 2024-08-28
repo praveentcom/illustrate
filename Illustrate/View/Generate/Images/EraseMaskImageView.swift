@@ -517,6 +517,7 @@ struct EraseMaskImageView: View {
                         }
                     }
                     .padding(.all, 32)
+                    .interactiveDismissDisabled()
                 }
         #endif
                 .navigationDestination(isPresented: $isNavigationActive) {

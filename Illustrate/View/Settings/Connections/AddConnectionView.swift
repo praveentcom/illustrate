@@ -3,104 +3,61 @@ import SwiftUI
 
 struct AddConnectionView: View {
     @Environment(\.modelContext) private var modelContext
-    @Binding var isPresented: Bool
-    @State var connectionKeys: [ConnectionKey]
-    @State private var selectedConnection: Connection?
+    @Environment(\.presentationMode) private var presentationMode
+
+    @State var connectionId: UUID
+
+    @State private var connection: Connection
     @State private var keyValue: String = ""
 
-    private var availableConnections: [Connection] {
-        connections.filter { connection in
-            !connectionKeys.contains { connectionKey in
-                connectionKey.connectionId == connection.connectionId
-            }
-        }
+    init(connectionId: UUID) {
+        self.connectionId = connectionId
+        connection = connections.first { $0.connectionId == connectionId }!
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                if availableConnections.isEmpty {
-                    Text("All connections have been added.")
+        Form {
+            Section("Link Connection") {
+                if connection.keyType == EnumConnectionKeyType.JSON {
+                    TextField("JSON Key", text: $keyValue, prompt: Text(connection.keyPlaceholder), axis: .vertical)
+                        .lineLimit(3 ... 8)
                 } else {
-                    if selectedConnection != nil {
-                        Picker("Connection", selection: $selectedConnection) {
-                            ForEach(availableConnections) { connection in
-                                Text(connection.connectionName).tag(connection as Connection?)
-                            }
-                        }
-                        if selectedConnection!.keyType == EnumConnectionKeyType.JSON {
-                            TextField("JSON Key", text: $keyValue, prompt: Text(selectedConnection!.keyPlaceholder), axis: .vertical)
-                                .lineLimit(3 ... 8)
-                        } else {
-                            TextField("API Key", text: $keyValue, prompt: Text(selectedConnection!.keyPlaceholder))
-                        }
-                    }
+                    TextField("API Key", text: $keyValue, prompt: Text(connection.keyPlaceholder))
                 }
-            }
-            .formStyle(.grouped)
-            .onAppear {
-                DispatchQueue.main.async {
-                    selectedConnection = selectedConnection ?? availableConnections.first
+                Button("Save") {
+                    addConnectionKey()
                 }
+                .disabled(keyValue.isEmpty)
             }
-            .navigationTitle("Add Connection")
-            .toolbar {
-                toolbarContent
-            }
-            #if os(macOS)
-            .frame(width: 480)
-            .fixedSize()
-            #endif
-        }
-    }
 
-    @ToolbarContentBuilder
-    private var toolbarContent: some ToolbarContent {
-        #if os(macOS)
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") {
-                    DispatchQueue.main.async {
-                        isPresented = false
-                    }
-                }
+            Section("Instructions") {
+                Image("\(connection.connectionCode)".lowercased())
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 20)
+                Label("To connect \(connection.connectionName), you will need \(connection.keyType == EnumConnectionKeyType.JSON ? "a service account JSON credential" : "an API key"). If you don't have one, use the link below for assistance on how to get one.", systemImage: "1.circle.fill")
+                Label("Once you link the key here, the same will be stored securely in your Apple Keychain. Illustrate will authenticate your requests with the connection provider via this key.", systemImage: "2.circle.fill")
+                Label("To remove or revoke, simply delete from here or via the Keychain access application. Note that Illustrate never stores your keys outside your Keychain.", systemImage: "3.circle.fill")
+                Label("Illustrate doesn't manage billing for these connections. Generation and other workflows might incur charges based on your usage. Refer to your connection provider for details.", systemImage: "4.circle.fill")
+                Link("Visit connnection provider website for assistance", destination: URL(string: connection.connectionOnboardingUrl)!)
             }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    addConnectionKey()
-                }
-                .disabled(selectedConnection == nil || keyValue.isEmpty)
-            }
-        #else
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button("Cancel") {
-                    DispatchQueue.main.async {
-                        isPresented = false
-                    }
-                }
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Save") {
-                    addConnectionKey()
-                }
-                .disabled(selectedConnection == nil || keyValue.isEmpty)
-            }
-        #endif
+        }
+        .formStyle(.grouped)
+        .navigationTitle(labelForItem(EnumNavigationItem.addConnection(connectionId: connectionId)))
     }
 
     private func addConnectionKey() {
-        guard let selectedConnection else { return }
-
         let keychain = KeychainSwift()
         keychain.accessGroup = keychainAccessGroup
         keychain.synchronizable = true
 
-        if keychain.get(selectedConnection.connectionId.uuidString) != nil {
-            keychain.delete(selectedConnection.connectionId.uuidString)
+        if keychain.get(connection.connectionId.uuidString) != nil {
+            keychain.delete(connection.connectionId.uuidString)
         }
 
-        if keychain.set(keyValue, forKey: selectedConnection.connectionId.uuidString) {
+        if keychain.set(keyValue, forKey: connection.connectionId.uuidString) {
             let newKey = ConnectionKey(
-                connectionId: selectedConnection.connectionId
+                connectionId: connection.connectionId
             )
 
             modelContext.insert(newKey)
@@ -114,7 +71,7 @@ struct AddConnectionView: View {
         }
 
         DispatchQueue.main.async {
-            isPresented = false
+            presentationMode.wrappedValue.dismiss()
         }
     }
 }

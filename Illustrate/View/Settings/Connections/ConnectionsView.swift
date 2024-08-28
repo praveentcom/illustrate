@@ -3,17 +3,25 @@ import KeychainSwift
 import SwiftData
 import SwiftUI
 
-struct ConnectedConnectionCell: View {
+struct LinkedConnectionView: View {
     @Environment(\.modelContext) private var modelContext
+
     @State private var isLongPressActive = false
     @State private var showDeleteConfirmation = false
 
-    let connectionName: String
+    let connection: Connection
     let connectionKey: ConnectionKey
 
     var body: some View {
         HStack {
-            Text(connectionName)
+            Label {
+                Text("\(connection.connectionName)")
+            } icon: {
+                Image("\(connection.connectionCode)_square".lowercased())
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
+            }
             Spacer()
             Image(systemName: "minus.circle")
                 .font(.headline)
@@ -25,7 +33,7 @@ struct ConnectedConnectionCell: View {
                 }
         }
         .confirmationDialog(
-            "Are you sure you want to disconnect \(connectionName)?",
+            "Are you sure you want to disconnect \(connection.connectionName)?",
             isPresented: $showDeleteConfirmation,
             titleVisibility: .visible
         ) {
@@ -60,8 +68,6 @@ struct ConnectionsView: View {
     @Query(sort: \ConnectionKey.createdAt, order: .reverse) private var connectionKeys: [ConnectionKey]
     @AppStorage("hasRequestedTrackingAuthorization") private var hasRequestedTrackingAuthorization = false
 
-    @State private var showingAddConnection = false
-
     func requestTrackingAuthorization() {
         ATTrackingManager.requestTrackingAuthorization { status in
             hasRequestedTrackingAuthorization = true
@@ -81,17 +87,43 @@ struct ConnectionsView: View {
         }
     }
 
+    func getLinkedConnections() -> [Connection] {
+        return connections.filter { connection in
+            connectionKeys.contains(where: { connection.connectionId == $0.connectionId })
+        }
+    }
+
+    func getUnlinkedConnections() -> [Connection] {
+        return connections.filter { connection in
+            !connectionKeys.contains(where: { connection.connectionId == $0.connectionId })
+        }
+    }
+
     var body: some View {
         Form {
-            Section("Enabled Connections") {
-                if connectionKeys.isEmpty {
-                    Text("Tap the 'Add Connection' button to add one.")
-                } else {
-                    ForEach(connectionKeys) { connectionKey in
-                        ConnectedConnectionCell(
-                            connectionName: connections.first(where: { $0.connectionId == connectionKey.connectionId })?.connectionName ?? "",
-                            connectionKey: connectionKey
-                        )
+            if getLinkedConnections().count > 0 {
+                Section("Linked Connections") {
+                    ForEach(getLinkedConnections(), id: \.self) { connection in
+                        if let connectionKey = connectionKeys.first(where: { $0.connectionId == connection.connectionId }) {
+                            LinkedConnectionView(connection: connection, connectionKey: connectionKey)
+                        }
+                    }
+                }
+            }
+
+            if getUnlinkedConnections().count > 0 {
+                Section("Available Connections") {
+                    ForEach(getUnlinkedConnections(), id: \.self) { connection in
+                        NavigationLink(value: EnumNavigationItem.addConnection(connectionId: connection.connectionId)) {
+                            Label {
+                                Text("\(connection.connectionName)")
+                            } icon: {
+                                Image("\(connection.connectionCode)_square".lowercased())
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 20, height: 20)
+                            }
+                        }
                     }
                 }
             }
@@ -101,16 +133,6 @@ struct ConnectionsView: View {
             if !hasRequestedTrackingAuthorization {
                 requestTrackingAuthorization()
             }
-        }
-        .toolbar {
-            Button("+ Connect") {
-                DispatchQueue.main.async {
-                    showingAddConnection = true
-                }
-            }
-        }
-        .sheet(isPresented: $showingAddConnection) {
-            AddConnectionView(isPresented: $showingAddConnection, connectionKeys: connectionKeys)
         }
         .navigationTitle(labelForItem(.settingsConnections))
     }
