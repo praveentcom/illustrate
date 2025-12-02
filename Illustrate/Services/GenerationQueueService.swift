@@ -103,7 +103,7 @@ class GenerationQueueService: ObservableObject {
                 errorMessage: "Invalid request data"
             )
             // Continue processing next item
-            if !queueItems.filter({ $0.status == .IN_PROGRESS }).isEmpty {
+            if !queueItems.filter({ $0.status == EnumQueueItemStatus.IN_PROGRESS }).isEmpty {
                 await processQueue()
             }
             return
@@ -140,7 +140,7 @@ class GenerationQueueService: ObservableObject {
         }
         
         // Continue processing next item
-        if !queueItems.filter({ $0.status == .IN_PROGRESS }).isEmpty {
+        if !queueItems.filter({ $0.status == EnumQueueItemStatus.IN_PROGRESS }).isEmpty {
             await processQueue()
         }
     }
@@ -182,7 +182,7 @@ class GenerationQueueService: ObservableObject {
             queueItems = try context.fetch(descriptor)
             
             // Resume processing if there are in-progress items
-            if queueItems.contains(where: { $0.status == .IN_PROGRESS }) {
+            if queueItems.contains(where: { $0.status == EnumQueueItemStatus.IN_PROGRESS }) {
                 startProcessing()
             }
         } catch {

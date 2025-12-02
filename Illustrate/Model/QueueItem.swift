@@ -28,21 +28,21 @@ class QueueItem: Identifiable, Codable {
     var id: UUID = UUID()
     var createdAt: Date = Date()
     var updatedAt: Date = Date()
-    var status: EnumQueueItemStatus = .IN_PROGRESS
+    var status: EnumQueueItemStatus = EnumQueueItemStatus.IN_PROGRESS
     var request: ImageGenerationRequest? = nil
     var response: ImageSetResponse? = nil
     var errorMessage: String? = nil
     var setId: UUID? = nil
-    var setType: EnumSetType = .GENERATE
+    var setType: EnumSetType = EnumSetType.GENERATE
     
     init(
         request: ImageGenerationRequest,
-        setType: EnumSetType = .GENERATE
+        setType: EnumSetType = EnumSetType.GENERATE
     ) {
         self.id = UUID()
         self.createdAt = Date()
         self.updatedAt = Date()
-        self.status = .IN_PROGRESS
+        self.status = EnumQueueItemStatus.IN_PROGRESS
         self.request = request
         self.setType = setType
     }

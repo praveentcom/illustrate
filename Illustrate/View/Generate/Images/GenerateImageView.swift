@@ -12,6 +12,9 @@ struct GenerateImageView: View {
 
     @State private var selectedConnectionId: String = ""
     @State private var selectedModelId: String = ""
+    
+    @State private var isNavigationActive: Bool = false
+    @State private var selectedSetId: UUID? = nil
 
     func getSupportedModels() -> [ConnectionModel] {
         if selectedConnectionId == "" {

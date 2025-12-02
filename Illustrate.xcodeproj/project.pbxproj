@@ -64,6 +64,9 @@
 		ACA50E242EDF149900738A80 /* EditMaskImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA50E1D2EDF149900738A80 /* EditMaskImageViewModel.swift */; };
 		ACA50E292EDF18EB00738A80 /* InfoLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA50E272EDF18EB00738A80 /* InfoLabel.swift */; };
 		ACA50E2A2EDF18EB00738A80 /* InfoTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA50E282EDF18EB00738A80 /* InfoTooltip.swift */; };
+		ACA50F342EDF27E100738A80 /* GenerationQueueService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA50F332EDF27E100738A80 /* GenerationQueueService.swift */; };
+		ACA50F362EDF27F400738A80 /* QueueItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA50F352EDF27F400738A80 /* QueueItem.swift */; };
+		ACA50F392EDF286000738A80 /* QueueSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA50F372EDF286000738A80 /* QueueSidebarView.swift */; };
 		ACAB78602C6B1C2E00EED0E8 /* GalleryGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB785F2C6B1C2E00EED0E8 /* GalleryGridView.swift */; };
 		ACAB78622C6B4B5D00EED0E8 /* ImageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB78612C6B4B5D00EED0E8 /* ImageAdapter.swift */; };
 		ACAB78652C6B53FC00EED0E8 /* GenerationImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB78642C6B53FC00EED0E8 /* GenerationImageView.swift */; };
@@ -173,6 +176,9 @@
 		ACA50E202EDF149900738A80 /* ImageToVideoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageToVideoViewModel.swift; sourceTree = "<group>"; };
 		ACA50E272EDF18EB00738A80 /* InfoLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoLabel.swift; sourceTree = "<group>"; };
 		ACA50E282EDF18EB00738A80 /* InfoTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoTooltip.swift; sourceTree = "<group>"; };
+		ACA50F332EDF27E100738A80 /* GenerationQueueService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerationQueueService.swift; sourceTree = "<group>"; };
+		ACA50F352EDF27F400738A80 /* QueueItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueItem.swift; sourceTree = "<group>"; };
+		ACA50F372EDF286000738A80 /* QueueSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueSidebarView.swift; sourceTree = "<group>"; };
 		ACAB785F2C6B1C2E00EED0E8 /* GalleryGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryGridView.swift; sourceTree = "<group>"; };
 		ACAB78612C6B4B5D00EED0E8 /* ImageAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAdapter.swift; sourceTree = "<group>"; };
 		ACAB78642C6B53FC00EED0E8 /* GenerationImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerationImageView.swift; sourceTree = "<group>"; };
@@ -293,6 +299,7 @@
 		AC2CE31D2C694B4B00893DC2 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				ACA50F352EDF27F400738A80 /* QueueItem.swift */,
 				ACE44C322C78D4A00008BB9D /* Navigation.swift */,
 				AC2CE31E2C694B5D00893DC2 /* Connection.swift */,
 				AC2CE3202C694E2A00893DC2 /* ConnectionModel.swift */,
@@ -350,6 +357,7 @@
 		AC2CE33F2C69F77000893DC2 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				ACA50F332EDF27E100738A80 /* GenerationQueueService.swift */,
 				AC5DC7B1CFF1F64D65A564A5 /* ConnectionService.swift */,
 				AC48BD442C7B99720054F1AC /* HuggingFace */,
 				AC48BD392C7B772C0054F1AC /* Fal */,
@@ -469,6 +477,14 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		ACA50F382EDF286000738A80 /* Queue */ = {
+			isa = PBXGroup;
+			children = (
+				ACA50F372EDF286000738A80 /* QueueSidebarView.swift */,
+			);
+			path = Queue;
+			sourceTree = "<group>";
+		};
 		ACAB785B2C6B1A0D00EED0E8 /* Gallery */ = {
 			isa = PBXGroup;
 			children = (
@@ -483,6 +499,7 @@
 		ACAB78682C6B895500EED0E8 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				ACA50F382EDF286000738A80 /* Queue */,
 				ACE44C3B2C79CF9D0008BB9D /* Atoms */,
 				ACE44C3C2C79CFAE0008BB9D /* Styles */,
 				ACE44C3D2C79CFBE0008BB9D /* Views */,
@@ -752,6 +769,7 @@
 				ACA0FF5F2C6D4D1400A8C1D5 /* G_STABILITY_CREATIVE_UPSCALE.swift in Sources */,
 				ACA0FF6C2C6E307300A8C1D5 /* MathAdapter.swift in Sources */,
 				ACCAC5CF2C71E997009A2EA8 /* G_STABILITY_IMAGE_TO_VIDEO.swift in Sources */,
+				ACA50F342EDF27E100738A80 /* GenerationQueueService.swift in Sources */,
 				AC2CE32C2C69C88600893DC2 /* GenerateImageView.swift in Sources */,
 				ACA50E212EDF149900738A80 /* EraseMaskImageViewModel.swift in Sources */,
 				ACA50E222EDF149900738A80 /* GenerateImageViewModel.swift in Sources */,
@@ -774,6 +792,7 @@
 				ACCAC5BD2C70CE7B009A2EA8 /* G_STABILITY_OUTPAINT.swift in Sources */,
 				ACEC4D8E2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift in Sources */,
 				ACA0FF572C6D3BE600A8C1D5 /* G_STABILITY_CORE.swift in Sources */,
+				ACA50F362EDF27F400738A80 /* QueueItem.swift in Sources */,
 				ACE44C3F2C79CFD50008BB9D /* PendingConnectionView.swift in Sources */,
 				AC48BD332C7B49700054F1AC /* DateAdapter.swift in Sources */,
 				AC2CE3342C69C90B00893DC2 /* ConnectionsView.swift in Sources */,
@@ -795,6 +814,7 @@
 				ACAB78652C6B53FC00EED0E8 /* GenerationImageView.swift in Sources */,
 				AC2CE34B2C6A36F800893DC2 /* G_OPENAI_DALLE3.swift in Sources */,
 				ACCAC5C32C7100CD009A2EA8 /* G_STABILITY_SEARCH_AND_REPLACE.swift in Sources */,
+				ACA50F392EDF286000738A80 /* QueueSidebarView.swift in Sources */,
 				ACE258012C738A6D00A989CA /* UsageMetricsView.swift in Sources */,
 				ACA0FF5B2C6D496500A8C1D5 /* G_STABILITY_ULTRA.swift in Sources */,
 				ACCAC5CA2C7126B5009A2EA8 /* ToggleStyle.swift in Sources */,

@@ -170,33 +170,33 @@ struct QueueItemRow: View {
     
     private var statusColor: Color {
         switch item.status {
-        case .IN_PROGRESS:
+        case EnumQueueItemStatus.IN_PROGRESS:
             return .blue
-        case .SUCCESSFUL:
+        case EnumQueueItemStatus.SUCCESSFUL:
             return .green
-        case .FAILED:
+        case EnumQueueItemStatus.FAILED:
             return .red
         }
     }
     
     private var statusIcon: String {
         switch item.status {
-        case .IN_PROGRESS:
+        case EnumQueueItemStatus.IN_PROGRESS:
             return "clock.fill"
-        case .SUCCESSFUL:
+        case EnumQueueItemStatus.SUCCESSFUL:
             return "checkmark.circle.fill"
-        case .FAILED:
+        case EnumQueueItemStatus.FAILED:
             return "xmark.circle.fill"
         }
     }
     
     private var statusText: String {
         switch item.status {
-        case .IN_PROGRESS:
+        case EnumQueueItemStatus.IN_PROGRESS:
             return "Generating..."
-        case .SUCCESSFUL:
+        case EnumQueueItemStatus.SUCCESSFUL:
             return "Complete - Tap to view"
-        case .FAILED:
+        case EnumQueueItemStatus.FAILED:
             return "Failed"
         }
     }
