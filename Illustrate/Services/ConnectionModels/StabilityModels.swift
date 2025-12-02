@@ -78,7 +78,7 @@ struct StabilityModels {
                 modelId: EnumConnectionModelCode.STABILITY_SD3.modelId,
                 modelCode: EnumConnectionModelCode.STABILITY_SD3,
                 modelSetType: EnumSetType.GENERATE,
-                modelName: "Stable 3.0 Large (Deprecated)",
+                modelName: "Stable 3.0 Large",
                 modelDescription: "Generate images using Stable Diffusion 3 Large (SD3). This model is deprecated - please use SD 3.5 models instead.",
                 modelSupportedParams: ConnectionModelSupportParams(
                     prompt: true,
@@ -102,7 +102,7 @@ struct StabilityModels {
                 modelId: EnumConnectionModelCode.STABILITY_SD3_TURBO.modelId,
                 modelCode: EnumConnectionModelCode.STABILITY_SD3_TURBO,
                 modelSetType: EnumSetType.GENERATE,
-                modelName: "Stable 3.0 Turbo (Deprecated)",
+                modelName: "Stable 3.0 Turbo",
                 modelDescription: "Generate images using Stable Diffusion 3 Large Turbo (SD3 Turbo). This model is deprecated - please use SD 3.5 Large Turbo instead.",
                 modelSupportedParams: ConnectionModelSupportParams(
                     prompt: true,
@@ -395,7 +395,7 @@ struct StabilityModels {
                 modelLaunchDate: getDateFromString("2023-07-26"),
                 modelGenerateBaseURL: "https://api.stability.ai/v2beta/image-to-video",
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Image-to-Video",
-                active: true
+                active: false
             )
         ]
     }

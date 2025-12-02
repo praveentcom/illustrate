@@ -122,7 +122,7 @@ struct GoogleCloudModels {
                 modelLaunchDate: getDateFromString("2024-12-01"),
                 modelGenerateBaseURL: "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict",
                 modelAPIDocumentationURL: "https://ai.google.dev/gemini-api/docs/imagen",
-                active: true
+                active: false
             ),
             ConnectionModel(
                 connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
