@@ -5,123 +5,28 @@ import SwiftData
 import SwiftUI
 
 struct ImageToVideoView: View {
-    // MARK: Model Context
-    
+    // MARK: Dependencies
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \ConnectionKey.createdAt, order: .reverse) private var connectionKeys: [ConnectionKey]
-    
-    @State private var selectedConnectionId: String = ""
-    @State private var selectedModelId: String = ""
-    
-    func getSupportedModels() -> [ConnectionModel] {
-        if selectedConnectionId == "" {
-            return []
-        }
-        
-        return ConnectionService.shared.models(for: EnumSetType.VIDEO_IMAGE).filter {
-            $0.connectionId.uuidString == selectedConnectionId
-        }
+
+    @StateObject private var viewModel: ImageToVideoViewModel
+
+    // MARK: Initialization
+    init() {
+        _viewModel = StateObject(wrappedValue: ImageToVideoViewModel(modelContext: nil))
     }
-    
-    func getSelectedModel() -> ConnectionModel? {
-        return ConnectionService.shared.model(by: selectedModelId)
-    }
-    
-    // MARK: Form States
-    
-    private enum Field: Int, CaseIterable {
-        case prompt, negativePrompt
-    }
-    
-    @FocusState private var focusedField: Field?
-    
-    @State private var prompt: String = ""
-    @State private var negativePrompt: String = ""
-    
-    @State private var artDimensions: String = ""
-    @State private var artQuality: EnumArtQuality = .HD
-    @State private var artStyle: EnumArtStyle = .VIVID
-    @State private var artVariant: EnumArtVariant = .NORMAL
-    @State private var numberOfVideos: Int = 1
-    @State private var promptEnhanceOpted: Bool = false
-    @State private var motion: Double = 135
-    @State private var stickyness: Double = 2.0
-    
-    // MARK: Photo States
-    
-    @State private var isPhotoPickerOpen: Bool = false
-    
-    @State private var selectedImageItem: PhotosPickerItem?
-    @State private var selectedImage: PlatformImage?
-    @State private var colorPalette: [String] = []
-    
-    @State private var isCropSheetOpen: Bool = false
-    
-    // MARK: Generation States
-    
-    @State private var isGenerating: Bool = false
-    @State private var errorState = ErrorState(message: "", isShowing: false)
-    func generateVideo() async -> VideoSetResponse? {
-        if !isGenerating {
-            let keychain = KeychainSwift()
-            keychain.accessGroup = keychainAccessGroup
-            keychain.synchronizable = true
-            
-            let connectionSecret: String? = keychain.get(getSelectedModel()!.connectionId.uuidString)
-            if connectionSecret == nil {
-                return VideoSetResponse(
-                    status: .FAILED,
-                    errorCode: EnumGenerateVideoAdapterErrorCode.ADAPTER_ERROR,
-                    errorMessage: "Keychain record not found"
-                )
-            }
-            
-            isGenerating = true
-            
-            let adapter = GenerateVideoAdapter(
-                videoGenerationRequest: VideoGenerationRequest(
-                    modelId: getSelectedModel()!.modelId.uuidString,
-                    artDimensions: artDimensions,
-                    clientImage: selectedImage?.toBase64PNG(),
-                    connectionKey: connectionKeys.first(where: { $0.connectionId == getSelectedModel()!.connectionId })!,
-                    connectionSecret: connectionSecret!,
-                    motion: Int(motion),
-                    stickyness: Int(stickyness)
-                ),
-                modelContext: modelContext
-            )
-            
-            let response: VideoSetResponse = await adapter.makeRequest()
-            
-            isGenerating = false
-#if !os(macOS)
-            try? await Task.sleep(nanoseconds: 500_000_000)
-#endif
-            
-            return response
-        }
-        
-        return nil
-    }
-    
-    // MARK: Navigation States
-    
-    @State private var isNavigationActive: Bool = false
-    @State private var selectedSetId: UUID? = nil
-    
-    // MARK: Helper Functions
-    
+
+    // MARK: Focus State
+    @FocusState private var focusedField: ImageToVideoViewModel.Field?
+
     var body: some View {
         VStack {
-            if selectedModelId != "" && !connectionKeys.isEmpty {
+            if viewModel.hasConnection && !connectionKeys.isEmpty {
                 Form {
                     Section(header: Text("Select Model")) {
-                        Picker("Connection", selection: $selectedConnectionId) {
+                        Picker("Connection", selection: $viewModel.selectedConnectionId) {
                             ForEach(
-                                connections.filter { connection in
-                                    connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-                                    ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .VIDEO_IMAGE }
-                                }, id: \.connectionId
+                                viewModel.getSupportedConnections(connectionKeys: connectionKeys), id: \.connectionId
                             ) { connection in
                                 HStack {
 #if !os(macOS)
@@ -138,12 +43,13 @@ struct ImageToVideoView: View {
 #if !os(macOS)
                         .pickerStyle(.navigationLink)
 #endif
-                        .onChange(of: selectedConnectionId) {
-                            selectedModelId = getSupportedModels().first?.modelId.uuidString ?? ""
+                        .onChange(of: viewModel.selectedConnectionId) {
+                            let models = viewModel.getSupportedModels(connectionKeys: connectionKeys)
+                            viewModel.selectedModelId = models.first?.modelId.uuidString ?? ""
                         }
-                        
-                        Picker("Model", selection: $selectedModelId) {
-                            ForEach(getSupportedModels()) { model in
+
+                        Picker("Model", selection: $viewModel.selectedModelId) {
+                            ForEach(viewModel.getSupportedModels(connectionKeys: connectionKeys)) { model in
                                 Text(model.modelName)
                                     .tag(model.modelId.uuidString)
                             }
@@ -151,21 +57,15 @@ struct ImageToVideoView: View {
 #if !os(macOS)
                         .pickerStyle(.navigationLink)
 #endif
-                        .onChange(of: selectedModelId) {
-                            let supportedDimensions = getSelectedModel()?.modelSupportedParams.dimensions ?? []
-                            
-                            if artDimensions == "" {
-                                artDimensions = supportedDimensions.first ?? ""
-                            } else if !supportedDimensions.contains(artDimensions) {
-                                artDimensions = supportedDimensions.first ?? ""
-                            }
+                        .onChange(of: viewModel.selectedModelId) {
+                            viewModel.validateAndSetDimensions()
                         }
                     }
-                    .disabled(isGenerating)
-                    
+                    .disabled(viewModel.isGenerating)
+
                     Section("Art Details") {
-                        Picker("Dimensions", selection: $artDimensions) {
-                            ForEach(getSelectedModel()?.modelSupportedParams.dimensions ?? [], id: \.self) { dimension in
+                        Picker("Dimensions", selection: $viewModel.artDimensions) {
+                            ForEach(viewModel.getSelectedModel()?.modelSupportedParams.dimensions ?? [], id: \.self) { dimension in
                                 HStack {
 #if !os(macOS)
                                     Image("symbol_dimension_\(getAspectRatio(dimension: dimension).width)_\(getAspectRatio(dimension: dimension).height)")
@@ -181,13 +81,12 @@ struct ImageToVideoView: View {
 #if !os(macOS)
                         .pickerStyle(.navigationLink)
 #endif
-                        .onChange(of: artDimensions) {
-                            selectedImage = nil
-                            colorPalette = []
+                        .onChange(of: viewModel.artDimensions) {
+                            viewModel.updateDimensions(dimension: viewModel.artDimensions)
                         }
-                        
-                        if getSelectedModel()?.modelSupportedParams.quality ?? false {
-                            Picker("Art Quality", selection: $artQuality) {
+
+                        if viewModel.getSelectedModel()?.modelSupportedParams.quality ?? false {
+                            Picker("Art Quality", selection: $viewModel.artQuality) {
                                 ForEach(EnumArtQuality.allCases, id: \.self) { quality in
                                     HStack {
 #if !os(macOS)
@@ -206,9 +105,9 @@ struct ImageToVideoView: View {
                             .pickerStyle(.navigationLink)
 #endif
                         }
-                        
-                        if getSelectedModel()?.modelSupportedParams.variant ?? false {
-                            Picker("Art Variant", selection: $artVariant) {
+
+                        if viewModel.getSelectedModel()?.modelSupportedParams.variant ?? false {
+                            Picker("Art Variant", selection: $viewModel.artVariant) {
                                 ForEach(EnumArtVariant.allCases, id: \.self) { variant in
                                     Text(variant.rawValue).tag(variant)
                                 }
@@ -217,9 +116,9 @@ struct ImageToVideoView: View {
                             .pickerStyle(.navigationLink)
 #endif
                         }
-                        
-                        if getSelectedModel()?.modelSupportedParams.style ?? false {
-                            Picker("Color Style", selection: $artStyle) {
+
+                        if viewModel.getSelectedModel()?.modelSupportedParams.style ?? false {
+                            Picker("Color Style", selection: $viewModel.artStyle) {
                                 ForEach(EnumArtStyle.allCases, id: \.self) { style in
                                     HStack {
 #if !os(macOS)
@@ -238,17 +137,17 @@ struct ImageToVideoView: View {
 #endif
                         }
                     }
-                    .disabled(isGenerating)
-                    
+                    .disabled(viewModel.isGenerating)
+
                     Section {
                         ZStack {
-                            SmoothAnimatedGradientView(colors: colorPalette.compactMap { hex in
+                            SmoothAnimatedGradientView(colors: viewModel.colorPalette.compactMap { hex in
                                 Color(getUniversalColorFromHex(hexString: hex))
                             })
-                            
-                            if selectedImage != nil {
+
+                            if viewModel.selectedImage != nil {
 #if os(macOS)
-                                Image(nsImage: selectedImage!)
+                                Image(nsImage: viewModel.selectedImage!)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -257,7 +156,7 @@ struct ImageToVideoView: View {
                                     .padding(.vertical, 6)
                                     .frame(maxWidth: .infinity)
 #else
-                                Image(uiImage: selectedImage!)
+                                Image(uiImage: viewModel.selectedImage!)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -270,64 +169,60 @@ struct ImageToVideoView: View {
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                     .frame(height: 200)
                                     .onTapGesture {
-                                        DispatchQueue.main.async {
-                                            isPhotoPickerOpen = true
-                                        }
+                                        viewModel.isPhotoPickerOpen = true
                                     }
                             }
                         }
-                        
+
                         HStack(spacing: 24) {
                             Spacer()
-                            Button(selectedImage != nil ? "Change image" : "Select image") {
-                                DispatchQueue.main.async {
-                                    isPhotoPickerOpen = true
-                                }
+                            Button(viewModel.selectedImage != nil ? "Change image" : "Select image") {
+                                viewModel.isPhotoPickerOpen = true
                             }
                             Spacer()
                         }
                     }
-                    
-                    if getSelectedModel()?.modelSupportedParams.prompt ?? false {
+
+                    if viewModel.getSelectedModel()?.modelSupportedParams.prompt ?? false {
                         Section(header: Text("Generate instructions")) {
-                            TextField("What's your video about?", text: $prompt, prompt: Text("Eg. Cat flying over the clouds"), axis: .vertical)
-                                .limitText($prompt, to: getSelectedModel()?.modelSupportedParams.maxPromptLength ?? 1)
+                            TextField("What's your video about?", text: $viewModel.prompt, prompt: Text("Eg. Cat flying over the clouds"), axis: .vertical)
+                                .limitText($viewModel.prompt, to: viewModel.getSelectedModel()?.modelSupportedParams.maxPromptLength ?? 1)
                                 .lineLimit(2 ... 8)
                                 .focused($focusedField, equals: .prompt)
-                            if getSelectedModel()?.modelSupportedParams.negativePrompt ?? false {
-                                TextField("Negative prompt (if any)", text: $negativePrompt, prompt: Text("Enter negative prompt here"), axis: .vertical)
-                                    .limitText($negativePrompt, to: getSelectedModel()?.modelSupportedParams.maxPromptLength ?? 1)
+                            if viewModel.getSelectedModel()?.modelSupportedParams.negativePrompt ?? false {
+                                TextField("Negative prompt (if any)", text: $viewModel.negativePrompt, prompt: Text("Enter negative prompt here"), axis: .vertical)
+                                    .limitText($viewModel.negativePrompt, to: viewModel.getSelectedModel()?.modelSupportedParams.maxPromptLength ?? 1)
                                     .lineLimit(2 ... 8)
                                     .focused($focusedField, equals: .negativePrompt)
                             }
                         }
-                        .disabled(isGenerating)
+                        .disabled(viewModel.isGenerating)
                     }
-                    
+
                     Section("Video Preferences") {
                         VStack {
 #if os(iOS)
-                            Text("Motion: \(Int(motion / 255 * 100))% (\(Int(motion)))")
+                            Text("Motion: \(Int(viewModel.motion / 255 * 100))% (\(Int(viewModel.motion)))")
 #endif
-                            Slider(value: $motion, in: 15 ... 255, step: 15) {
-                                Text("Motion: \(Int(motion / 255 * 100))% (\(Int(motion)))")
+                            Slider(value: $viewModel.motion, in: 15 ... 255, step: 15) {
+                                Text("Motion: \(Int(viewModel.motion / 255 * 100))% (\(Int(viewModel.motion)))")
                             }
                         }
                         VStack {
 #if os(iOS)
-                            Text("Stickyness: \(Int(stickyness * 10))% \(stickyness, specifier: "%.1f")")
+                            Text("Stickyness: \(Int(viewModel.stickyness * 10))% \(viewModel.stickyness, specifier: "%.1f")")
 #endif
-                            Slider(value: $stickyness, in: 0 ... 10, step: 0.5) {
-                                Text("Stickyness: \(Int(stickyness * 10))% \(stickyness, specifier: "%.1f")")
+                            Slider(value: $viewModel.stickyness, in: 0 ... 10, step: 0.5) {
+                                Text("Stickyness: \(Int(viewModel.stickyness * 10))% \(viewModel.stickyness, specifier: "%.1f")")
                             }
                         }
                     }
-                    .disabled(isGenerating)
-                    
+                    .disabled(viewModel.isGenerating)
+
                     Section(header: Text("Additional requests")) {
-                        if getSelectedModel()?.modelSupportedParams.count ?? 1 > 1 {
-                            Picker("Number of videos", selection: $numberOfVideos) {
-                                ForEach(1 ... (getSelectedModel()?.modelSupportedParams.count ?? 1), id: \.self) { count in
+                        if viewModel.getSelectedModel()?.modelSupportedParams.count ?? 1 > 1 {
+                            Picker("Number of videos", selection: $viewModel.numberOfVideos) {
+                                ForEach(1 ... (viewModel.getSelectedModel()?.modelSupportedParams.count ?? 1), id: \.self) { count in
                                     Text("\(count)")
                                         .tag(count)
                                 }
@@ -336,123 +231,76 @@ struct ImageToVideoView: View {
                             .pickerStyle(.navigationLink)
 #endif
                         }
-                        
-                        if (getSelectedModel()?.modelSupportedParams.autoEnhance ?? false) && ConnectionService.shared.isOpenAIConnected(connectionKeys: connectionKeys) {
+
+                        if (viewModel.getSelectedModel()?.modelSupportedParams.autoEnhance ?? false) && ConnectionService.shared.isOpenAIConnected(connectionKeys: connectionKeys) {
                             HStack {
-                                Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
-                                
+                                Toggle("Auto-enhance prompt?", isOn: $viewModel.promptEnhanceOpted)
+
                                 Image(systemName: "info.circle")
                                     .foregroundColor(.secondary)
                                     .help(Text("Uses OpenAI to enhance your prompt for better results"))
                             }
                         }
                     }
-                        
-                        Button(
-                            isGenerating ? "Generating, please wait..." : "Generate Video"
-                        ) {
-                            DispatchQueue.main.async {
-                                focusedField = nil
-                            }
-                            
-                            Task {
-                                let response = await generateVideo()
-                                if response?.status == EnumGenerationStatus.GENERATED && response?.set?.id != nil {
-                                    DispatchQueue.main.async {
-                                        selectedSetId = response!.set!.id
-                                        isNavigationActive = true
-                                    }
-                                } else if response?.status == EnumGenerationStatus.FAILED {
-                                    DispatchQueue.main.async {
-                                        errorState = ErrorState(
-                                            message: response?.errorMessage ?? "Something went wrong",
-                                            isShowing: true
-                                        )
-                                    }
-                                }
-                            }
+
+                    Button(
+                        viewModel.isGenerating ? "Generating, please wait..." : "Generate Video"
+                    ) {
+                        DispatchQueue.main.async {
+                            focusedField = nil
                         }
-                        .disabled(isGenerating || selectedImage == nil)
-                    }
-                    .formStyle(.grouped)
-                    .photosPicker(isPresented: $isPhotoPickerOpen, selection: $selectedImageItem, matching: .all(of: [
-                        .not(.videos),
-                    ]))
-                    .onChange(of: selectedImageItem) {
+
                         Task {
-                            if let loaded = try? await selectedImageItem?.loadTransferable(type: Data.self) {
-#if os(macOS)
-                                selectedImage = NSImage(data: loaded)
-#else
-                                selectedImage = UIImage(data: loaded)
-#endif
-                                
-                                if let selectedImage = selectedImage {
-                                    colorPalette = dominantColorsFromImage(selectedImage, clusterCount: 6)
-                                    isCropSheetOpen = true
-                                }
-                            } else {
-                                selectedImage = nil
-                                colorPalette = []
-                            }
+                            let response = await viewModel.generateVideo(connectionKeys: connectionKeys)
+                            viewModel.handleGenerationResponse(response: response)
                         }
                     }
-                    .sheet(isPresented: $isCropSheetOpen) {
-                        ImageCropAdapter(
-                            image: selectedImage!,
-                            cropDimensions: artDimensions,
-                            onCropConfirm: { image in
-                                selectedImage = image.resizeImage(targetSize: CGSize(
-                                    width: getAspectRatio(dimension: artDimensions).actualWidth,
-                                    height: getAspectRatio(dimension: artDimensions).actualHeight
-                                ))
-                                
-                                colorPalette = dominantColorsFromImage(selectedImage!, clusterCount: 6)
-                                
-                                isCropSheetOpen = false
-                            },
-                            onCropCancel: {
-                                selectedImage = nil
-                                colorPalette = []
-                                
-                                isCropSheetOpen = false
-                            }
-                        )
+                    .disabled(!viewModel.canGenerate)
+                }
+                .formStyle(.grouped)
+                .photosPicker(isPresented: $viewModel.isPhotoPickerOpen, selection: $viewModel.selectedImageItem, matching: .all(of: [
+                    .not(.videos),
+                ]))
+                .onChange(of: viewModel.selectedImageItem) {
+                    Task {
+                        if let loaded = try? await viewModel.selectedImageItem?.loadTransferable(type: Data.self) {
+                            viewModel.processSelectedImage(loaded: loaded)
+                        } else {
+                            viewModel.selectedImage = nil
+                            viewModel.colorPalette = []
+                        }
                     }
-                
+                }
+                .sheet(isPresented: $viewModel.isCropSheetOpen) {
+                    ImageCropAdapter(
+                        image: viewModel.selectedImage!,
+                        cropDimensions: viewModel.artDimensions,
+                        onCropConfirm: { image in
+                            viewModel.handleImageCropping(image: image)
+                        },
+                        onCropCancel: {
+                            viewModel.cancelImageCropping()
+                        }
+                    )
+                }
+
             } else {
                 PendingConnectionView(setType: .VIDEO_IMAGE)
             }
         }
         .onAppear {
-            if !connectionKeys.isEmpty && selectedModelId.isEmpty {
-                let supportedConnections = connections.filter { connection in
-                    connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-                    ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .VIDEO_IMAGE }
-                }
-                
-                if let firstSupportedConnection = supportedConnections.first,
-                   let key = connectionKeys.first(where: { $0.connectionId == firstSupportedConnection.connectionId })
-                {
-                    selectedConnectionId = key.connectionId.uuidString
-                    selectedModelId = getSupportedModels().first?.modelId.uuidString ?? ""
-                    
-                    if !selectedConnectionId.isEmpty, !selectedModelId.isEmpty {
-                        artDimensions = getSelectedModel()?.modelSupportedParams.dimensions.first ?? ""
-                    }
-                }
-            }
+            viewModel.initialize(connectionKeys: connectionKeys)
         }
 #if os(macOS)
-        .toast(isPresenting: $errorState.isShowing, duration: 12, offsetY: 16) {
+        .toast(isPresenting: $viewModel.errorState.isShowing, duration: 12, offsetY: 16) {
             AlertToast(
                 displayMode: .hud,
                 type: .systemImage("exclamationmark.triangle", Color.red),
-                title: errorState.message,
+                title: viewModel.errorState.message,
                 subTitle: "Tap to dismiss"
             )
         }
-        .toast(isPresenting: $isGenerating, offsetY: 16) {
+        .toast(isPresenting: $viewModel.isGenerating, offsetY: 16) {
             AlertToast(
                 displayMode: .hud,
                 type: .loading,
@@ -461,14 +309,14 @@ struct ImageToVideoView: View {
             )
         }
 #else
-        .sheet(isPresented: $errorState.isShowing) { [errorState] in
+        .sheet(isPresented: $viewModel.errorState.isShowing) { [viewModel] in
             VStack(alignment: .center, spacing: 24) {
                 VStack(alignment: .center, spacing: 8) {
                     Image(systemName: "exclamationmark.triangle")
                         .resizable()
                         .frame(width: 40, height: 40)
                     VStack(alignment: .center) {
-                        Text(errorState.message)
+                        Text(viewModel.errorState.message)
                             .multilineTextAlignment(.center)
                         Text("Dismiss to try again")
                             .multilineTextAlignment(.center)
@@ -478,7 +326,7 @@ struct ImageToVideoView: View {
             }
             .padding(.all, 32)
         }
-        .sheet(isPresented: $isGenerating) {
+        .sheet(isPresented: $viewModel.isGenerating) {
             VStack(alignment: .center, spacing: 24) {
                 VStack(alignment: .center, spacing: 8) {
                     ProgressView()
@@ -496,15 +344,11 @@ struct ImageToVideoView: View {
             .interactiveDismissDisabled()
         }
 #endif
-        .navigationDestination(isPresented: $isNavigationActive) {
-            if let _selectedSetId = selectedSetId {
+        .navigationDestination(isPresented: $viewModel.isNavigationActive) {
+            if let _selectedSetId = viewModel.selectedSetId {
                 GenerationVideoView(setId: _selectedSetId)
                     .onDisappear {
-                        DispatchQueue.main.async {
-                            focusedField = nil
-                            isNavigationActive = false
-                            selectedSetId = nil
-                        }
+                        viewModel.resetNavigation()
                     }
             }
         }
