@@ -138,12 +138,27 @@ func extractFirstFrameFromVideo(base64Video: String) -> String? {
 }
 
 func getFirstFrameAsBase64Image(from videoURL: URL) -> String? {
-    let asset = AVAsset(url: videoURL)
+    let asset = AVURLAsset(url: videoURL)
     let imageGenerator = AVAssetImageGenerator(asset: asset)
     imageGenerator.appliesPreferredTrackTransform = true
 
-    do {
-        let cgImage = try imageGenerator.copyCGImage(at: .zero, actualTime: nil)
+    var result: String?
+    let semaphore = DispatchSemaphore(value: 0)
+
+    imageGenerator.generateCGImageAsynchronously(for: .zero) { cgImage, time, error in
+        defer {
+            semaphore.signal()
+        }
+
+        if let error = error {
+            print("Error extracting first frame: \(error)")
+            return
+        }
+
+        guard let cgImage = cgImage else {
+            print("Error: No CGImage returned")
+            return
+        }
 
         #if os(macOS)
             let image = NSImage(cgImage: cgImage, size: .zero)
@@ -152,24 +167,22 @@ func getFirstFrameAsBase64Image(from videoURL: URL) -> String? {
                   let bitmapImage = NSBitmapImageRep(data: tiffData),
                   let pngData = bitmapImage.representation(using: .png, properties: [:])
             else {
-                return nil
+                return
             }
 
-            return pngData.base64EncodedString(options: .endLineWithCarriageReturn)
+            result = pngData.base64EncodedString(options: .endLineWithCarriageReturn)
 
         #else
             let image = UIImage(cgImage: cgImage)
 
             guard let pngData = image.pngData() else {
-                return nil
+                return
             }
 
-            return pngData.base64EncodedString(options: .endLineWithCarriageReturn)
+            result = pngData.base64EncodedString(options: .endLineWithCarriageReturn)
         #endif
-
-    } catch {
-        print("Error extracting first frame: \(error)")
-
-        return nil
     }
+
+    semaphore.wait()
+    return result
 }
