@@ -1,5 +1,5 @@
 {
-  "originHash" : "8f94431096a40afb4f123a37e25f3e5cc981e9a53bf40a295353637151e3b4d7",
+  "originHash" : "0d090ee69ee408646b61eb631e3f4a665cefba8301455ac3850b28061140afbe",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/KC-2001MS/OnboardingUI",
       "state" : {
-        "revision" : "1ae875d26cc941534219d6099756bc011be55b5d",
-        "version" : "1.0.0"
+        "revision" : "032555b18e77d64fb43e34fc053e249522f0ad7c",
+        "version" : "1.0.1"
       }
     }
   ],

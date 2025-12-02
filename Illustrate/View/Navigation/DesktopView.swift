@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 
 struct DesktopView: View {
+    @StateObject private var navigationManager = NavigationManager()
     @State private var selectedItem: EnumNavigationItem? = .dashboardWorkspace
     @State private var desktopNavigationPath = NavigationPath()
 
@@ -21,7 +22,7 @@ struct DesktopView: View {
             .frame(minWidth: 240)
         } detail: {
             NavigationStack(path: $desktopNavigationPath) {
-                if let selectedItem = selectedItem {
+                if let selectedItem = navigationManager.selectedNavigationItem ?? selectedItem {
                     viewForItem(selectedItem)
                         .navigationDestination(for: EnumNavigationItem.self) { item in
                             viewForItem(item)
@@ -33,6 +34,12 @@ struct DesktopView: View {
             #if os(macOS)
             .frame(minWidth: 800)
             #endif
+        }
+        .environmentObject(navigationManager)
+        .onChange(of: navigationManager.selectedNavigationItem) { _, newValue in
+            if let newValue = newValue {
+                selectedItem = newValue
+            }
         }
     }
 }

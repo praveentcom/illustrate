@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 
 struct MobileView: View {
+    @StateObject private var navigationManager = NavigationManager()
     @State private var homeNavigationPath = NavigationPath()
     @State private var generationsNavigationPath = NavigationPath()
     @State private var historyNavigationPath = NavigationPath()
@@ -49,5 +50,6 @@ struct MobileView: View {
                 Label("Settings", systemImage: "gear")
             }
         }
+        .environmentObject(navigationManager)
     }
 }

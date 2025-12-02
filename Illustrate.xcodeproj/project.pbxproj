@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		24615B1EE76F472AAF096CE3 /* NavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C46B05E16D46F496DFBDA6 /* NavigationManager.swift */; };
 		AC111F1B2C7D017300170D4F /* OnboardingUI in Frameworks */ = {isa = PBXBuildFile; productRef = AC111F1A2C7D017300170D4F /* OnboardingUI */; };
 		AC111F1E2C7D01B600170D4F /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC111F1D2C7D01B600170D4F /* WelcomeView.swift */; };
 		AC111F212C7D2C2200170D4F /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC111F202C7D2C2200170D4F /* OnboardingView.swift */; };
@@ -17,6 +18,7 @@
 		AC2CE3172C69478400893DC2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC2CE3162C69478400893DC2 /* Preview Assets.xcassets */; };
 		AC2CE31F2C694B5D00893DC2 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE31E2C694B5D00893DC2 /* Connection.swift */; };
 		AC2CE3212C694E2A00893DC2 /* ConnectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE3202C694E2A00893DC2 /* ConnectionModel.swift */; };
+		AC6AEA1F6CC9CA45B8999C9B /* ConnectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5DC7B1CFF1F64D65A564A5 /* ConnectionService.swift */; };
 		AC2CE3232C69504800893DC2 /* ConnectionKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE3222C69504800893DC2 /* ConnectionKey.swift */; };
 		AC2CE3292C69C7DE00893DC2 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE3282C69C7DE00893DC2 /* MainView.swift */; };
 		AC2CE32C2C69C88600893DC2 /* GenerateImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE32B2C69C88600893DC2 /* GenerateImageView.swift */; };
@@ -108,6 +110,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		42C46B05E16D46F496DFBDA6 /* NavigationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationManager.swift; sourceTree = "<group>"; };
 		AC111F1D2C7D01B600170D4F /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		AC111F202C7D2C2200170D4F /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		AC2CE3092C69478300893DC2 /* Illustrate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Illustrate.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -117,6 +120,7 @@
 		AC2CE3162C69478400893DC2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AC2CE31E2C694B5D00893DC2 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
 		AC2CE3202C694E2A00893DC2 /* ConnectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionModel.swift; sourceTree = "<group>"; };
+		AC5DC7B1CFF1F64D65A564A5 /* ConnectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionService.swift; sourceTree = "<group>"; };
 		AC2CE3222C69504800893DC2 /* ConnectionKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionKey.swift; sourceTree = "<group>"; };
 		AC2CE3282C69C7DE00893DC2 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		AC2CE32B2C69C88600893DC2 /* GenerateImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateImageView.swift; sourceTree = "<group>"; };
@@ -324,6 +328,7 @@
 		AC2CE33F2C69F77000893DC2 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				AC5DC7B1CFF1F64D65A564A5 /* ConnectionService.swift */,
 				AC48BD442C7B99720054F1AC /* HuggingFace */,
 				AC48BD392C7B772C0054F1AC /* Fal */,
 				ACEC4D8A2C77C2C100928688 /* Replicate */,
@@ -374,6 +379,7 @@
 			isa = PBXGroup;
 			children = (
 				AC48BD292C7A6A280054F1AC /* iCloudViewModel.swift */,
+				42C46B05E16D46F496DFBDA6 /* NavigationManager.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -634,7 +640,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1540;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 2610;
 				TargetAttributes = {
 					AC2CE3082C69478300893DC2 = {
 						CreatedOnToolsVersion = 15.4;
@@ -694,7 +700,9 @@
 				AC2CE34D2C6A375600893DC2 /* GenerateImageAdapter.swift in Sources */,
 				ACCAC5D52C72235E009A2EA8 /* GenerationVideoView.swift in Sources */,
 				AC48BD2A2C7A6A280054F1AC /* iCloudViewModel.swift in Sources */,
+				24615B1EE76F472AAF096CE3 /* NavigationManager.swift in Sources */,
 				AC2CE3212C694E2A00893DC2 /* ConnectionModel.swift in Sources */,
+				AC6AEA1F6CC9CA45B8999C9B /* ConnectionService.swift in Sources */,
 				ACCAC5D12C71E9B3009A2EA8 /* GenerateVideoAdapter.swift in Sources */,
 				AC2CE33A2C69D1B900893DC2 /* AddConnectionView.swift in Sources */,
 				AC48BD352C7B54680054F1AC /* FieldAdapter.swift in Sources */,
@@ -799,7 +807,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 24J6SG2424;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -821,6 +831,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -860,7 +871,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 24J6SG2424;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -875,6 +888,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -889,10 +903,16 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = JV227HA2DR;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_FILE_ACCESS_DOWNLOADS_FOLDER = readwrite;
+				ENABLE_FILE_ACCESS_PICTURE_FOLDER = readwrite;
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Illustrate/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Illustrate;
@@ -907,13 +927,14 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = so.illustrate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = YES;
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
@@ -934,10 +955,16 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = JV227HA2DR;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_FILE_ACCESS_DOWNLOADS_FOLDER = readwrite;
+				ENABLE_FILE_ACCESS_PICTURE_FOLDER = readwrite;
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Illustrate/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Illustrate;
@@ -952,13 +979,14 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = so.illustrate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = YES;
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
