@@ -41,7 +41,7 @@ jobs:
         run: xcodebuild -version
 
       - name: List available schemes
-        run: xcodebuild -list -project DNSDeck.xcodeproj
+        run: xcodebuild -list -project Illustrate.xcodeproj
 
       - name: Build iOS target
         run: |
