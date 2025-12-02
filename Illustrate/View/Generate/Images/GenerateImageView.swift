@@ -261,9 +261,7 @@ struct GenerateImageView: View {
                             HStack {
                                 Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
 
-                                Image(systemName: "info.circle")
-                                    .foregroundColor(.secondary)
-                                    .help(Text("Uses OpenAI to enhance your prompt for better results"))
+                                InfoTooltip("Uses OpenAI to enhance your prompt for better results")
                             }
                         }
                     }
@@ -272,6 +270,17 @@ struct GenerateImageView: View {
                     Button(isGenerating ? "Generating, please wait..." : "Generate") {
                         DispatchQueue.main.async {
                             focusedField = nil
+                        }
+
+                        // Validate prompt before generation
+                        guard !prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                            DispatchQueue.main.async {
+                                errorState = ErrorState(
+                                    message: "Prompt is required to generate an image",
+                                    isShowing: true
+                                )
+                            }
+                            return
                         }
 
                         Task {

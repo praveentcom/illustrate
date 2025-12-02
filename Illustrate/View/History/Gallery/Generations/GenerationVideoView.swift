@@ -106,14 +106,7 @@ struct GenerationVideoView: View {
                                                     .shadow(color: .black.opacity(0.4), radius: 8)
                                                     .frame(maxWidth: .infinity)
                                                 HStack(spacing: 8) {
-                                                    HStack {
-                                                        Image(systemName: "info.circle")
-                                                        Text("Request Image")
-                                                    }
-                                                    .padding(.vertical, 4)
-                                                    .padding(.horizontal, 8)
-                                                    .background(.thinMaterial)
-                                                    .cornerRadius(8)
+                                                    InfoLabel("Request Image")
                                                     if maskImage != nil {
                                                         Toggle(isOn: $showMask) {
                                                             Text("Show Mask")
@@ -145,14 +138,7 @@ struct GenerationVideoView: View {
                                             ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_client") { requestImage in
                                                 ICloudImageLoader(imageName: ".\(getSelectedGeneration()!.id.uuidString)_mask") { maskImage in
                                                     if requestImage != nil || maskImage != nil {
-                                                        HStack {
-                                                            Image(systemName: "info.circle")
-                                                            Text("Generated Video")
-                                                        }
-                                                        .padding(.vertical, 4)
-                                                        .padding(.horizontal, 8)
-                                                        .background(.thinMaterial)
-                                                        .cornerRadius(8)
+                                                        InfoLabel("Generated Video")
                                                     }
                                                 }
                                                 .id("video_mask_\(getSelectedGeneration()!.id.uuidString)")

@@ -376,9 +376,7 @@ struct EditMaskImageView: View {
                             HStack {
                                 Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
                                 
-                                Image(systemName: "info.circle")
-                                    .foregroundColor(.secondary)
-                                    .help(Text("Uses OpenAI to enhance your prompt for better results"))
+                                InfoTooltip("Uses OpenAI to enhance your prompt for better results")
                             }
                         }
                     }
