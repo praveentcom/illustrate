@@ -118,7 +118,7 @@ func saveVideoToDocumentsDirectory(videoData: Data, withName name: String) -> UR
     }
 #endif
 
-func extractFirstFrameFromVideo(base64Video: String) -> String? {
+func extractFirstFrameFromVideo(base64Video: String) async -> String? {
     guard let videoData = Data(base64Encoded: base64Video) else {
         return nil
     }
@@ -130,59 +130,54 @@ func extractFirstFrameFromVideo(base64Video: String) -> String? {
         try videoData.write(to: videoURL)
     } catch {
         print("Error writing video data to file: \(error)")
-
         return nil
     }
 
-    return getFirstFrameAsBase64Image(from: videoURL)
+    return await getFirstFrameAsBase64Image(from: videoURL)
 }
 
-func getFirstFrameAsBase64Image(from videoURL: URL) -> String? {
+func getFirstFrameAsBase64Image(from videoURL: URL) async -> String? {
     let asset = AVURLAsset(url: videoURL)
     let imageGenerator = AVAssetImageGenerator(asset: asset)
     imageGenerator.appliesPreferredTrackTransform = true
 
-    var result: String?
-    let semaphore = DispatchSemaphore(value: 0)
-
-    imageGenerator.generateCGImageAsynchronously(for: .zero) { cgImage, time, error in
-        defer {
-            semaphore.signal()
-        }
-
-        if let error = error {
-            print("Error extracting first frame: \(error)")
-            return
-        }
-
-        guard let cgImage = cgImage else {
-            print("Error: No CGImage returned")
-            return
-        }
-
-        #if os(macOS)
-            let image = NSImage(cgImage: cgImage, size: .zero)
-
-            guard let tiffData = image.tiffRepresentation,
-                  let bitmapImage = NSBitmapImageRep(data: tiffData),
-                  let pngData = bitmapImage.representation(using: .png, properties: [:])
-            else {
+    return await withCheckedContinuation { continuation in
+        imageGenerator.generateCGImageAsynchronously(for: .zero) { cgImage, _, error in
+            if let error = error {
+                print("Error extracting first frame: \(error)")
+                continuation.resume(returning: nil)
                 return
             }
 
-            result = pngData.base64EncodedString(options: .endLineWithCarriageReturn)
-
-        #else
-            let image = UIImage(cgImage: cgImage)
-
-            guard let pngData = image.pngData() else {
+            guard let cgImage = cgImage else {
+                print("Error: No CGImage returned")
+                continuation.resume(returning: nil)
                 return
             }
 
-            result = pngData.base64EncodedString(options: .endLineWithCarriageReturn)
-        #endif
+            #if os(macOS)
+                let image = NSImage(cgImage: cgImage, size: .zero)
+
+                guard let tiffData = image.tiffRepresentation,
+                      let bitmapImage = NSBitmapImageRep(data: tiffData),
+                      let pngData = bitmapImage.representation(using: .png, properties: [:])
+                else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+
+                continuation.resume(returning: pngData.base64EncodedString(options: .endLineWithCarriageReturn))
+
+            #else
+                let image = UIImage(cgImage: cgImage)
+
+                guard let pngData = image.pngData() else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+
+                continuation.resume(returning: pngData.base64EncodedString(options: .endLineWithCarriageReturn))
+            #endif
+        }
     }
-
-    semaphore.wait()
-    return result
 }

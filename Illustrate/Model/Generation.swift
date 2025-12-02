@@ -3,7 +3,7 @@ import SwiftData
 import SwiftUI
 
 enum EnumArtVariant: String, Codable, CaseIterable, Identifiable {
-    var id: String { UUID().uuidString }
+    var id: String { rawValue }
 
     case NORMAL = "Normal"
     case WATERCOLOR = "Watercolor"
@@ -37,28 +37,28 @@ enum EnumArtVariant: String, Codable, CaseIterable, Identifiable {
 }
 
 enum EnumArtStyle: String, Codable, CaseIterable, Identifiable {
-    var id: String { UUID().uuidString }
+    var id: String { rawValue }
 
     case NATURAL = "Natural"
     case VIVID = "Vivid"
 }
 
 enum EnumArtQuality: String, Codable, CaseIterable, Identifiable {
-    var id: String { UUID().uuidString }
+    var id: String { rawValue }
 
     case HD
     case STANDARD = "Standard"
 }
 
 enum EnumGenerationStatus: String, Codable, CaseIterable, Identifiable {
-    var id: String { UUID().uuidString }
+    var id: String { rawValue }
 
     case GENERATED
     case FAILED
 }
 
 enum EnumGenerationContentType: String, Codable, CaseIterable, Identifiable {
-    var id: String { UUID().uuidString }
+    var id: String { rawValue }
 
     case IMAGE_2D
     case VIDEO

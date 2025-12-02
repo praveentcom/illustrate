@@ -24,7 +24,7 @@ struct GalleryImageView: View {
     var body: some View {
         VStack {
             if (filteredGenerations.filter { $0.contentType == .IMAGE_2D }.isEmpty) {
-                Text("No requests.")
+                Text("No images generated.")
                     .opacity(0.5)
             } else {
                 ScrollView {

@@ -3,7 +3,7 @@ import SwiftData
 import SwiftUI
 
 enum EnumSetType: String, Codable, CaseIterable, Identifiable {
-    var id: String { UUID().uuidString }
+    var id: String { rawValue }
 
     case GENERATE
     case EDIT_UPSCALE
@@ -14,6 +14,8 @@ enum EnumSetType: String, Codable, CaseIterable, Identifiable {
     case EDIT_REPLACE
     case REMOVE_BACKGROUND
     case VIDEO_IMAGE
+    case VIDEO_TEXT
+    case VIDEO_VIDEO
 }
 
 func labelForSetType(_ item: EnumSetType) -> String {
@@ -36,6 +38,10 @@ func labelForSetType(_ item: EnumSetType) -> String {
         return "Remove Background"
     case .VIDEO_IMAGE:
         return "Image to Video"
+    case .VIDEO_TEXT:
+        return "Text to Video"
+    case .VIDEO_VIDEO:
+        return "Video to Video"
     }
 }
 
@@ -59,13 +65,17 @@ func subLabelForSetType(_ item: EnumSetType) -> String {
         return "Simply remove the background from an image"
     case .VIDEO_IMAGE:
         return "Convert an image to a video with your prompt"
+    case .VIDEO_TEXT:
+        return "Generate video from text description with audio"
+    case .VIDEO_VIDEO:
+        return "Extend or modify an existing video"
     }
 }
 
 func iconForSetType(_ item: EnumSetType) -> String {
     switch item {
     case .GENERATE:
-        return "paintbrush"
+        return "sparkles"
     case .EDIT_UPSCALE:
         return "arrow.up.forward.app"
     case .EDIT_EXPAND:
@@ -82,6 +92,10 @@ func iconForSetType(_ item: EnumSetType) -> String {
         return "scissors"
     case .VIDEO_IMAGE:
         return "video"
+    case .VIDEO_TEXT:
+        return "text.below.photo"
+    case .VIDEO_VIDEO:
+        return "video.badge.plus"
     }
 }
 

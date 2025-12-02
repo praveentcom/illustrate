@@ -1,13 +1,5 @@
-//
-//  InfoLabel.swift
-//  Illustrate
-//
-//  Created by Praveen on 2025-12-02.
-//
-
 import SwiftUI
 
-/// A reusable info icon with text label in a styled container
 struct InfoLabel: View {
     let label: Text
 
@@ -27,7 +19,6 @@ struct InfoLabel: View {
     }
 }
 
-/// Convenience initializer for string-based labels
 extension InfoLabel {
     init(_ label: String) {
         self.init(label: Text(label))

@@ -119,7 +119,6 @@ class NetworkAdapter {
         for child in mirror.children {
             guard let key = child.label else { continue }
 
-            // Handle different types by converting them to String
             if let value = child.value as? String {
                 bodyData.append("--\(boundary)\r\n".data(using: .utf8)!)
                 bodyData.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)

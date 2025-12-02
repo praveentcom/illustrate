@@ -11,6 +11,8 @@ struct GalleryGridView: View {
     struct ImageCellView: View {
         let image: PlatformImage
         let generation: Generation
+        let setType: EnumSetType?
+        @State private var isHovered: Bool = false
 
         var body: some View {
             #if os(macOS)
@@ -18,13 +20,50 @@ struct GalleryGridView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: .infinity)
+                    .overlay(
+                        Color(systemBackground).opacity(isHovered ? 0.1 : 0)
+                    )
+                    .overlay(alignment: .bottomTrailing) {
+                        if let setType = setType {
+                            GenerationTypeOverlay(setType: setType)
+                                .padding(6)
+                        }
+                    }
+                    .onHover { hovering in
+                        isHovered = hovering
+                    }
             #else
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: .infinity)
+                    .overlay(alignment: .bottomTrailing) {
+                        if let setType = setType {
+                            GenerationTypeOverlay(setType: setType)
+                                .padding(6)
+                        }
+                    }
             #endif
         }
+    }
+    
+    struct GenerationTypeOverlay: View {
+        let setType: EnumSetType
+        
+        var body: some View {
+            Image(systemName: iconForSetType(setType))
+                .font(.title3)
+                .foregroundColor(Color(label))
+                .padding(6)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color(systemBackground).opacity(0.7))
+                )
+        }
+    }
+
+    private func setType(for generation: Generation) -> EnumSetType? {
+        return sets.first(where: { $0.id == generation.setId })?.setType
     }
 
     var body: some View {
@@ -43,7 +82,7 @@ struct GalleryGridView: View {
                         NavigationLink(
                             value: generation.contentType == .IMAGE_2D ? EnumNavigationItem.generationImage(setId: generation.setId) : EnumNavigationItem.generationVideo(setId: generation.setId)
                         ) {
-                            ImageCellView(image: image, generation: generation)
+                            ImageCellView(image: image, generation: generation, setType: setType(for: generation))
                         }
                         .buttonStyle(PlainButtonStyle())
                     } else {

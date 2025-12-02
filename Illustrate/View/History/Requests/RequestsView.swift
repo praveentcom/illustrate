@@ -139,7 +139,7 @@ struct RequestsView: View {
     var body: some View {
         VStack {
             if filteredGenerations.isEmpty {
-                Text("No requests.")
+                Text("No generations requested.")
                     .opacity(0.5)
             } else {
                 Table(of: Generation.self, sortOrder: $sortOrder) {

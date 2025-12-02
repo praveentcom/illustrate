@@ -3,6 +3,7 @@ import SwiftUI
 
 struct DesktopView: View {
     @StateObject private var navigationManager = NavigationManager()
+    @StateObject private var queueManager = QueueManager.shared
     @State private var selectedItem: EnumNavigationItem? = .dashboardWorkspace
     @State private var desktopNavigationPath = NavigationPath()
 
@@ -22,8 +23,8 @@ struct DesktopView: View {
             .frame(minWidth: 240)
         } detail: {
             NavigationStack(path: $desktopNavigationPath) {
-                if let selectedItem = navigationManager.selectedNavigationItem ?? selectedItem {
-                    viewForItem(selectedItem)
+                if let currentItem = selectedItem {
+                    viewForItem(currentItem)
                         .navigationDestination(for: EnumNavigationItem.self) { item in
                             viewForItem(item)
                         }
@@ -31,14 +32,27 @@ struct DesktopView: View {
                     Text("Select an item")
                 }
             }
-            #if os(macOS)
-            .frame(minWidth: 800)
-            #endif
+            .frame(minWidth: 600)
+        }
+        .inspector(isPresented: .constant(true)) {
+            QueueSidebarView(queueManager: queueManager)
+                .inspectorColumnWidth(min: 320, ideal: 320, max: 320)
+                .navigationTitle("Generation Queue")
+                .interactiveDismissDisabled()
         }
         .environmentObject(navigationManager)
+        .environmentObject(queueManager)
         .onChange(of: navigationManager.selectedNavigationItem) { _, newValue in
             if let newValue = newValue {
+                desktopNavigationPath = NavigationPath()
                 selectedItem = newValue
+                navigationManager.selectedNavigationItem = nil
+            }
+        }
+        .onChange(of: navigationManager.detailNavigationItem) { _, newValue in
+            if let newValue = newValue {
+                desktopNavigationPath.append(newValue)
+                navigationManager.clearDetailNavigation()
             }
         }
     }

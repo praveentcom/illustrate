@@ -56,34 +56,48 @@ struct OnboardingView: View {
     var body: some View {
         LazyVGrid(columns: columns, spacing: 8) {
             ForEach(checklist(), id: \.item) { checklistItem in
-                NavigationLink(value: checklistItem.item) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Image(systemName: checklistItem.isCompleted ? "checkmark.circle" : checklistItem.icon)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                        VStack {
-                            Text("\(checklistItem.label) →")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity, alignment: .topLeading)
-                            Text(checklistItem.subLabel)
-                                .multilineTextAlignment(.leading)
-                                .opacity(0.8)
-                                .frame(maxWidth: .infinity, alignment: .topLeading)
-                        }
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 16)
-                    .frame(minHeight: 72, maxHeight: .infinity, alignment: .topLeading)
-                    .background(
-                        Color.mint.opacity(
-                            checklistItem.isCompleted ? 0.1 : 0
-                        )
-                    )
-                    .background(tertiarySystemFill)
-                    .cornerRadius(4)
+                OnboardingChecklistItem(checklistItem: checklistItem)
+            }
+        }
+    }
+}
+
+struct OnboardingChecklistItem: View {
+    var checklistItem: OnboardingView.OnboardingChecklist
+    @State private var isHovered: Bool = false
+
+    var body: some View {
+        NavigationLink(value: checklistItem.item) {
+            VStack(alignment: .leading, spacing: 6) {
+                Image(systemName: checklistItem.isCompleted ? "checkmark.circle" : checklistItem.icon)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
+                VStack {
+                    Text("\(checklistItem.label) →")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .topLeading)
+                    Text(checklistItem.subLabel)
+                        .multilineTextAlignment(.leading)
+                        .opacity(0.8)
+                        .frame(maxWidth: .infinity, alignment: .topLeading)
                 }
-                .buttonStyle(PlainButtonStyle())
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 16)
+            .frame(minHeight: 72, maxHeight: .infinity, alignment: .topLeading)
+            .background(
+                Color.mint.opacity(
+                    checklistItem.isCompleted ? (isHovered ? 0.2 : 0.1) : (isHovered ? 0.1 : 0)
+                )
+            )
+            .background(tertiarySystemFill)
+            .cornerRadius(8)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered = hovering
             }
         }
     }

@@ -31,6 +31,7 @@ struct ImageGenerationRequest: Codable {
     var connectionSecret: String
     var numberOfImages: Int = 1
     var editDirection: ImageEditDirection?
+    var responseModalities: [EnumResponseModality] = []
 }
 
 struct ImageGenerationResponse: Codable {
@@ -127,6 +128,22 @@ func getImageGenerationAdapter(imageGenerationRequest: ImageGenerationRequest) t
         return G_HUGGING_FACE_FLUX_SCHNELL()
     case EnumConnectionModelCode.HUGGING_FACE_FLUX_DEV:
         return G_HUGGING_FACE_FLUX_DEV()
+    case EnumConnectionModelCode.GOOGLE_GEMINI_FLASH_IMAGE:
+        return G_GOOGLE_GEMINI_FLASH_IMAGE()
+    case EnumConnectionModelCode.GOOGLE_GEMINI_FLASH_IMAGE_EDIT:
+        return G_GOOGLE_GEMINI_FLASH_IMAGE_EDIT()
+    case EnumConnectionModelCode.GOOGLE_GEMINI_PRO_IMAGE:
+        return G_GOOGLE_GEMINI_PRO_IMAGE()
+    case EnumConnectionModelCode.GOOGLE_GEMINI_PRO_IMAGE_EDIT:
+        return G_GOOGLE_GEMINI_PRO_IMAGE_EDIT()
+    case EnumConnectionModelCode.GOOGLE_IMAGEN_3:
+        return G_GOOGLE_IMAGEN_3()
+    case EnumConnectionModelCode.GOOGLE_IMAGEN_4_FAST:
+        return G_GOOGLE_IMAGEN_4_FAST()
+    case EnumConnectionModelCode.GOOGLE_IMAGEN_4_STANDARD:
+        return G_GOOGLE_IMAGEN_4_STANDARD()
+    case EnumConnectionModelCode.GOOGLE_IMAGEN_4_ULTRA:
+        return G_GOOGLE_IMAGEN_4_ULTRA()
     default:
         throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
     }
@@ -183,7 +200,6 @@ class GenerateImageAdapter {
                         }
                     }
 
-                    // Save client image
                     if imageGenerationRequest.clientImage != nil {
                         let _: URL? = saveImageToDocumentsDirectory(
                             imageData: Data(base64Encoded: imageGenerationRequest.clientImage!)!,
@@ -192,7 +208,6 @@ class GenerateImageAdapter {
                         toPlatformImage(base64: imageGenerationRequest.clientImage!)?.saveToiCloud(fileName: ".\(uuid)_client")
                     }
 
-                    // Save client mask
                     if imageGenerationRequest.clientMask != nil {
                         let _: URL? = saveImageToDocumentsDirectory(
                             imageData: Data(base64Encoded: imageGenerationRequest.clientMask!)!,

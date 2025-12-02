@@ -3,7 +3,7 @@ import SwiftData
 import SwiftUI
 
 enum EnumConnectionCode: String, Codable, CaseIterable, Identifiable {
-    var id: String { UUID().uuidString }
+    var id: String { rawValue }
 
     case GOOGLE_CLOUD
     case OPENAI
@@ -31,14 +31,14 @@ enum EnumConnectionCode: String, Codable, CaseIterable, Identifiable {
 }
 
 enum EnumConnectionKeyType: String, Codable, CaseIterable, Identifiable {
-    var id: String { UUID().uuidString }
+    var id: String { rawValue }
 
     case JSON
     case API = "API Key"
 }
 
 enum EnumConnectionCreditCurrency: String, Codable, CaseIterable, Identifiable {
-    var id: String { UUID().uuidString }
+    var id: String { rawValue }
 
     case USD
     case CREDITS = "Credits"
@@ -165,10 +165,10 @@ let connections = [
         connectionCode: EnumConnectionCode.GOOGLE_CLOUD,
         connectionName: "Google Cloud",
         connectionDescription: "High-performance infrastructure for cloud.",
-        connectionOnboardingUrl: "https://console.cloud.google.com/iam-admin/serviceaccounts",
-        keyStructure: "\"project_id\":\\s*\"[a-z0-9\\-]+\",\\s*\"private_key\":\\s*\"-----BEGIN PRIVATE KEY-----\\\\n(?:[^\\\\n]+\\\\n)+-----END PRIVATE KEY-----\\\\n\",\\s*\"client_email\":\\s*\"[a-z0-9\\-]+@[a-z0-9\\-]+\\.iam\\.gserviceaccount\\.com\"",
-        keyPlaceholder: "Enter JSON key",
-        keyType: EnumConnectionKeyType.JSON,
+        connectionOnboardingUrl: "https://console.cloud.google.com/apis/credentials",
+        keyStructure: "^AIza[a-zA-Z0-9_-]{35}$",
+        keyPlaceholder: "AIza************",
+        keyType: EnumConnectionKeyType.API,
         creditCurrency: EnumConnectionCreditCurrency.USD,
         active: true
     ),

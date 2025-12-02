@@ -14,6 +14,8 @@ enum EnumNavigationItem: Identifiable, Hashable {
     case generateRemoveBackground
 
     case generateVideoImage
+    case generateVideoText
+    case generateVideoEdit
 
     case historyRequests
     case historyImageGallery
@@ -43,7 +45,7 @@ enum EnumNavigationItem: Identifiable, Hashable {
 }
 
 enum EnumNavigationSection: String, Codable, CaseIterable, Identifiable {
-    var id: String { UUID().uuidString }
+    var id: String { rawValue }
 
     case Dashboard
     case ImageGenerations = "Image Generations"
@@ -59,7 +61,7 @@ func sectionItems(section: EnumNavigationSection) -> [EnumNavigationItem] {
     case .ImageGenerations:
         return [.generateGenerate, .generateEditUpscale, .generateEditExpand, .generateEditPrompt, .generateEditMask, .generateEraseMask, .generateSearchReplace, .generateRemoveBackground]
     case .VideoGenerations:
-        return [.generateVideoImage]
+        return [.generateVideoText, .generateVideoImage, .generateVideoEdit]
     case .History:
         #if os(macOS)
             return [.historyRequests, .historyImageGallery, .historyVideoGallery, .historyUsageMetrics]
@@ -93,6 +95,10 @@ func labelForItem(_ item: EnumNavigationItem) -> String {
         return labelForSetType(.REMOVE_BACKGROUND)
     case .generateVideoImage:
         return labelForSetType(.VIDEO_IMAGE)
+    case .generateVideoText:
+        return labelForSetType(.VIDEO_TEXT)
+    case .generateVideoEdit:
+        return labelForSetType(.VIDEO_VIDEO)
     case .historyRequests:
         return "All Requests"
     case .historyImageGallery:
@@ -136,6 +142,10 @@ func subLabelForItem(_ item: EnumNavigationItem) -> String {
         return subLabelForSetType(.REMOVE_BACKGROUND)
     case .generateVideoImage:
         return subLabelForSetType(.VIDEO_IMAGE)
+    case .generateVideoText:
+        return subLabelForSetType(.VIDEO_TEXT)
+    case .generateVideoEdit:
+        return subLabelForSetType(.VIDEO_VIDEO)
     case .historyRequests:
         return "View all your generation requests"
     case .historyImageGallery:
@@ -179,6 +189,10 @@ func iconForItem(_ item: EnumNavigationItem) -> String {
         return iconForSetType(.REMOVE_BACKGROUND)
     case .generateVideoImage:
         return iconForSetType(.VIDEO_IMAGE)
+    case .generateVideoText:
+        return iconForSetType(.VIDEO_TEXT)
+    case .generateVideoEdit:
+        return iconForSetType(.VIDEO_VIDEO)
     case .historyRequests:
         return "note.text"
     case .historyImageGallery:
@@ -192,7 +206,7 @@ func iconForItem(_ item: EnumNavigationItem) -> String {
     case .settingsManageStorage:
         return "lock.icloud"
     case .generationImage:
-        return "paintbrush"
+        return "sparkles"
     case .generationVideo:
         return "video"
     case .addConnection:
@@ -223,6 +237,10 @@ func viewForItem(_ item: EnumNavigationItem) -> some View {
         RemoveBackgroundImageView()
     case .generateVideoImage:
         ImageToVideoView()
+    case .generateVideoText:
+        TextToVideoView()
+    case .generateVideoEdit:
+        EditVideoView()
     case .historyRequests:
         RequestsView()
     case .historyImageGallery:

@@ -27,7 +27,7 @@ struct WelcomeView: View {
                 OnboardingContentView("We don't collect any of the data from this application, be it for analytics or data processing. This is forever, period.")
             }
         } link: {
-            Link("Read more on privacy...", destination: URL(string: "https://illustrate.so/docs/privacy-policy")!)
+            Link("Read more on privacy...", destination: URL(string: "https://illustrate.help/privacy")!)
                 .foregroundStyle(Color.accentColor)
         } button: {
             ContinueButton(color: .accentColor, action: action)

@@ -1,18 +1,25 @@
+import SwiftData
 import SwiftUI
 
 struct ConnectionDetailsView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query private var connectionKeys: [ConnectionKey]
     @Binding var isPresented: Bool
     @State var selectedConnection: Connection
+
+    var isConnected: Bool {
+        connectionKeys.contains { $0.connectionId == selectedConnection.connectionId }
+    }
 
     var body: some View {
         Form {
             Section("Details") {
                 SectionKeyValueView(
-                    key: "Logo",
+                    key: "Provider Logo",
                     value: selectedConnection.connectionName,
                     customValueView: Image("\(selectedConnection.connectionCode)_trimmed".lowercased()).resizable().scaledToFit().frame(height: 20)
                 )
-                SectionKeyValueView(key: "Name", value: selectedConnection.connectionName)
+                SectionKeyValueView(key: "Provider Name", value: selectedConnection.connectionName)
                 SectionKeyValueView(key: "Description", value: selectedConnection.connectionDescription)
             }
             Section("Available Models") {
@@ -38,9 +45,36 @@ struct ConnectionDetailsView: View {
                         }
                     }
                 }
+                if !isConnected {
+                    ToolbarItem(placement: .confirmationAction) {
+                        NavigationLink(value: EnumNavigationItem.addConnection(connectionId: selectedConnection.connectionId)) {
+                            Text("Connect")
+                        }
+                        .simultaneousGesture(TapGesture().onEnded {
+                            DispatchQueue.main.async {
+                                isPresented = false
+                            }
+                        })
+                    }
+                }
             }
             .frame(width: 480)
             .fixedSize()
+        #else
+            .toolbar {
+                if !isConnected {
+                    ToolbarItem(placement: .confirmationAction) {
+                        NavigationLink(value: EnumNavigationItem.addConnection(connectionId: selectedConnection.connectionId)) {
+                            Text("Connect")
+                        }
+                        .simultaneousGesture(TapGesture().onEnded {
+                            DispatchQueue.main.async {
+                                isPresented = false
+                            }
+                        })
+                    }
+                }
+            }
         #endif
     }
 }

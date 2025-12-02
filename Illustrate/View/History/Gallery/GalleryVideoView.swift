@@ -24,7 +24,7 @@ struct GalleryVideoView: View {
     var body: some View {
         VStack {
             if (filteredGenerations.filter { $0.contentType == .VIDEO }.isEmpty) {
-                Text("No requests.")
+                Text("No videos generated.")
                     .opacity(0.5)
             } else {
                 ScrollView {

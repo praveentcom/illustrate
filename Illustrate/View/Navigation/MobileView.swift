@@ -27,7 +27,7 @@ struct MobileView: View {
                     }
             }
             .tabItem {
-                Label("Generate", systemImage: "paintbrush")
+                Label("Generate", systemImage: "sparkles")
             }
 
             NavigationStack(path: $historyNavigationPath) {

@@ -6,20 +6,17 @@ import SwiftUI
 
 @MainActor
 class EraseMaskImageViewModel: ObservableObject {
-    // MARK: - Dependencies
     private let modelContext: ModelContext?
     private let connectionService: ConnectionService
     private let keychain: KeychainSwift
 
-    // MARK: - Published Properties
     @Published var selectedConnectionId: String = ""
     @Published var selectedModelId: String = ""
-    @Published var isGenerating: Bool = false
     @Published var errorState = ErrorState(message: "", isShowing: false)
     @Published var isNavigationActive: Bool = false
     @Published var selectedSetId: UUID? = nil
+    @Published var showQueuedToast: Bool = false
 
-    // MARK: - Form Properties (Note: Erase doesn't use prompt/negativePrompt)
     @Published var artDimensions: String = ""
     @Published var artQuality: EnumArtQuality = .HD
     @Published var artStyle: EnumArtStyle = .VIVID
@@ -27,25 +24,21 @@ class EraseMaskImageViewModel: ObservableObject {
     @Published var numberOfImages: Int = 1
     @Published var promptEnhanceOpted: Bool = false
 
-    // MARK: - Photo Properties
     @Published var selectedImageItem: PhotosPickerItem?
     @Published var selectedImage: PlatformImage?
     @Published var colorPalette: [String] = []
     @Published var isPhotoPickerOpen: Bool = false
     @Published var isCropSheetOpen: Bool = false
 
-    // MARK: - Mask Properties
     @Published var maskPath = Path()
     @Published var canvasSize = CGSize.zero
 
-    // MARK: - Focus State (Not used for erase but kept for consistency)
     private enum Field: Int, CaseIterable {
         case prompt, negativePrompt
     }
     
     private var focusedField: Field? = nil
 
-    // MARK: - Initialization
     init(
         modelContext: ModelContext?,
         connectionService: ConnectionService = ConnectionService.shared,
@@ -55,12 +48,10 @@ class EraseMaskImageViewModel: ObservableObject {
         self.connectionService = connectionService
         self.keychain = keychain
 
-        // Configure keychain
         self.keychain.accessGroup = keychainAccessGroup
         self.keychain.synchronizable = true
     }
 
-    // MARK: - Connection and Model Management
     func getSupportedModels() -> [ConnectionModel] {
         guard !selectedConnectionId.isEmpty else { return [] }
 
@@ -83,7 +74,6 @@ class EraseMaskImageViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Initialization Logic
     func initialize(connectionKeys: [ConnectionKey]) {
         guard !connectionKeys.isEmpty && selectedModelId.isEmpty else { return }
 
@@ -102,7 +92,6 @@ class EraseMaskImageViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Dimension Management
     func updateDimensions(dimension: String) {
         guard artDimensions != dimension else { return }
 
@@ -123,7 +112,6 @@ class EraseMaskImageViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Image Processing
     func processSelectedImage(loaded: Data) {
         #if os(macOS)
         selectedImage = NSImage(data: loaded)
@@ -161,7 +149,6 @@ class EraseMaskImageViewModel: ObservableObject {
         isCropSheetOpen = false
     }
 
-    // MARK: - Mask Management
     func clearMask() {
         maskPath = Path()
     }
@@ -170,112 +157,60 @@ class EraseMaskImageViewModel: ObservableObject {
         maskPath = path
     }
 
-    // MARK: - Image Erase Generation
-    func generateImage(connectionKeys: [ConnectionKey]) async -> ImageSetResponse? {
-        guard !isGenerating,
-              let selectedModel = getSelectedModel(),
+    func submitToQueue(connectionKeys: [ConnectionKey], queueManager: QueueManager) {
+        guard let selectedModel = getSelectedModel(),
               let selectedImage = selectedImage else {
-            return nil
-        }
-
-        // Get connection secret from keychain
-        let connectionSecret = keychain.get(selectedModel.connectionId.uuidString)
-
-        guard let secret = connectionSecret else {
-            await MainActor.run {
-                isGenerating = false
-            }
-            return ImageSetResponse(
-                status: .FAILED,
-                errorCode: .ADAPTER_ERROR,
-                errorMessage: "Keychain record not found"
+            errorState = ErrorState(
+                message: "No image or model selected",
+                isShowing: true
             )
+            return
         }
 
-        // Find connection key
+        guard let connectionSecret = keychain.get(selectedModel.connectionId.uuidString) else {
+            errorState = ErrorState(
+                message: "Keychain record not found",
+                isShowing: true
+            )
+            return
+        }
+
         guard let connectionKey = connectionKeys.first(where: {
             $0.connectionId == selectedModel.connectionId
         }) else {
-            await MainActor.run {
-                isGenerating = false
-            }
-            return ImageSetResponse(
-                status: .FAILED,
-                errorCode: .ADAPTER_ERROR,
-                errorMessage: "Connection key not found"
+            errorState = ErrorState(
+                message: "Connection key not found",
+                isShowing: true
             )
+            return
         }
 
-        // Generate mask image
         let clientMask = exportPathToImage(
             path: maskPath,
             size: canvasSize
         )
 
-        await MainActor.run {
-            isGenerating = true
-        }
+        let request = ImageGenerationRequest(
+            modelId: selectedModel.modelId.uuidString,
+            prompt: "",
+            negativePrompt: "",
+            artDimensions: artDimensions,
+            clientImage: selectedImage.toBase64PNG(),
+            clientMask: clientMask?.toBase64PNG(),
+            connectionKey: connectionKey,
+            connectionSecret: connectionSecret
+        )
 
-        do {
-            // Note: For erase, prompt and negativePrompt are empty strings
-            let request = ImageGenerationRequest(
-                modelId: selectedModel.modelId.uuidString,
-                prompt: "",
-                negativePrompt: "",
-                artDimensions: artDimensions,
-                clientImage: selectedImage.toBase64PNG(),
-                clientMask: clientMask?.toBase64PNG(),
-                connectionKey: connectionKey,
-                connectionSecret: secret
-            )
+        _ = queueManager.submitImageGeneration(
+            request: request,
+            modelContext: modelContext!
+        )
 
-            let adapter = GenerateImageAdapter(
-                imageGenerationRequest: request,
-                modelContext: modelContext!
-            )
-
-            let response = await adapter.makeRequest()
-
-            await MainActor.run {
-                isGenerating = false
-            }
-
-            #if !os(macOS)
-            try? await Task.sleep(nanoseconds: 500_000_000)
-            #endif
-
-            return response
-
-        } catch {
-            await MainActor.run {
-                isGenerating = false
-                errorState = ErrorState(
-                    message: "Failed to erase image: \(error.localizedDescription)",
-                    isShowing: true
-                )
-            }
-            return nil
-        }
+        showQueuedToast = true
     }
 
-    // MARK: - Generation Handler
-    func handleGenerationResponse(response: ImageSetResponse?) {
-        guard let response = response else { return }
-
-        if response.status == .GENERATED && response.set?.id != nil {
-            selectedSetId = response.set!.id
-            isNavigationActive = true
-        } else if response.status == .FAILED {
-            errorState = ErrorState(
-                message: response.errorMessage ?? "Something went wrong",
-                isShowing: true
-            )
-        }
-    }
-
-    // MARK: - Validation
     var canGenerate: Bool {
-        return !isGenerating && selectedImage != nil && !maskPath.isEmpty
+        return selectedImage != nil && !maskPath.isEmpty
     }
 
     var hasConnection: Bool {
@@ -286,7 +221,6 @@ class EraseMaskImageViewModel: ObservableObject {
         return !maskPath.isEmpty
     }
 
-    // MARK: - Cleanup
     func resetNavigation() {
         focusedField = nil
         isNavigationActive = false

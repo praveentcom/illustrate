@@ -3,7 +3,7 @@ import SwiftData
 import SwiftUI
 
 enum EnumConnectionModelCode: String, Codable, CaseIterable, Identifiable {
-    var id: String { UUID().uuidString }
+    var id: String { rawValue }
 
     case OPENAI_DALLE3
     case STABILITY_SDXL
@@ -23,7 +23,6 @@ enum EnumConnectionModelCode: String, Codable, CaseIterable, Identifiable {
     case STABILITY_SEARCH_AND_REPLACE
     case STABILITY_REMOVE_BACKGROUND
     case STABILITY_IMAGE_TO_VIDEO
-    case GCLOUD_IMAGEN2
     case REPLICATE_FLUX_SCHNELL
     case REPLICATE_FLUX_DEV
     case REPLICATE_FLUX_PRO
@@ -32,6 +31,19 @@ enum EnumConnectionModelCode: String, Codable, CaseIterable, Identifiable {
     case FAL_FLUX_PRO
     case HUGGING_FACE_FLUX_SCHNELL
     case HUGGING_FACE_FLUX_DEV
+    case GOOGLE_GEMINI_FLASH_IMAGE
+    case GOOGLE_GEMINI_FLASH_IMAGE_EDIT
+    case GOOGLE_GEMINI_PRO_IMAGE
+    case GOOGLE_GEMINI_PRO_IMAGE_EDIT
+    case GOOGLE_IMAGEN_3
+    case GOOGLE_IMAGEN_4_FAST
+    case GOOGLE_IMAGEN_4_STANDARD
+    case GOOGLE_IMAGEN_4_ULTRA
+    case GOOGLE_VEO_31
+    case GOOGLE_VEO_31_FAST
+    case GOOGLE_VEO_3
+    case GOOGLE_VEO_3_FAST
+    case GOOGLE_VEO_2
 
     var modelId: UUID {
         switch self {
@@ -71,8 +83,6 @@ enum EnumConnectionModelCode: String, Codable, CaseIterable, Identifiable {
             return UUID(uuidString: "20000000-0000-0000-0000-000000000212")!
         case .STABILITY_IMAGE_TO_VIDEO:
             return UUID(uuidString: "20000000-0000-0000-0000-000000000213")!
-        case .GCLOUD_IMAGEN2:
-            return UUID(uuidString: "20000000-0000-0000-0000-000000000301")!
         case .REPLICATE_FLUX_SCHNELL:
             return UUID(uuidString: "20000000-0000-0000-0000-000000000401")!
         case .REPLICATE_FLUX_DEV:
@@ -89,6 +99,56 @@ enum EnumConnectionModelCode: String, Codable, CaseIterable, Identifiable {
             return UUID(uuidString: "20000000-0000-0000-0000-000000000601")!
         case .HUGGING_FACE_FLUX_DEV:
             return UUID(uuidString: "20000000-0000-0000-0000-000000000602")!
+        case .GOOGLE_GEMINI_FLASH_IMAGE:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000302")!
+        case .GOOGLE_GEMINI_FLASH_IMAGE_EDIT:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000303")!
+        case .GOOGLE_GEMINI_PRO_IMAGE:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000304")!
+        case .GOOGLE_GEMINI_PRO_IMAGE_EDIT:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000305")!
+        case .GOOGLE_IMAGEN_3:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000306")!
+        case .GOOGLE_IMAGEN_4_FAST:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000307")!
+        case .GOOGLE_IMAGEN_4_STANDARD:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000308")!
+        case .GOOGLE_IMAGEN_4_ULTRA:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000309")!
+        case .GOOGLE_VEO_31:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000310")!
+        case .GOOGLE_VEO_31_FAST:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000311")!
+        case .GOOGLE_VEO_3:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000312")!
+        case .GOOGLE_VEO_3_FAST:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000313")!
+        case .GOOGLE_VEO_2:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000314")!
+        }
+    }
+}
+
+enum EnumResponseModality: String, Codable, CaseIterable, Identifiable {
+    var id: String { rawValue }
+    
+    case TEXT = "TEXT"
+    case IMAGE = "IMAGE"
+    case AUDIO = "AUDIO"
+    
+    var label: String {
+        switch self {
+        case .TEXT: return "Text"
+        case .IMAGE: return "Image"
+        case .AUDIO: return "Audio"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .TEXT: return "text.alignleft"
+        case .IMAGE: return "photo"
+        case .AUDIO: return "waveform"
         }
     }
 }
@@ -104,6 +164,11 @@ struct ConnectionModelSupportParams: Codable {
         case style
         case count
         case autoEnhance
+        case responseModalities
+        case supportedDurations
+        case supportsAudio
+        case supportsLastFrame
+        case supportsVideoInput
     }
 
     var prompt: Bool = false
@@ -115,6 +180,11 @@ struct ConnectionModelSupportParams: Codable {
     var style: Bool = false
     var count: Int = 1
     var autoEnhance: Bool = false
+    var responseModalities: [EnumResponseModality] = []
+    var supportedDurations: [Int] = []
+    var supportsAudio: Bool = false
+    var supportsLastFrame: Bool = false
+    var supportsVideoInput: Bool = false
 
     init(
         prompt: Bool,
@@ -125,7 +195,12 @@ struct ConnectionModelSupportParams: Codable {
         variant: Bool,
         style: Bool,
         count: Int,
-        autoEnhance: Bool
+        autoEnhance: Bool,
+        responseModalities: [EnumResponseModality] = [],
+        supportedDurations: [Int] = [],
+        supportsAudio: Bool = false,
+        supportsLastFrame: Bool = false,
+        supportsVideoInput: Bool = false
     ) {
         self.prompt = prompt
         self.negativePrompt = negativePrompt
@@ -136,6 +211,11 @@ struct ConnectionModelSupportParams: Codable {
         self.style = style
         self.count = count
         self.autoEnhance = autoEnhance
+        self.responseModalities = responseModalities
+        self.supportedDurations = supportedDurations
+        self.supportsAudio = supportsAudio
+        self.supportsLastFrame = supportsLastFrame
+        self.supportsVideoInput = supportsVideoInput
     }
 
     func encode(to encoder: Encoder) throws {
@@ -149,6 +229,11 @@ struct ConnectionModelSupportParams: Codable {
         try container.encode(style, forKey: .style)
         try container.encode(count, forKey: .count)
         try container.encode(autoEnhance, forKey: .autoEnhance)
+        try container.encode(responseModalities, forKey: .responseModalities)
+        try container.encode(supportedDurations, forKey: .supportedDurations)
+        try container.encode(supportsAudio, forKey: .supportsAudio)
+        try container.encode(supportsLastFrame, forKey: .supportsLastFrame)
+        try container.encode(supportsVideoInput, forKey: .supportsVideoInput)
     }
 }
 

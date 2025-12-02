@@ -5,8 +5,6 @@ import SwiftData
 import SwiftUI
 
 struct SearchReplaceImageView: View {
-    // MARK: Model Context
-    
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \ConnectionKey.createdAt, order: .reverse) private var connectionKeys: [ConnectionKey]
     
@@ -46,8 +44,6 @@ struct SearchReplaceImageView: View {
     @State private var numberOfImages: Int = 1
     @State private var promptEnhanceOpted: Bool = false
     
-    // MARK: Photo States
-    
     @State private var isPhotoPickerOpen: Bool = false
     
     @State private var selectedImageItem: PhotosPickerItem?
@@ -56,61 +52,60 @@ struct SearchReplaceImageView: View {
     
     @State private var isCropSheetOpen: Bool = false
     
-    // MARK: Generation States
-    
-    @State private var isGenerating: Bool = false
+    @EnvironmentObject private var queueManager: QueueManager
     @State private var errorState = ErrorState(message: "", isShowing: false)
-    func generateImage() async -> ImageSetResponse? {
-        if !isGenerating {
-            let keychain = KeychainSwift()
-            keychain.accessGroup = keychainAccessGroup
-            keychain.synchronizable = true
-            
-            let connectionSecret: String? = keychain.get(getSelectedModel()!.connectionId.uuidString)
-            if connectionSecret == nil {
-                isGenerating = false
-                return ImageSetResponse(
-                    status: .FAILED,
-                    errorCode: EnumGenerateImageAdapterErrorCode.ADAPTER_ERROR,
-                    errorMessage: "Keychain record not found"
-                )
-            }
-            
-            isGenerating = true
-            
-            let adapter = GenerateImageAdapter(
-                imageGenerationRequest: ImageGenerationRequest(
-                    modelId: getSelectedModel()!.modelId.uuidString,
-                    prompt: prompt,
-                    searchPrompt: searchPrompt,
-                    negativePrompt: negativePrompt,
-                    artDimensions: artDimensions,
-                    clientImage: selectedImage?.toBase64PNG(),
-                    connectionKey: connectionKeys.first(where: { $0.connectionId == getSelectedModel()!.connectionId })!,
-                    connectionSecret: connectionSecret!
-                ),
-                modelContext: modelContext
+    @State private var showQueuedToast: Bool = false
+    
+    func submitToQueue() {
+        guard let selectedModel = getSelectedModel() else {
+            errorState = ErrorState(
+                message: "No model selected",
+                isShowing: true
             )
-            
-            let response: ImageSetResponse = await adapter.makeRequest()
-            
-            isGenerating = false
-#if !os(macOS)
-            try? await Task.sleep(nanoseconds: 500_000_000)
-#endif
-            
-            return response
+            return
         }
         
-        return nil
+        let keychain = KeychainSwift()
+        keychain.accessGroup = keychainAccessGroup
+        keychain.synchronizable = true
+
+        guard let connectionSecret = keychain.get(selectedModel.connectionId.uuidString) else {
+            errorState = ErrorState(
+                message: "Keychain record not found",
+                isShowing: true
+            )
+            return
+        }
+        
+        guard let connectionKey = connectionKeys.first(where: { $0.connectionId == selectedModel.connectionId }) else {
+            errorState = ErrorState(
+                message: "Connection key not found",
+                isShowing: true
+            )
+            return
+        }
+        
+        let request = ImageGenerationRequest(
+            modelId: selectedModel.modelId.uuidString,
+            prompt: prompt,
+            searchPrompt: searchPrompt,
+            negativePrompt: negativePrompt,
+            artDimensions: artDimensions,
+            clientImage: selectedImage?.toBase64PNG(),
+            connectionKey: connectionKey,
+            connectionSecret: connectionSecret
+        )
+        
+        _ = queueManager.submitImageGeneration(
+            request: request,
+            modelContext: modelContext
+        )
+        
+        showQueuedToast = true
     }
-    
-    // MARK: Navigation States
     
     @State private var isNavigationActive: Bool = false
     @State private var selectedSetId: UUID? = nil
-    
-    // MARK: Helper Functions
     
     var body: some View {
         VStack {
@@ -162,7 +157,6 @@ struct SearchReplaceImageView: View {
                             }
                         }
                     }
-                    .disabled(isGenerating)
                     
                     Section("Art Details") {
                         Picker("Dimensions", selection: $artDimensions) {
@@ -239,7 +233,6 @@ struct SearchReplaceImageView: View {
 #endif
                         }
                     }
-                    .disabled(isGenerating)
                     
                     Section {
                         ZStack {
@@ -306,7 +299,6 @@ struct SearchReplaceImageView: View {
                                     .focused($focusedField, equals: .negativePrompt)
                             }
                         }
-                        .disabled(isGenerating)
                     }
                     
                     Section(header: Text("Additional requests")) {
@@ -331,31 +323,26 @@ struct SearchReplaceImageView: View {
                         }
                     }
                         
-                        Button(
-                            isGenerating ? "Replacing, please wait..." : "Perform Search and Replace"
-                        ) {
-                            DispatchQueue.main.async {
-                                focusedField = nil
-                            }
-                            
-                            Task {
-                                let response = await generateImage()
-                                if response?.status == EnumGenerationStatus.GENERATED && response?.set?.id != nil {
-                                    DispatchQueue.main.async {
-                                        selectedSetId = response!.set!.id
-                                        isNavigationActive = true
-                                    }
-                                } else if response?.status == EnumGenerationStatus.FAILED {
-                                    DispatchQueue.main.async {
-                                        errorState = ErrorState(
-                                            message: response?.errorMessage ?? "Something went wrong",
-                                            isShowing: true
-                                        )
-                                    }
-                                }
-                            }
+                    Section {
+                        EstimatedCostView(
+                            cost: CostEstimator.estimatedImageCost(
+                                modelCode: getSelectedModel()?.modelCode ?? .STABILITY_SEARCH_AND_REPLACE,
+                                quality: artQuality,
+                                dimensions: artDimensions,
+                                numberOfImages: numberOfImages
+                            ),
+                            modelCode: getSelectedModel()?.modelCode
+                        )
+                    }
+
+                    Button("Perform Search and Replace") {
+                        DispatchQueue.main.async {
+                            focusedField = nil
                         }
-                        .disabled(isGenerating || selectedImage == nil)
+                        
+                        submitToQueue()
+                    }
+                    .disabled(selectedImage == nil)
                     }
                     .formStyle(.grouped)
                     .photosPicker(isPresented: $isPhotoPickerOpen, selection: $selectedImageItem, matching: .all(of: [
@@ -430,12 +417,12 @@ struct SearchReplaceImageView: View {
                 subTitle: "Tap to dismiss"
             )
         }
-        .toast(isPresenting: $isGenerating, offsetY: 16) {
+        .toast(isPresenting: $showQueuedToast, duration: 3, offsetY: 16) {
             AlertToast(
                 displayMode: .hud,
-                type: .loading,
-                title: "Generating image",
-                subTitle: "This might take a while, hang on."
+                type: .systemImage("checkmark.circle", Color.green),
+                title: "Added to queue",
+                subTitle: "Check the queue sidebar for progress"
             )
         }
 #else
@@ -450,28 +437,34 @@ struct SearchReplaceImageView: View {
                             .multilineTextAlignment(.center)
                         Text("Dismiss to try again")
                             .multilineTextAlignment(.center)
-                            .opacity(0.6)
+                            .opacity(0.7)
                     }
                 }
             }
             .padding(.all, 32)
         }
-        .sheet(isPresented: $isGenerating) {
+        .sheet(isPresented: $showQueuedToast) {
             VStack(alignment: .center, spacing: 24) {
                 VStack(alignment: .center, spacing: 8) {
-                    ProgressView()
-                        .frame(width: 24, height: 24)
+                    Image(systemName: "checkmark.circle")
+                        .resizable()
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(.green)
                     VStack(alignment: .center) {
-                        Text("Generating image")
+                        Text("Added to queue")
                             .multilineTextAlignment(.center)
-                        Text("This might take a while, hang on.")
+                        Text("Check the queue for progress")
                             .multilineTextAlignment(.center)
-                            .opacity(0.6)
+                            .opacity(0.7)
                     }
                 }
             }
             .padding(.all, 32)
-            .interactiveDismissDisabled()
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    showQueuedToast = false
+                }
+            }
         }
 #endif
         .navigationDestination(isPresented: $isNavigationActive) {

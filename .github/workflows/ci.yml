@@ -48,7 +48,7 @@ jobs:
           xcodebuild clean build \
             -project Illustrate.xcodeproj \
             -scheme "Illustrate" \
-            -destination "platform=iOS Simulator,name=iPhone SE (3rd generation)" \
+            -destination "platform=iOS Simulator,name=iPhone 16" \
             -configuration Release \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \

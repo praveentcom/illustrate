@@ -107,6 +107,7 @@ struct WorkspaceView: View {
 
 struct WorkspaceGenerateShortcut: View {
     var item: EnumNavigationItem
+    @State private var isHovered: Bool = false
 
     var body: some View {
         NavigationLink(value: item) {
@@ -128,20 +129,31 @@ struct WorkspaceGenerateShortcut: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 16)
             .frame(minHeight: 72, maxHeight: .infinity, alignment: .topLeading)
-            .background(Color.accentColor.opacity(0.1))
+            .background(Color.accentColor.opacity(isHovered ? 0.2 : 0.1))
             .background(tertiarySystemFill)
-            .cornerRadius(4)
+            .cornerRadius(8)
         }
         .buttonStyle(PlainButtonStyle())
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered = hovering
+            }
+        }
     }
 }
 
 struct WorkspaceConnectionShortcut: View {
+    @Query private var connectionKeys: [ConnectionKey]
     @State var isConnectionDetailsOpen: Bool = false
+    @State private var isHovered: Bool = false
 
     var item: Connection
     var setType: EnumSetType? = nil
     var showModels: Bool
+
+    var isConnected: Bool {
+        connectionKeys.contains { $0.connectionId == item.connectionId }
+    }
 
     func getModelsForConnection() -> [ConnectionModel] {
         if setType != nil {
@@ -165,31 +177,37 @@ struct WorkspaceConnectionShortcut: View {
             if showModels {
                 Text("\(getModelsForConnection().map { $0.modelName }.joined(separator: ", "))")
                     .multilineTextAlignment(.leading)
-                    .opacity(0.6)
+                    .opacity(0.7)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
             } else {
-                Text("\(getModelsForConnection().count) model\(getModelsForConnection().count == 1 ? "" : "s") available")
+                Text("\(getModelsForConnection().count) variation\(getModelsForConnection().count == 1 ? "" : "s") available")
                     .multilineTextAlignment(.leading)
-                    .opacity(0.6)
+                    .opacity(0.7)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
             }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 16)
         .frame(minHeight: 72, maxHeight: .infinity, alignment: .topLeading)
-        #if os(macOS)
-            .background(Color(NSColor.secondarySystemFill))
-        #else
-            .background(Color(UIColor.secondarySystemFill))
-        #endif
-            .cornerRadius(4)
-            .onTapGesture {
-                DispatchQueue.main.async {
-                    isConnectionDetailsOpen = true
-                }
+        .background(
+            Color.mint.opacity(
+                isConnected ? (isHovered ? 0.2 : 0.1) : (isHovered ? 0.1 : 0)
+            )
+        )
+        .background(tertiarySystemFill)
+        .cornerRadius(8)
+        .onTapGesture {
+            DispatchQueue.main.async {
+                isConnectionDetailsOpen = true
             }
-            .sheet(isPresented: $isConnectionDetailsOpen) {
-                ConnectionDetailsView(isPresented: $isConnectionDetailsOpen, selectedConnection: item)
+        }
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered = hovering
             }
+        }
+        .sheet(isPresented: $isConnectionDetailsOpen) {
+            ConnectionDetailsView(isPresented: $isConnectionDetailsOpen, selectedConnection: item)
+        }
     }
 }

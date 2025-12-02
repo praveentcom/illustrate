@@ -5,12 +5,10 @@ import SwiftUI
 
 @MainActor
 class GenerateImageViewModel: ObservableObject {
-    // MARK: - Dependencies
     private let modelContext: ModelContext?
     private let connectionService: ConnectionService
     private let keychain: KeychainSwift
 
-    // MARK: - Published Properties
     @Published var selectedConnectionId: String = ""
     @Published var selectedModelId: String = ""
     @Published var isGenerating: Bool = false
@@ -18,7 +16,6 @@ class GenerateImageViewModel: ObservableObject {
     @Published var isNavigationActive: Bool = false
     @Published var selectedSetId: UUID? = nil
 
-    // MARK: - Form Properties
     @Published var prompt: String = ""
     @Published var negativePrompt: String = ""
     @Published var artDimensions: String = ""
@@ -28,14 +25,12 @@ class GenerateImageViewModel: ObservableObject {
     @Published var numberOfImages: Int = 1
     @Published var promptEnhanceOpted: Bool = false
 
-    // MARK: - Focus State
     enum Field: Int, CaseIterable {
         case prompt, negativePrompt
     }
     
     private var focusedField: Field? = nil
 
-    // MARK: - Initialization
     init(
         modelContext: ModelContext?,
         connectionService: ConnectionService = ConnectionService.shared,
@@ -45,12 +40,10 @@ class GenerateImageViewModel: ObservableObject {
         self.connectionService = connectionService
         self.keychain = keychain
 
-        // Configure keychain
         self.keychain.accessGroup = keychainAccessGroup
         self.keychain.synchronizable = true
     }
 
-    // MARK: - Connection and Model Management
     func getSupportedModels() -> [ConnectionModel] {
         guard !selectedConnectionId.isEmpty else { return [] }
 
@@ -75,7 +68,6 @@ class GenerateImageViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Initialization Logic
     func initialize(connectionKeys: [ConnectionKey]) {
         guard !connectionKeys.isEmpty && selectedModelId.isEmpty else { return }
 
@@ -94,7 +86,6 @@ class GenerateImageViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Dimension Management
     func validateAndSetDimensions() {
         let selectedModel = getSelectedModel()
         let supportedDimensions = selectedModel?.modelSupportedParams.dimensions ?? []
@@ -106,14 +97,12 @@ class GenerateImageViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Image Generation
     func generateImage(connectionKeys: [ConnectionKey]) async -> ImageSetResponse? {
         guard !isGenerating,
               let selectedModel = getSelectedModel() else {
             return nil
         }
 
-        // Get connection secret from keychain
         let connectionSecret = keychain.get(selectedModel.connectionId.uuidString)
 
         guard let secret = connectionSecret else {
@@ -127,7 +116,6 @@ class GenerateImageViewModel: ObservableObject {
             )
         }
 
-        // Find connection key
         guard let connectionKey = connectionKeys.first(where: {
             $0.connectionId == selectedModel.connectionId
         }) else {
@@ -188,7 +176,6 @@ class GenerateImageViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Generation Handler
     func handleGenerationResponse(response: ImageSetResponse?) {
         guard let response = response else { return }
 
@@ -203,7 +190,6 @@ class GenerateImageViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Validation
     var canGenerate: Bool {
         return !isGenerating && !prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
@@ -212,7 +198,6 @@ class GenerateImageViewModel: ObservableObject {
         return !selectedModelId.isEmpty
     }
 
-    // MARK: - Cleanup
     func resetNavigation() {
         focusedField = nil
         isNavigationActive = false

@@ -6,20 +6,16 @@ import PhotosUI
 
 @MainActor
 class ImageToVideoViewModel: ObservableObject {
-    // MARK: - Dependencies
-    private let modelContext: ModelContext?
     private let connectionService: ConnectionService
     private let keychain: KeychainSwift
 
-    // MARK: - Published Properties
     @Published var selectedConnectionId: String = ""
     @Published var selectedModelId: String = ""
-    @Published var isGenerating: Bool = false
     @Published var errorState = ErrorState(message: "", isShowing: false)
     @Published var isNavigationActive: Bool = false
     @Published var selectedSetId: UUID? = nil
+    @Published var showQueuedToast: Bool = false
 
-    // MARK: - Form Properties
     @Published var prompt: String = ""
     @Published var negativePrompt: String = ""
     @Published var artDimensions: String = ""
@@ -30,43 +26,49 @@ class ImageToVideoViewModel: ObservableObject {
     @Published var promptEnhanceOpted: Bool = false
     @Published var motion: Double = 135
     @Published var stickyness: Double = 2.0
+    @Published var durationSeconds: Int = 8
+    @Published var generateAudio: Bool = true
 
-    // MARK: - Photo Properties
     @Published var selectedImageItem: PhotosPickerItem?
     @Published var selectedImage: PlatformImage?
     @Published var colorPalette: [String] = []
     @Published var isPhotoPickerOpen: Bool = false
     @Published var isCropSheetOpen: Bool = false
 
-    // MARK: - Focus State
+    @Published var selectedLastFrameItem: PhotosPickerItem?
+    @Published var selectedLastFrame: PlatformImage?
+    @Published var isLastFramePickerOpen: Bool = false
+    @Published var isLastFrameCropSheetOpen: Bool = false
+
     var focusedField: Field? = nil
 
     enum Field: Int, CaseIterable {
         case prompt, negativePrompt
     }
 
-    // MARK: - Initialization
     init(
-        modelContext: ModelContext?,
         connectionService: ConnectionService = ConnectionService.shared,
         keychain: KeychainSwift = KeychainSwift()
     ) {
-        self.modelContext = modelContext
         self.connectionService = connectionService
         self.keychain = keychain
 
-        // Configure keychain
         self.keychain.accessGroup = keychainAccessGroup
         self.keychain.synchronizable = true
     }
 
-    // MARK: - Connection and Model Management
     func getSupportedModels(connectionKeys: [ConnectionKey]) -> [ConnectionModel] {
         guard !selectedConnectionId.isEmpty else { return [] }
 
-        return connectionService.models(for: .VIDEO_IMAGE).filter {
+        let videoImageModels = connectionService.models(for: .VIDEO_IMAGE).filter {
             $0.connectionId.uuidString == selectedConnectionId
         }
+        
+        let veoModels = connectionService.models(for: .VIDEO_TEXT).filter {
+            $0.connectionId.uuidString == selectedConnectionId
+        }
+        
+        return videoImageModels + veoModels
     }
 
     func getSelectedModel() -> ConnectionModel? {
@@ -78,12 +80,42 @@ class ImageToVideoViewModel: ObservableObject {
         return connections.filter { connection in
             connectionKeys.contains { $0.connectionId == connection.connectionId } &&
             connectionService.allModels.contains {
-                $0.connectionId == connection.connectionId && $0.modelSetType == .VIDEO_IMAGE
+                $0.connectionId == connection.connectionId && 
+                ($0.modelSetType == .VIDEO_IMAGE || $0.modelSetType == .VIDEO_TEXT)
             }
         }
     }
 
-    // MARK: - Initialization Logic
+    var isVeoModel: Bool {
+        guard let model = getSelectedModel() else { return false }
+        return !model.modelSupportedParams.supportedDurations.isEmpty
+    }
+    
+    var supportsLastFrame: Bool {
+        return getSelectedModel()?.modelSupportedParams.supportsLastFrame ?? false
+    }
+    
+    var supportsAudio: Bool {
+        return getSelectedModel()?.modelSupportedParams.supportsAudio ?? false
+    }
+    
+    var is1080p: Bool {
+        return artDimensions.contains("1080") || artDimensions.contains("1920")
+    }
+    
+    func getSupportedDurations() -> [Int] {
+        guard let model = getSelectedModel() else { return [] }
+        return model.modelSupportedParams.supportedDurations
+    }
+    
+    func getAvailableDurations() -> [Int] {
+        let allDurations = getSupportedDurations()
+        if is1080p {
+            return [8]
+        }
+        return allDurations
+    }
+
     func initialize(connectionKeys: [ConnectionKey]) {
         guard !connectionKeys.isEmpty && selectedModelId.isEmpty else { return }
 
@@ -98,16 +130,19 @@ class ImageToVideoViewModel: ObservableObject {
 
             if !selectedConnectionId.isEmpty, !selectedModelId.isEmpty {
                 artDimensions = getSelectedModel()?.modelSupportedParams.dimensions.first ?? ""
+                if isVeoModel {
+                    durationSeconds = getSupportedDurations().last ?? 8
+                }
             }
         }
     }
 
-    // MARK: - Dimension Management
     func updateDimensions(dimension: String) {
         guard artDimensions != dimension else { return }
 
         artDimensions = dimension
         selectedImage = nil
+        selectedLastFrame = nil
         colorPalette = []
     }
 
@@ -120,9 +155,20 @@ class ImageToVideoViewModel: ObservableObject {
         } else if !supportedDimensions.contains(artDimensions) {
             artDimensions = supportedDimensions.first ?? ""
         }
+        
+        if isVeoModel {
+            let supportedDurations = getSupportedDurations()
+            if !supportedDurations.contains(durationSeconds) {
+                durationSeconds = supportedDurations.last ?? 8
+            }
+        }
+        
+        if !supportsLastFrame {
+            selectedLastFrame = nil
+            selectedLastFrameItem = nil
+        }
     }
 
-    // MARK: - Image Processing
     func processSelectedImage(loaded: Data) {
         #if os(macOS)
         selectedImage = NSImage(data: loaded)
@@ -157,104 +203,97 @@ class ImageToVideoViewModel: ObservableObject {
         isCropSheetOpen = false
     }
 
-    // MARK: - Video Generation
-    func generateVideo(connectionKeys: [ConnectionKey]) async -> VideoSetResponse? {
-        guard !isGenerating,
-              let selectedModel = getSelectedModel() else {
-            return nil
+    func processSelectedLastFrame(loaded: Data) {
+        #if os(macOS)
+        selectedLastFrame = NSImage(data: loaded)
+        #else
+        selectedLastFrame = UIImage(data: loaded)
+        #endif
+
+        if selectedLastFrame != nil {
+            isLastFrameCropSheetOpen = true
         }
+    }
 
-        // Get connection secret from keychain
-        let connectionSecret = keychain.get(selectedModel.connectionId.uuidString)
+    func handleLastFrameCropping(image: PlatformImage) {
+        let targetSize = CGSize(
+            width: getAspectRatio(dimension: artDimensions).actualWidth,
+            height: getAspectRatio(dimension: artDimensions).actualHeight
+        )
 
-        guard let secret = connectionSecret else {
-            return VideoSetResponse(
-                status: .FAILED,
-                errorCode: .ADAPTER_ERROR,
-                errorMessage: "Keychain record not found"
+        selectedLastFrame = image.resizeImage(targetSize: targetSize)
+        isLastFrameCropSheetOpen = false
+    }
+
+    func cancelLastFrameCropping() {
+        selectedLastFrame = nil
+        isLastFrameCropSheetOpen = false
+    }
+
+    func submitToQueue(connectionKeys: [ConnectionKey], queueManager: QueueManager, modelContext: ModelContext) {
+        guard let selectedModel = getSelectedModel() else {
+            errorState = ErrorState(
+                message: "No model selected",
+                isShowing: true
             )
+            return
         }
 
-        // Find connection key
+        guard let connectionSecret = keychain.get(selectedModel.connectionId.uuidString) else {
+            errorState = ErrorState(
+                message: "Keychain record not found",
+                isShowing: true
+            )
+            return
+        }
+
         guard let connectionKey = connectionKeys.first(where: {
             $0.connectionId == selectedModel.connectionId
         }) else {
-            return VideoSetResponse(
-                status: .FAILED,
-                errorCode: .ADAPTER_ERROR,
-                errorMessage: "Connection key not found"
-            )
-        }
-
-        await MainActor.run {
-            isGenerating = true
-        }
-
-        do {
-            let request = VideoGenerationRequest(
-                modelId: selectedModel.modelId.uuidString,
-                artDimensions: artDimensions,
-                clientImage: selectedImage?.toBase64PNG(),
-                connectionKey: connectionKey,
-                connectionSecret: secret,
-                motion: Int(motion),
-                stickyness: Int(stickyness)
-            )
-
-            let adapter = GenerateVideoAdapter(
-                videoGenerationRequest: request,
-                modelContext: modelContext!
-            )
-
-            let response = await adapter.makeRequest()
-
-            await MainActor.run {
-                isGenerating = false
-            }
-
-            #if !os(macOS)
-            try? await Task.sleep(nanoseconds: 500_000_000)
-            #endif
-
-            return response
-
-        } catch {
-            await MainActor.run {
-                isGenerating = false
-                errorState = ErrorState(
-                    message: "Failed to generate video: \(error.localizedDescription)",
-                    isShowing: true
-                )
-            }
-            return nil
-        }
-    }
-
-    // MARK: - Generation Handler
-    func handleGenerationResponse(response: VideoSetResponse?) {
-        guard let response = response else { return }
-
-        if response.status == .GENERATED && response.set?.id != nil {
-            selectedSetId = response.set!.id
-            isNavigationActive = true
-        } else if response.status == .FAILED {
             errorState = ErrorState(
-                message: response.errorMessage ?? "Something went wrong",
+                message: "Connection key not found",
                 isShowing: true
             )
+            return
         }
+        
+        var resolution: String? = nil
+        if isVeoModel {
+            resolution = artDimensions.contains("1080") || artDimensions.contains("1920") ? "1080p" : "720p"
+        }
+
+        let request = VideoGenerationRequest(
+            modelId: selectedModel.modelId.uuidString,
+            prompt: prompt,
+            negativePrompt: negativePrompt.isEmpty ? nil : negativePrompt,
+            artDimensions: artDimensions,
+            clientImage: selectedImage?.toBase64PNG(),
+            clientLastFrame: selectedLastFrame?.toBase64PNG(),
+            connectionKey: connectionKey,
+            connectionSecret: connectionSecret,
+            motion: isVeoModel ? nil : Int(motion),
+            stickyness: isVeoModel ? nil : Int(stickyness),
+            durationSeconds: isVeoModel ? durationSeconds : nil,
+            resolution: resolution,
+            generateAudio: supportsAudio ? generateAudio : nil
+        )
+
+        _ = queueManager.submitVideoGeneration(
+            request: request,
+            modelContext: modelContext
+        )
+
+        showQueuedToast = true
     }
 
-    // MARK: - Validation
     var canGenerate: Bool {
-        return !isGenerating && selectedImage != nil && !selectedModelId.isEmpty
+        return selectedImage != nil && !selectedModelId.isEmpty
     }
 
     var hasConnection: Bool {
         return !selectedModelId.isEmpty
     }
 
-    // MARK: - Cleanup
     func resetNavigation() {
         focusedField = nil
         isNavigationActive = false

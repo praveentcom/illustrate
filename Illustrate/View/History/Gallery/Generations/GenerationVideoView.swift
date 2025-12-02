@@ -54,6 +54,18 @@ struct GenerationVideoView: View {
     @State private var showDocumentPicker = false
     @State private var showShareSheet = false
 
+    private func getVideoAspectRatio(from dimensions: String?) -> CGFloat {
+        guard let dimensions = dimensions else { return 16.0 / 9.0 }
+        let parts = dimensions.lowercased().split(separator: "x")
+        guard parts.count == 2,
+              let width = Double(parts[0]),
+              let height = Double(parts[1]),
+              height > 0 else {
+            return 16.0 / 9.0
+        }
+        return width / height
+    }
+
     func getSelectedGeneration() -> Generation? {
         if generationIndex >= 0 && generationIndex < generations.count {
             return generations[generationIndex]
@@ -131,7 +143,8 @@ struct GenerationVideoView: View {
                                     VStack(spacing: 16) {
                                         #if os(macOS)
                                             VideoPlayer(player: AVPlayer(url: videoUrl))
-                                                .frame(maxHeight: 400)
+                                                .aspectRatio(getVideoAspectRatio(from: getSelectedGeneration()?.artDimensions), contentMode: .fit)
+                                                .frame(maxHeight: 500)
                                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                                                 .shadow(color: .black.opacity(0.4), radius: 8)
                                                 .frame(maxWidth: .infinity)
@@ -146,7 +159,7 @@ struct GenerationVideoView: View {
                                             .id("video_client_\(getSelectedGeneration()!.id.uuidString)")
                                         #else
                                             VideoPlayer(player: AVPlayer(url: videoUrl))
-                                                .aspectRatio(contentMode: .fill)
+                                                .aspectRatio(getVideoAspectRatio(from: getSelectedGeneration()?.artDimensions), contentMode: .fit)
                                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                                         #endif
                                     }

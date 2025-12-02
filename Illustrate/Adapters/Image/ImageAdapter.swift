@@ -33,7 +33,6 @@ func loadImageFromiCloud(_ fileName: String) -> PlatformImage? {
     }
 
     guard let containerURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents") else {
-        print("iCloud container not available.")
         return nil
     }
 
@@ -43,6 +42,11 @@ func loadImageFromiCloud(_ fileName: String) -> PlatformImage? {
         }
 
         let fileUrl = containerURL.appendingPathComponent("\(fileName).png")
+        
+        guard FileManager.default.fileExists(atPath: fileUrl.path) else {
+            return nil
+        }
+        
         let data = try Data(contentsOf: fileUrl)
 
         #if os(macOS)
@@ -52,7 +56,7 @@ func loadImageFromiCloud(_ fileName: String) -> PlatformImage? {
         #endif
         return image
     } catch {
-        print("Error loading image: \(error.localizedDescription)")
+        print("Error loading image '\(fileName)': \(error.localizedDescription)")
         return nil
     }
 }

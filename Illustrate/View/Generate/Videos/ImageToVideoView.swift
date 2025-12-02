@@ -5,18 +5,12 @@ import SwiftData
 import SwiftUI
 
 struct ImageToVideoView: View {
-    // MARK: Dependencies
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var queueManager: QueueManager
     @Query(sort: \ConnectionKey.createdAt, order: .reverse) private var connectionKeys: [ConnectionKey]
 
-    @StateObject private var viewModel: ImageToVideoViewModel
+    @StateObject private var viewModel = ImageToVideoViewModel()
 
-    // MARK: Initialization
-    init() {
-        _viewModel = StateObject(wrappedValue: ImageToVideoViewModel(modelContext: nil))
-    }
-
-    // MARK: Focus State
     @FocusState private var focusedField: ImageToVideoViewModel.Field?
 
     var body: some View {
@@ -61,9 +55,39 @@ struct ImageToVideoView: View {
                             viewModel.validateAndSetDimensions()
                         }
                     }
-                    .disabled(viewModel.isGenerating)
 
                     Section("Art Details") {
+                        if viewModel.isVeoModel {
+                            Picker("Dimensions", selection: $viewModel.artDimensions) {
+                                ForEach(viewModel.getSelectedModel()?.modelSupportedParams.dimensions ?? [], id: \.self) { dimension in
+                                    Text(dimension)
+                                        .tag(dimension)
+                                }
+                            }
+#if !os(macOS)
+                            .pickerStyle(.navigationLink)
+#endif
+                            .onChange(of: viewModel.artDimensions) {
+                                viewModel.updateDimensions(dimension: viewModel.artDimensions)
+                                if viewModel.is1080p && viewModel.durationSeconds != 8 {
+                                    viewModel.durationSeconds = 8
+                                }
+                            }
+
+                            Picker("Duration", selection: $viewModel.durationSeconds) {
+                                ForEach(viewModel.getAvailableDurations(), id: \.self) { duration in
+                                    Text("\(duration) seconds")
+                                        .tag(duration)
+                                }
+                            }
+#if !os(macOS)
+                            .pickerStyle(.navigationLink)
+#endif
+                            
+                            if viewModel.supportsAudio {
+                                Toggle("Generate Audio", isOn: $viewModel.generateAudio)
+                            }
+                        } else {
                         Picker("Dimensions", selection: $viewModel.artDimensions) {
                             ForEach(viewModel.getSelectedModel()?.modelSupportedParams.dimensions ?? [], id: \.self) { dimension in
                                 HStack {
@@ -83,6 +107,7 @@ struct ImageToVideoView: View {
 #endif
                         .onChange(of: viewModel.artDimensions) {
                             viewModel.updateDimensions(dimension: viewModel.artDimensions)
+                            }
                         }
 
                         if viewModel.getSelectedModel()?.modelSupportedParams.quality ?? false {
@@ -137,9 +162,8 @@ struct ImageToVideoView: View {
 #endif
                         }
                     }
-                    .disabled(viewModel.isGenerating)
 
-                    Section {
+                    Section(header: Text("Starting Frame")) {
                         ZStack {
                             SmoothAnimatedGradientView(colors: viewModel.colorPalette.compactMap { hex in
                                 Color(getUniversalColorFromHex(hexString: hex))
@@ -182,6 +206,61 @@ struct ImageToVideoView: View {
                             Spacer()
                         }
                     }
+                    
+                    if viewModel.supportsLastFrame {
+                        Section(header: Text("Ending Frame (Optional)")) {
+                            ZStack {
+                                SmoothAnimatedGradientView(colors: viewModel.colorPalette.compactMap { hex in
+                                    Color(getUniversalColorFromHex(hexString: hex))
+                                })
+                                
+                                if viewModel.selectedLastFrame != nil {
+#if os(macOS)
+                                    Image(nsImage: viewModel.selectedLastFrame!)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        .frame(maxHeight: 400)
+                                        .shadow(color: .black.opacity(0.4), radius: 8)
+                                        .padding(.vertical, 6)
+                                        .frame(maxWidth: .infinity)
+#else
+                                    Image(uiImage: viewModel.selectedLastFrame!)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        .padding(.vertical, 6)
+#endif
+                                } else {
+                                    Image("placeholder_select_image")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        .frame(height: 200)
+                                        .onTapGesture {
+                                            if viewModel.selectedImage != nil {
+                                                viewModel.isLastFramePickerOpen = true
+                                            }
+                                        }
+                                        .opacity(viewModel.selectedImage == nil ? 0.5 : 1.0)
+                                }
+                            }
+
+                            HStack(spacing: 24) {
+                                Spacer()
+                                Button(viewModel.selectedLastFrame != nil ? "Change ending frame" : "Add ending frame") {
+                                    viewModel.isLastFramePickerOpen = true
+                                }
+                                .disabled(viewModel.selectedImage == nil)
+                                if viewModel.selectedLastFrame != nil {
+                                    Button("Remove", role: .destructive) {
+                                        viewModel.selectedLastFrame = nil
+                                    }
+                                }
+                                Spacer()
+                            }
+                        }
+                    }
 
                     if viewModel.getSelectedModel()?.modelSupportedParams.prompt ?? false {
                         Section(header: Text("Generate instructions")) {
@@ -196,9 +275,9 @@ struct ImageToVideoView: View {
                                     .focused($focusedField, equals: .negativePrompt)
                             }
                         }
-                        .disabled(viewModel.isGenerating)
                     }
 
+                    if !viewModel.isVeoModel {
                     Section("Video Preferences") {
                         VStack {
 #if os(iOS)
@@ -214,10 +293,10 @@ struct ImageToVideoView: View {
 #endif
                             Slider(value: $viewModel.stickyness, in: 0 ... 10, step: 0.5) {
                                 Text("Stickyness: \(Int(viewModel.stickyness * 10))% \(viewModel.stickyness, specifier: "%.1f")")
+                                }
                             }
                         }
                     }
-                    .disabled(viewModel.isGenerating)
 
                     Section(header: Text("Additional requests")) {
                         if viewModel.getSelectedModel()?.modelSupportedParams.count ?? 1 > 1 {
@@ -241,17 +320,34 @@ struct ImageToVideoView: View {
                         }
                     }
 
-                    Button(
-                        viewModel.isGenerating ? "Generating, please wait..." : "Generate Video"
-                    ) {
+                    Section {
+                        if viewModel.isVeoModel {
+                            EstimatedCostView(
+                                cost: CostEstimator.estimatedVideoCost(
+                                    modelCode: viewModel.getSelectedModel()?.modelCode ?? .STABILITY_IMAGE_TO_VIDEO,
+                                    durationSeconds: viewModel.durationSeconds,
+                                    numberOfVideos: viewModel.numberOfVideos
+                                ),
+                                modelCode: viewModel.getSelectedModel()?.modelCode
+                            )
+                        } else {
+                            EstimatedCostView(
+                                cost: CostEstimator.estimatedVideoCost(
+                                    modelCode: viewModel.getSelectedModel()?.modelCode ?? .STABILITY_IMAGE_TO_VIDEO,
+                                    durationSeconds: 4,
+                                    numberOfVideos: viewModel.numberOfVideos
+                                ),
+                                modelCode: viewModel.getSelectedModel()?.modelCode
+                            )
+                        }
+                    }
+
+                    Button("Generate Video") {
                         DispatchQueue.main.async {
                             focusedField = nil
                         }
 
-                        Task {
-                            let response = await viewModel.generateVideo(connectionKeys: connectionKeys)
-                            viewModel.handleGenerationResponse(response: response)
-                        }
+                        viewModel.submitToQueue(connectionKeys: connectionKeys, queueManager: queueManager, modelContext: modelContext)
                     }
                     .disabled(!viewModel.canGenerate)
                 }
@@ -269,6 +365,16 @@ struct ImageToVideoView: View {
                         }
                     }
                 }
+                .photosPicker(isPresented: $viewModel.isLastFramePickerOpen, selection: $viewModel.selectedLastFrameItem, matching: .images)
+                .onChange(of: viewModel.selectedLastFrameItem) {
+                    Task {
+                        if let loaded = try? await viewModel.selectedLastFrameItem?.loadTransferable(type: Data.self) {
+                            viewModel.processSelectedLastFrame(loaded: loaded)
+                        } else {
+                            viewModel.selectedLastFrame = nil
+                        }
+                    }
+                }
                 .sheet(isPresented: $viewModel.isCropSheetOpen) {
                     ImageCropAdapter(
                         image: viewModel.selectedImage!,
@@ -278,6 +384,18 @@ struct ImageToVideoView: View {
                         },
                         onCropCancel: {
                             viewModel.cancelImageCropping()
+                        }
+                    )
+                }
+                .sheet(isPresented: $viewModel.isLastFrameCropSheetOpen) {
+                    ImageCropAdapter(
+                        image: viewModel.selectedLastFrame!,
+                        cropDimensions: viewModel.artDimensions,
+                        onCropConfirm: { image in
+                            viewModel.handleLastFrameCropping(image: image)
+                        },
+                        onCropCancel: {
+                            viewModel.cancelLastFrameCropping()
                         }
                     )
                 }
@@ -298,12 +416,12 @@ struct ImageToVideoView: View {
                 subTitle: "Tap to dismiss"
             )
         }
-        .toast(isPresenting: $viewModel.isGenerating, offsetY: 16) {
+        .toast(isPresenting: $viewModel.showQueuedToast, duration: 3, offsetY: 16) {
             AlertToast(
                 displayMode: .hud,
-                type: .loading,
-                title: "Generating video",
-                subTitle: "This might take a while, hang on."
+                type: .systemImage("checkmark.circle", Color.green),
+                title: "Added to queue",
+                subTitle: "Check the queue sidebar for progress"
             )
         }
 #else
@@ -318,28 +436,34 @@ struct ImageToVideoView: View {
                             .multilineTextAlignment(.center)
                         Text("Dismiss to try again")
                             .multilineTextAlignment(.center)
-                            .opacity(0.6)
+                            .opacity(0.7)
                     }
                 }
             }
             .padding(.all, 32)
         }
-        .sheet(isPresented: $viewModel.isGenerating) {
+        .sheet(isPresented: $viewModel.showQueuedToast) {
             VStack(alignment: .center, spacing: 24) {
                 VStack(alignment: .center, spacing: 8) {
-                    ProgressView()
-                        .frame(width: 24, height: 24)
+                    Image(systemName: "checkmark.circle")
+                        .resizable()
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(.green)
                     VStack(alignment: .center) {
-                        Text("Generating video")
+                        Text("Added to queue")
                             .multilineTextAlignment(.center)
-                        Text("This might take a while, hang on.")
+                        Text("Check the queue for progress")
                             .multilineTextAlignment(.center)
-                            .opacity(0.6)
+                            .opacity(0.7)
                     }
                 }
             }
             .padding(.all, 32)
-            .interactiveDismissDisabled()
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    viewModel.showQueuedToast = false
+                }
+            }
         }
 #endif
         .navigationDestination(isPresented: $viewModel.isNavigationActive) {
