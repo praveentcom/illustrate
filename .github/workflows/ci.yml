@@ -1,0 +1,55 @@
+name: Build and Test
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build-macos:
+    name: Build macOS App
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build macOS target
+        run: |
+          xcodebuild clean build \
+            -project Illustrate.xcodeproj \
+            -scheme "Illustrate" \
+            -destination "platform=macOS" \
+            -configuration Release \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+  build-ios:
+    name: Build iOS App
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: List available schemes
+        run: xcodebuild -list -project DNSDeck.xcodeproj
+
+      - name: Build iOS target
+        run: |
+          xcodebuild clean build \
+            -project Illustrate.xcodeproj \
+            -scheme "Illustrate" \
+            -destination "platform=iOS Simulator,name=iPhone SE (3rd generation)" \
+            -configuration Release \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
