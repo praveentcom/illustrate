@@ -218,7 +218,7 @@ struct QueueItemRow: View {
     }
 }
 
-// Placeholder for result view navigation
+// Result view navigation - uses existing GenerationImageView
 struct ResultView: View {
     let setId: UUID
     @Environment(\.modelContext) private var modelContext
@@ -229,23 +229,25 @@ struct ResultView: View {
     }
     
     var body: some View {
-        VStack {
-            if let set = imageSet {
-                Text("Result for: \(set.prompt)")
-                    .font(.headline)
-                    .padding()
-                
-                // TODO: Show the actual generated images
-                // This would integrate with existing image display logic
-                Text("Set ID: \(set.id.uuidString)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+        if let set = imageSet {
+            if set.setType == .VIDEO_IMAGE {
+                GenerationVideoView(setId: setId)
             } else {
-                Text("Result not found")
-                    .foregroundColor(.secondary)
+                GenerationImageView(setId: setId)
             }
+        } else {
+            VStack {
+                Image(systemName: "exclamationmark.triangle")
+                    .font(.system(size: 48))
+                    .foregroundColor(.secondary)
+                
+                Text("Result not found")
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+                    .padding(.top, 8)
+            }
+            .frame(minWidth: 400, minHeight: 300)
+            .padding()
         }
-        .frame(minWidth: 400, minHeight: 300)
-        .padding()
     }
 }
