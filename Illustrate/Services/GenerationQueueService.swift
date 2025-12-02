@@ -28,9 +28,10 @@ class GenerationQueueService: ObservableObject {
     
     // MARK: - Queue Management
     
-    func addToQueue(request: ImageGenerationRequest, setType: EnumSetType) -> QueueItem {
+    func addToQueue(request: ImageGenerationRequest, setType: EnumSetType) -> QueueItem? {
         guard let context = modelContext else {
-            fatalError("ModelContext not set")
+            print("Error: ModelContext not set")
+            return nil
         }
         
         let queueItem = QueueItem(request: request, setType: setType)
@@ -46,7 +47,7 @@ class GenerationQueueService: ObservableObject {
             return queueItem
         } catch {
             print("Failed to save queue item: \(error)")
-            return queueItem
+            return nil
         }
     }
     
@@ -87,8 +88,11 @@ class GenerationQueueService: ObservableObject {
     private func processQueue() async {
         guard let context = modelContext else { return }
         
-        // Find next item to process
-        guard let nextItem = queueItems.first(where: { $0.status == .IN_PROGRESS }) else {
+        // Find next item to process in FIFO order (oldest first)
+        guard let nextItem = queueItems
+            .filter({ $0.status == .IN_PROGRESS })
+            .sorted(by: { $0.createdAt < $1.createdAt })
+            .first else {
             return
         }
         

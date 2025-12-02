@@ -51,6 +51,7 @@ struct GenerateImageView: View {
     // MARK: Generation States
 
     @State private var errorState = ErrorState(message: "", isShowing: false)
+    @State private var successState = ErrorState(message: "", isShowing: false)
 
     var body: some View {
         VStack {
@@ -253,17 +254,23 @@ struct GenerateImageView: View {
                             numberOfImages: numberOfImages
                         )
                         
-                        _ = queueService.addToQueue(request: request, setType: .GENERATE)
-                        
-                        // Clear form
-                        prompt = ""
-                        negativePrompt = ""
-                        
-                        // Show success message
-                        errorState = ErrorState(
-                            message: "Generation added to queue",
-                            isShowing: true
-                        )
+                        if let queueItem = queueService.addToQueue(request: request, setType: .GENERATE) {
+                            // Clear form
+                            prompt = ""
+                            negativePrompt = ""
+                            
+                            // Show success message
+                            successState = ErrorState(
+                                message: "Generation added to queue",
+                                isShowing: true
+                            )
+                        } else {
+                            // Show error message
+                            errorState = ErrorState(
+                                message: "Failed to add to queue. Please try again.",
+                                isShowing: true
+                            )
+                        }
                     }
                 }
                 .formStyle(.grouped)
@@ -291,12 +298,19 @@ struct GenerateImageView: View {
             }
         }
         #if os(macOS)
-        .toast(isPresenting: $errorState.isShowing, duration: 3, offsetY: 16) {
+        .toast(isPresenting: $successState.isShowing, duration: 3, offsetY: 16) {
             AlertToast(
                 displayMode: .hud,
-                type: .systemImage(errorState.message.contains("added to queue") ? "checkmark.circle" : "exclamationmark.triangle", errorState.message.contains("added to queue") ? Color.green : Color.red),
+                type: .systemImage("checkmark.circle", Color.green),
+                title: successState.message
+            )
+        }
+        .toast(isPresenting: $errorState.isShowing, duration: 12, offsetY: 16) {
+            AlertToast(
+                displayMode: .hud,
+                type: .systemImage("exclamationmark.triangle", Color.red),
                 title: errorState.message,
-                subTitle: errorState.message.contains("added to queue") ? nil : "Tap to dismiss"
+                subTitle: "Tap to dismiss"
             )
         }
         #else

@@ -42,8 +42,16 @@ struct DesktopView: View {
                         Button(action: {
                             showQueueSidebar.toggle()
                         }) {
-                            Label("Queue", systemImage: showQueueSidebar ? "sidebar.right" : "sidebar.right")
-                                .help("Toggle Queue Sidebar")
+                            ZStack(alignment: .topTrailing) {
+                                Image(systemName: showQueueSidebar ? "sidebar.right" : "list.bullet.clipboard")
+                                if !queueService.queueItems.isEmpty {
+                                    Circle()
+                                        .fill(Color.blue)
+                                        .frame(width: 8, height: 8)
+                                        .offset(x: 4, y: -4)
+                                }
+                            }
+                            .help("Toggle Queue Sidebar")
                         }
                     }
                 }

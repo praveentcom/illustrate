@@ -4,7 +4,7 @@ import SwiftData
 import SwiftUI
 
 enum EnumQueueItemStatus: String, Codable, CaseIterable, Identifiable {
-    var id: String { UUID().uuidString }
+    var id: String { self.rawValue }
     
     case IN_PROGRESS = "In Progress"
     case SUCCESSFUL = "Successful"
