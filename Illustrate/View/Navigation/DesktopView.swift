@@ -3,8 +3,10 @@ import SwiftUI
 
 struct DesktopView: View {
     @StateObject private var navigationManager = NavigationManager()
+    @EnvironmentObject var queueService: GenerationQueueService
     @State private var selectedItem: EnumNavigationItem? = .dashboardWorkspace
     @State private var desktopNavigationPath = NavigationPath()
+    @State private var showQueueSidebar: Bool = true
 
     var body: some View {
         NavigationSplitView {
@@ -21,19 +23,36 @@ struct DesktopView: View {
             }
             .frame(minWidth: 240)
         } detail: {
-            NavigationStack(path: $desktopNavigationPath) {
-                if let selectedItem = navigationManager.selectedNavigationItem ?? selectedItem {
-                    viewForItem(selectedItem)
-                        .navigationDestination(for: EnumNavigationItem.self) { item in
-                            viewForItem(item)
+            HStack(spacing: 0) {
+                NavigationStack(path: $desktopNavigationPath) {
+                    if let selectedItem = navigationManager.selectedNavigationItem ?? selectedItem {
+                        viewForItem(selectedItem)
+                            .navigationDestination(for: EnumNavigationItem.self) { item in
+                                viewForItem(item)
+                            }
+                    } else {
+                        Text("Select an item")
+                    }
+                }
+                #if os(macOS)
+                .frame(minWidth: 800)
+                #endif
+                .toolbar {
+                    ToolbarItem(placement: .automatic) {
+                        Button(action: {
+                            showQueueSidebar.toggle()
+                        }) {
+                            Label("Queue", systemImage: showQueueSidebar ? "sidebar.right" : "sidebar.right")
+                                .help("Toggle Queue Sidebar")
                         }
-                } else {
-                    Text("Select an item")
+                    }
+                }
+                
+                if showQueueSidebar {
+                    Divider()
+                    QueueSidebarView()
                 }
             }
-            #if os(macOS)
-            .frame(minWidth: 800)
-            #endif
         }
         .environmentObject(navigationManager)
         .onChange(of: navigationManager.selectedNavigationItem) { _, newValue in

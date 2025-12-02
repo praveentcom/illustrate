@@ -8,6 +8,7 @@ struct GenerateImageView: View {
 
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \ConnectionKey.createdAt, order: .reverse) private var connectionKeys: [ConnectionKey]
+    @EnvironmentObject var queueService: GenerationQueueService
 
     @State private var selectedConnectionId: String = ""
     @State private var selectedModelId: String = ""
@@ -49,59 +50,7 @@ struct GenerateImageView: View {
 
     // MARK: Generation States
 
-    @State private var isGenerating: Bool = false
     @State private var errorState = ErrorState(message: "", isShowing: false)
-    func generateImage() async -> ImageSetResponse? {
-        if !isGenerating {
-            let keychain = KeychainSwift()
-            keychain.accessGroup = keychainAccessGroup
-            keychain.synchronizable = true
-
-            let connectionSecret: String? = keychain.get(getSelectedModel()!.connectionId.uuidString)
-            if connectionSecret == nil {
-                isGenerating = false
-                return ImageSetResponse(
-                    status: .FAILED,
-                    errorCode: EnumGenerateImageAdapterErrorCode.ADAPTER_ERROR,
-                    errorMessage: "Keychain record not found"
-                )
-            }
-
-            isGenerating = true
-
-            let adapter = GenerateImageAdapter(
-                imageGenerationRequest: ImageGenerationRequest(
-                    modelId: getSelectedModel()!.modelId.uuidString,
-                    prompt: prompt,
-                    negativePrompt: negativePrompt,
-                    artVariant: artVariant,
-                    artQuality: artQuality,
-                    artStyle: artStyle,
-                    artDimensions: artDimensions,
-                    connectionKey: connectionKeys.first(where: { $0.connectionId == getSelectedModel()!.connectionId })!,
-                    connectionSecret: connectionSecret!,
-                    numberOfImages: numberOfImages
-                ),
-                modelContext: modelContext
-            )
-
-            let response: ImageSetResponse = await adapter.makeRequest()
-
-            isGenerating = false
-            #if !os(macOS)
-                try? await Task.sleep(nanoseconds: 500_000_000)
-            #endif
-
-            return response
-        }
-
-        return nil
-    }
-
-    // MARK: Navigation States
-
-    @State private var isNavigationActive: Bool = false
-    @State private var selectedSetId: UUID? = nil
 
     var body: some View {
         VStack {
@@ -153,7 +102,6 @@ struct GenerateImageView: View {
                             }
                         }
                     }
-                    .disabled(isGenerating)
 
                     Section("Details") {
                         Picker("Art Dimensions", selection: $artDimensions) {
@@ -226,7 +174,6 @@ struct GenerateImageView: View {
                             #endif
                         }
                     }
-                    .disabled(isGenerating)
 
                     if getSelectedModel()?.modelSupportedParams.prompt ?? false {
                         Section(header: Text("What do you want to generate?")) {
@@ -241,7 +188,6 @@ struct GenerateImageView: View {
                                     .focused($focusedField, equals: .negativePrompt)
                             }
                         }
-                        .disabled(isGenerating)
                     }
 
                     Section(header: Text("Additional requests")) {
@@ -265,42 +211,60 @@ struct GenerateImageView: View {
                             }
                         }
                     }
-                    .disabled(isGenerating)
 
-                    Button(isGenerating ? "Generating, please wait..." : "Generate") {
-                        DispatchQueue.main.async {
-                            focusedField = nil
-                        }
+                    Button("Generate") {
+                        focusedField = nil
 
                         // Validate prompt before generation
                         guard !prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                            DispatchQueue.main.async {
-                                errorState = ErrorState(
-                                    message: "Prompt is required to generate an image",
-                                    isShowing: true
-                                )
-                            }
+                            errorState = ErrorState(
+                                message: "Prompt is required to generate an image",
+                                isShowing: true
+                            )
                             return
                         }
 
-                        Task {
-                            let response = await generateImage()
-                            if response?.status == EnumGenerationStatus.GENERATED && response?.set?.id != nil {
-                                DispatchQueue.main.async {
-                                    selectedSetId = response!.set!.id
-                                    isNavigationActive = true
-                                }
-                            } else if response?.status == EnumGenerationStatus.FAILED {
-                                DispatchQueue.main.async {
-                                    errorState = ErrorState(
-                                        message: response?.errorMessage ?? "Something went wrong",
-                                        isShowing: true
-                                    )
-                                }
-                            }
+                        // Get connection secret from keychain
+                        let keychain = KeychainSwift()
+                        keychain.accessGroup = keychainAccessGroup
+                        keychain.synchronizable = true
+                        
+                        guard let selectedModel = getSelectedModel(),
+                              let connectionSecret = keychain.get(selectedModel.connectionId.uuidString),
+                              let connectionKey = connectionKeys.first(where: { $0.connectionId == selectedModel.connectionId }) else {
+                            errorState = ErrorState(
+                                message: "Connection configuration error",
+                                isShowing: true
+                            )
+                            return
                         }
+
+                        // Create request and add to queue
+                        let request = ImageGenerationRequest(
+                            modelId: selectedModel.modelId.uuidString,
+                            prompt: prompt,
+                            negativePrompt: negativePrompt,
+                            artVariant: artVariant,
+                            artQuality: artQuality,
+                            artStyle: artStyle,
+                            artDimensions: artDimensions,
+                            connectionKey: connectionKey,
+                            connectionSecret: connectionSecret,
+                            numberOfImages: numberOfImages
+                        )
+                        
+                        _ = queueService.addToQueue(request: request, setType: .GENERATE)
+                        
+                        // Clear form
+                        prompt = ""
+                        negativePrompt = ""
+                        
+                        // Show success message
+                        errorState = ErrorState(
+                            message: "Generation added to queue",
+                            isShowing: true
+                        )
                     }
-                    .disabled(isGenerating)
                 }
                 .formStyle(.grouped)
             } else {
@@ -327,20 +291,12 @@ struct GenerateImageView: View {
             }
         }
         #if os(macOS)
-        .toast(isPresenting: $errorState.isShowing, duration: 12, offsetY: 16) {
+        .toast(isPresenting: $errorState.isShowing, duration: 3, offsetY: 16) {
             AlertToast(
                 displayMode: .hud,
-                type: .systemImage("exclamationmark.triangle", Color.red),
+                type: .systemImage(errorState.message.contains("added to queue") ? "checkmark.circle" : "exclamationmark.triangle", errorState.message.contains("added to queue") ? Color.green : Color.red),
                 title: errorState.message,
-                subTitle: "Tap to dismiss"
-            )
-        }
-        .toast(isPresenting: $isGenerating, offsetY: 16) {
-            AlertToast(
-                displayMode: .hud,
-                type: .loading,
-                title: "Generating image",
-                subTitle: "This might take a while, hang on."
+                subTitle: errorState.message.contains("added to queue") ? nil : "Tap to dismiss"
             )
         }
         #else
