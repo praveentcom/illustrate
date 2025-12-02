@@ -1,3 +1,4 @@
+import Foundation
 import CloudKit
 import SwiftData
 import SwiftUI
