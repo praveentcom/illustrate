@@ -24,7 +24,7 @@ struct UsageMetricsView: View {
 
     func getMetrics() -> UsageMetrics {
         if let connection = connections.first(where: { $0.connectionId == selectedConnectionKey?.connectionId }) {
-            let models: [ConnectionModel] = connectionModels.filter { $0.connectionId == connection.connectionId }
+            let models: [ConnectionModel] = ConnectionService.shared.allModels.filter { $0.connectionId == connection.connectionId }
             let modelIds: [String] = models.map { $0.modelId.uuidString }
             let dateLimit = Date().addingTimeInterval(-30 * 24 * 60 * 60)
             let fetchDescriptor = FetchDescriptor<Generation>(
@@ -142,17 +142,47 @@ struct UsageMetricsView: View {
                         Text("Total Generations")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                        Chart(getMetrics().dailyMetrics) { metric in
-                            BarMark(
-                                x: .value("Date", metric.date),
-                                y: .value("Count", metric.totalGenerations)
-                            )
+                        if getMetrics().dailyMetrics.isEmpty {
+                            VStack(spacing: 8) {
+                                Image(systemName: "chart.bar.xaxis")
+                                    .font(.system(size: 24))
+                                    .foregroundStyle(.secondary)
+                                VStack(spacing: 4) {
+                                    Text("No generation data")
+                                        .font(.callout)
+                                        .foregroundStyle(.secondary)
+                                    Text("Start generating images to see your usage metrics here")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .multilineTextAlignment(.center)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .frame(height: 200)
+                        } else {
+                            Chart(getMetrics().dailyMetrics) { metric in
+                                BarMark(
+                                    x: .value("Date", metric.date),
+                                    y: .value("Count", metric.totalGenerations)
+                                )
+                            }
+                            .chartXAxis {
+                                AxisMarks { value in
+                                    AxisGridLine()
+                                    AxisTick()
+                                    AxisValueLabel {
+                                        if let date = value.as(Date.self) {
+                                            Text(date, format: .dateTime.month().day())
+                                        }
+                                    }
+                                }
+                            }
+                            .chartYAxis {
+                                AxisMarks(position: .leading)
+                            }
+                            .padding(.bottom, 8)
+                            .frame(height: 200)
                         }
-                        .chartYAxis {
-                            AxisMarks(position: .leading)
-                        }
-                        .padding(.bottom, 8)
-                        .frame(height: 200)
                     }
                     .padding(.all, 12)
                     .frame(alignment: .topLeading)
@@ -161,29 +191,59 @@ struct UsageMetricsView: View {
                         Text("Cost Incurred")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                        Chart(getMetrics().dailyMetrics) { metric in
-                            BarMark(
-                                x: .value("Date", metric.date),
-                                y: .value("Cost", metric.costIncurred)
-                            )
-                        }
-                        .chartYAxis {
-                            AxisMarks(position: .leading) { value in
-                                AxisGridLine()
-                                AxisTick()
-                                AxisValueLabel {
-                                    if let doubleValue = value.as(Double.self) {
-                                        if getConnection(connectionId: selectedConnectionKey!.connectionId)!.creditCurrency == .USD {
-                                            Text("$\(doubleValue, specifier: "%.2f")")
-                                        } else if getConnection(connectionId: selectedConnectionKey!.connectionId)!.creditCurrency == .CREDITS {
-                                            Text("\(doubleValue, specifier: "%.0f") credits")
+                        if getMetrics().dailyMetrics.isEmpty {
+                            VStack(spacing: 8) {
+                                Image(systemName: "dollarsign.circle")
+                                    .font(.system(size: 24))
+                                    .foregroundStyle(.secondary)
+                                VStack(spacing: 4) {
+                                    Text("No cost data")
+                                        .font(.callout)
+                                        .foregroundStyle(.secondary)
+                                    Text("Start generating images to see your cost metrics here")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .multilineTextAlignment(.center)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .frame(height: 200)
+                        } else {
+                            Chart(getMetrics().dailyMetrics) { metric in
+                                BarMark(
+                                    x: .value("Date", metric.date),
+                                    y: .value("Cost", metric.costIncurred)
+                                )
+                            }
+                            .chartXAxis {
+                                AxisMarks { value in
+                                    AxisGridLine()
+                                    AxisTick()
+                                    AxisValueLabel {
+                                        if let date = value.as(Date.self) {
+                                            Text(date, format: .dateTime.month().day())
                                         }
                                     }
                                 }
                             }
+                            .chartYAxis {
+                                AxisMarks(position: .leading) { value in
+                                    AxisGridLine()
+                                    AxisTick()
+                                    AxisValueLabel {
+                                        if let doubleValue = value.as(Double.self) {
+                                            if getConnection(connectionId: selectedConnectionKey!.connectionId)!.creditCurrency == .USD {
+                                                Text("$\(doubleValue, specifier: "%.2f")")
+                                            } else if getConnection(connectionId: selectedConnectionKey!.connectionId)!.creditCurrency == .CREDITS {
+                                                Text("\(doubleValue, specifier: "%.0f") credits")
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(.bottom, 8)
+                            .frame(height: 200)
                         }
-                        .padding(.bottom, 8)
-                        .frame(height: 200)
                     }
                     .padding(.all, 12)
                     .frame(alignment: .topLeading)
@@ -192,25 +252,55 @@ struct UsageMetricsView: View {
                         Text("Storage Utilized")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                        Chart(getMetrics().dailyMetrics) { metric in
-                            BarMark(
-                                x: .value("Date", metric.date),
-                                y: .value("Storage", metric.sizeUtilized)
-                            )
-                        }
-                        .chartYAxis {
-                            AxisMarks(position: .leading) { value in
-                                AxisGridLine()
-                                AxisTick()
-                                AxisValueLabel {
-                                    if let doubleValue = value.as(Double.self) {
-                                        Text("\(doubleValue, specifier: "%.0f") MB")
+                        if getMetrics().dailyMetrics.isEmpty {
+                            VStack(spacing: 8) {
+                                Image(systemName: "internaldrive")
+                                    .font(.system(size: 24))
+                                    .foregroundStyle(.secondary)
+                                VStack(spacing: 4) {
+                                    Text("No storage data")
+                                        .font(.callout)
+                                        .foregroundStyle(.secondary)
+                                    Text("Start generating images to see your storage usage here")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .multilineTextAlignment(.center)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .frame(height: 200)
+                        } else {
+                            Chart(getMetrics().dailyMetrics) { metric in
+                                BarMark(
+                                    x: .value("Date", metric.date),
+                                    y: .value("Storage", metric.sizeUtilized)
+                                )
+                            }
+                            .chartXAxis {
+                                AxisMarks { value in
+                                    AxisGridLine()
+                                    AxisTick()
+                                    AxisValueLabel {
+                                        if let date = value.as(Date.self) {
+                                            Text(date, format: .dateTime.month().day())
+                                        }
                                     }
                                 }
                             }
+                            .chartYAxis {
+                                AxisMarks(position: .leading) { value in
+                                    AxisGridLine()
+                                    AxisTick()
+                                    AxisValueLabel {
+                                        if let doubleValue = value.as(Double.self) {
+                                            Text("\(doubleValue, specifier: "%.0f") MB")
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(.bottom, 8)
+                            .frame(height: 200)
                         }
-                        .padding(.bottom, 8)
-                        .frame(height: 200)
                     }
                     .padding(.all, 12)
                     .frame(alignment: .topLeading)

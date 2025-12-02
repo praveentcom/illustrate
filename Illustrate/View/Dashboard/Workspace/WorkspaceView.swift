@@ -2,6 +2,8 @@ import SwiftData
 import SwiftUI
 
 struct WorkspaceView: View {
+    @Environment(\.modelContext) private var modelContext
+
     var timeBasedGreeting: String {
         let hour = Calendar.current.component(.hour, from: Date())
         if hour < 12 {
@@ -21,6 +23,22 @@ struct WorkspaceView: View {
         #endif
     }()
 
+    private var connectionKeysCount: Int {
+        let descriptor = FetchDescriptor<ConnectionKey>()
+        let count = (try? modelContext.fetchCount(descriptor)) ?? 0
+        return count
+    }
+
+    private var generationsCount: Int {
+        let descriptor = FetchDescriptor<Generation>()
+        let count = (try? modelContext.fetchCount(descriptor)) ?? 0
+        return count
+    }
+
+    private var shouldShowOnboarding: Bool {
+        return connectionKeysCount == 0 || generationsCount == 0
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
@@ -30,12 +48,14 @@ struct WorkspaceView: View {
                     Text("What do you want to generate today?")
                 }
 
-                VStack(alignment: .leading) {
-                    Text("Welcome, let's get you started.")
-                        .font(.caption)
-                        .textCase(.uppercase)
-                        .opacity(0.5)
-                    OnboardingView()
+                if shouldShowOnboarding {
+                    VStack(alignment: .leading) {
+                        Text("Welcome, let's get you started.")
+                            .font(.caption)
+                            .textCase(.uppercase)
+                            .opacity(0.5)
+                        OnboardingView()
+                    }
                 }
 
                 VStack(alignment: .leading) {
@@ -125,9 +145,9 @@ struct WorkspaceConnectionShortcut: View {
 
     func getModelsForConnection() -> [ConnectionModel] {
         if setType != nil {
-            return connectionModels.filter { $0.connectionId == item.connectionId && $0.modelSetType == setType }
+            return ConnectionService.shared.models(for: setType!).filter { $0.connectionId == item.connectionId }
         } else {
-            return connectionModels.filter { $0.connectionId == item.connectionId }
+            return ConnectionService.shared.models(for: item.connectionId)
         }
     }
 

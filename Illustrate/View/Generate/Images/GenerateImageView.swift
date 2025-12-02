@@ -17,11 +17,16 @@ struct GenerateImageView: View {
             return []
         }
 
-        return connectionModels.filter { $0.modelSetType == EnumSetType.GENERATE && $0.connectionId.uuidString == selectedConnectionId }
+        let service = ConnectionService.shared
+        return service.allModels.filter {
+            $0.modelSetType == EnumSetType.GENERATE &&
+            $0.connectionId.uuidString == selectedConnectionId &&
+            $0.active
+        }
     }
 
     func getSelectedModel() -> ConnectionModel? {
-        return connectionModels.first(where: { $0.modelId.uuidString == selectedModelId })
+        return ConnectionService.shared.model(by: selectedModelId)
     }
 
     // MARK: Form States
@@ -107,7 +112,7 @@ struct GenerateImageView: View {
                             ForEach(
                                 connections.filter { connection in
                                     connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-                                        connectionModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .GENERATE }
+                                        ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .GENERATE && $0.active }
                                 }, id: \.connectionId
                             ) { connection in
                                 HStack {
@@ -125,7 +130,7 @@ struct GenerateImageView: View {
                         #if !os(macOS)
                         .pickerStyle(.navigationLink)
                         #endif
-                        .onChange(of: selectedConnectionId) {
+                        .onChange(of: selectedConnectionId) { _, _ in
                             selectedModelId = getSupportedModels().first?.modelId.uuidString ?? ""
                         }
 
@@ -138,7 +143,7 @@ struct GenerateImageView: View {
                         #if !os(macOS)
                         .pickerStyle(.navigationLink)
                         #endif
-                        .onChange(of: selectedModelId) {
+                        .onChange(of: selectedModelId) { _, _ in
                             let supportedDimensions = getSelectedModel()?.modelSupportedParams.dimensions ?? []
 
                             if artDimensions == "" {
@@ -252,8 +257,14 @@ struct GenerateImageView: View {
                             #endif
                         }
 
-                        if getSelectedModel()?.modelSupportedParams.autoEnhance ?? false {
-                            Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
+                        if (getSelectedModel()?.modelSupportedParams.autoEnhance ?? false) && ConnectionService.shared.isOpenAIConnected(connectionKeys: connectionKeys) {
+                            HStack {
+                                Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
+
+                                Image(systemName: "info.circle")
+                                    .foregroundColor(.secondary)
+                                    .help(Text("Uses OpenAI to enhance your prompt for better results"))
+                            }
                         }
                     }
                     .disabled(isGenerating)
@@ -291,7 +302,7 @@ struct GenerateImageView: View {
             if !connectionKeys.isEmpty && selectedModelId.isEmpty {
                 let supportedConnections = connections.filter { connection in
                     connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-                        connectionModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .GENERATE }
+                        ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .GENERATE && $0.active }
                 }
 
                 if let firstSupportedConnection = supportedConnections.first,

@@ -5,7 +5,7 @@ class G_STABILITY_IMAGE_TO_VIDEO: VideoGenerationProtocol {
         return 20.0
     }
 
-    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.STABILITY_IMAGE_TO_VIDEO })!
+    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.STABILITY_IMAGE_TO_VIDEO.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String?

@@ -2,19 +2,27 @@ import Foundation
 
 class G_STABILITY_SD3: ImageGenerationProtocol {
     func getCreditsUsed(request: ImageGenerationRequest) -> Double {
-        let model = connectionModels.first(where: { $0.modelId.uuidString == request.modelId })
+        let model = ConnectionService.shared.model(by: request.modelId)
 
         switch model?.modelCode {
         case .STABILITY_SD3_TURBO:
             return 4.0
         case .STABILITY_SD3:
             return 6.5
+        case .STABILITY_SD35_LARGE:
+            return 6.5
+        case .STABILITY_SD35_LARGE_TURBO:
+            return 4.0
+        case .STABILITY_SD35_MEDIUM:
+            return 3.5
+        case .STABILITY_SD35_FLASH:
+            return 2.5
         default:
             return 6.5
         }
     }
 
-    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.STABILITY_SD3 })!
+    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.STABILITY_SD3.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String
@@ -52,8 +60,25 @@ class G_STABILITY_SD3: ImageGenerationProtocol {
     func transformRequest(request: ImageGenerationRequest) -> ServiceRequest {
         let aspectRatio = getImageDimensions(artDimensions: request.artDimensions)
 
-        let model = connectionModels.first(where: { $0.modelId.uuidString == request.modelId })
-        let modelString = model?.modelCode == .STABILITY_SD3_TURBO ? "sd3-turbo" : "sd3"
+        let model = ConnectionService.shared.model(by: request.modelId)
+        let modelString: String
+
+        switch model?.modelCode {
+        case .STABILITY_SD3_TURBO:
+            modelString = "sd3-turbo"
+        case .STABILITY_SD3:
+            modelString = "sd3"
+        case .STABILITY_SD35_LARGE:
+            modelString = "sd3.5-large"
+        case .STABILITY_SD35_LARGE_TURBO:
+            modelString = "sd3.5-large-turbo"
+        case .STABILITY_SD35_MEDIUM:
+            modelString = "sd3.5-medium"
+        case .STABILITY_SD35_FLASH:
+            modelString = "sd3.5-flash"
+        default:
+            modelString = "sd3"
+        }
 
         return ServiceRequest(
             prompt: request.prompt,

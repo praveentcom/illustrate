@@ -1,7 +1,8 @@
 import Foundation
 import SwiftData
 
-var keychainAccessGroup = "JV227HA2DR.so.illustrate.SharedItems"
+let TEAM_ID = "24J6SG2424"
+var keychainAccessGroup = "\(TEAM_ID).so.illustrate.SharedItems"
 
 @Model
 final class ConnectionKey: Codable {

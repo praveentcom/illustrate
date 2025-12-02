@@ -18,11 +18,13 @@ struct EraseMaskImageView: View {
             return []
         }
 
-        return connectionModels.filter { $0.modelSetType == EnumSetType.EDIT_MASK_ERASE && $0.connectionId.uuidString == selectedConnectionId }
+        return ConnectionService.shared.models(for: EnumSetType.EDIT_MASK_ERASE).filter {
+            $0.connectionId.uuidString == selectedConnectionId
+        }
     }
 
     func getSelectedModel() -> ConnectionModel? {
-        return connectionModels.first(where: { $0.modelId.uuidString == selectedModelId })
+        return ConnectionService.shared.model(by: selectedModelId)
     }
 
     // MARK: Form States
@@ -117,6 +119,8 @@ struct EraseMaskImageView: View {
     @State private var isNavigationActive: Bool = false
     @State private var selectedSetId: UUID? = nil
 
+    // MARK: Helper Functions
+
     // MARK: View
 
     var body: some View {
@@ -128,7 +132,7 @@ struct EraseMaskImageView: View {
                             ForEach(
                                 connections.filter { connection in
                                     connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-                                        connectionModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_MASK_ERASE }
+                                        ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_MASK_ERASE && $0.active }
                                 }, id: \.connectionId
                             ) { connection in
                                 HStack {
@@ -173,7 +177,6 @@ struct EraseMaskImageView: View {
                             }
                         }
                     }
-                    .disabled(isGenerating)
 
                     Section("Art Details") {
                         Picker("Dimensions", selection: $artDimensions) {
@@ -250,7 +253,6 @@ struct EraseMaskImageView: View {
                             #endif
                         }
                     }
-                    .disabled(isGenerating)
 
                     Section {
                         ZStack {
@@ -363,16 +365,21 @@ struct EraseMaskImageView: View {
                                         .tag(count)
                                 }
                             }
-                            #if !os(macOS)
+#if !os(macOS)
                             .pickerStyle(.navigationLink)
-                            #endif
+#endif
                         }
-
-                        if getSelectedModel()?.modelSupportedParams.autoEnhance ?? false {
-                            Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
+                        
+                        if (getSelectedModel()?.modelSupportedParams.autoEnhance ?? false) && ConnectionService.shared.isOpenAIConnected(connectionKeys: connectionKeys) {
+                            HStack {
+                                Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
+                                
+                                Image(systemName: "info.circle")
+                                    .foregroundColor(.secondary)
+                                    .help(Text("Uses OpenAI to enhance your prompt for better results"))
+                            }
                         }
                     }
-                    .disabled(isGenerating)
 
                     Button(
                         isGenerating ? "Editing, please wait..." : "Perform Edit"
@@ -444,6 +451,7 @@ struct EraseMaskImageView: View {
                         }
                     )
                 }
+                .disabled(isGenerating)
             } else {
                 PendingConnectionView(setType: .EDIT_MASK_ERASE)
             }
@@ -452,7 +460,7 @@ struct EraseMaskImageView: View {
             if !connectionKeys.isEmpty && selectedModelId.isEmpty {
                 let supportedConnections = connections.filter { connection in
                     connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-                        connectionModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_MASK_ERASE }
+                        ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_MASK_ERASE && $0.active }
                 }
 
                 if let firstSupportedConnection = supportedConnections.first,

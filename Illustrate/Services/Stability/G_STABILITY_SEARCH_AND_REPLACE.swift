@@ -5,7 +5,7 @@ class G_STABILITY_SEARCH_AND_REPLACE: ImageGenerationProtocol {
         return 4.0
     }
 
-    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.STABILITY_SEARCH_AND_REPLACE })!
+    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.STABILITY_SEARCH_AND_REPLACE.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String

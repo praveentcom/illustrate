@@ -6,7 +6,7 @@ struct PendingConnectionView: View {
 
     var connectionsWithSetTypeSupport: [Connection] {
         return connections.filter { connection in
-            connectionModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == setType }
+            ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == setType && $0.active }
         }
     }
 

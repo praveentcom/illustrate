@@ -5,7 +5,7 @@ class G_REPLICATE_FLUX_SCHNELL: ImageGenerationProtocol {
         return 0.0028
     }
 
-    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.REPLICATE_FLUX_SCHNELL })!
+    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.REPLICATE_FLUX_SCHNELL.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String

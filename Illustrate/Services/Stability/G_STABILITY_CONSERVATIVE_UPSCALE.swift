@@ -5,7 +5,7 @@ class G_STABILITY_CONSERVATIVE_UPSCALE: ImageGenerationProtocol {
         return 25.0
     }
 
-    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.STABILITY_CONSERVATIVE_UPSCALE })!
+    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.STABILITY_CONSERVATIVE_UPSCALE.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String

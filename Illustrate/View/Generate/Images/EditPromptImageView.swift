@@ -18,11 +18,13 @@ struct EditPromptImageView: View {
             return []
         }
 
-        return connectionModels.filter { $0.modelSetType == EnumSetType.EDIT_PROMPT && $0.connectionId.uuidString == selectedConnectionId }
+        return ConnectionService.shared.models(for: EnumSetType.EDIT_PROMPT).filter {
+            $0.connectionId.uuidString == selectedConnectionId
+        }
     }
 
     func getSelectedModel() -> ConnectionModel? {
-        return connectionModels.first(where: { $0.modelId.uuidString == selectedModelId })
+        return ConnectionService.shared.model(by: selectedModelId)
     }
 
     // MARK: Form States
@@ -117,7 +119,7 @@ struct EditPromptImageView: View {
                             ForEach(
                                 connections.filter { connection in
                                     connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-                                        connectionModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_PROMPT }
+                                        ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_PROMPT }
                                 }, id: \.connectionId
                             ) { connection in
                                 HStack {
@@ -318,8 +320,14 @@ struct EditPromptImageView: View {
                             #endif
                         }
 
-                        if getSelectedModel()?.modelSupportedParams.autoEnhance ?? false {
-                            Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
+                        if (getSelectedModel()?.modelSupportedParams.autoEnhance ?? false) && ConnectionService.shared.isOpenAIConnected(connectionKeys: connectionKeys) {
+                            HStack {
+                                Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
+
+                                Image(systemName: "info.circle")
+                                    .foregroundColor(.secondary)
+                                    .help(Text("Uses OpenAI to enhance your prompt for better results"))
+                            }
                         }
                     }
                     .disabled(isGenerating)
@@ -399,7 +407,7 @@ struct EditPromptImageView: View {
             if !connectionKeys.isEmpty && selectedModelId.isEmpty {
                 let supportedConnections = connections.filter { connection in
                     connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-                        connectionModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_PROMPT }
+                        ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_PROMPT }
                 }
 
                 if let firstSupportedConnection = supportedConnections.first,

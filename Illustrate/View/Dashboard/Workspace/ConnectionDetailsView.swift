@@ -17,12 +17,12 @@ struct ConnectionDetailsView: View {
             }
             Section("Available Models") {
                 ForEach(EnumSetType.allCases, id: \.self) { set in
-                    let models = connectionModels.filter { $0.modelSetType == set && $0.connectionId == selectedConnection.connectionId }
+                    let models = ConnectionService.shared.models(for: set).filter { $0.connectionId == selectedConnection.connectionId }
                     if !models.isEmpty {
                         SectionKeyValueView(
                             icon: iconForSetType(set),
                             key: labelForSetType(set),
-                            value: models.map { $0.modelName }.joined(separator: ", ")
+                            value: models.map { $0.modelName }.joined(separator: "\n")
                         )
                     }
                 }

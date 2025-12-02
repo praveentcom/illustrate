@@ -5,7 +5,7 @@ class G_HUGGING_FACE_FLUX_DEV: ImageGenerationProtocol {
         return 0.00
     }
 
-    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.HUGGING_FACE_FLUX_DEV })!
+    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.HUGGING_FACE_FLUX_DEV.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let inputs: String

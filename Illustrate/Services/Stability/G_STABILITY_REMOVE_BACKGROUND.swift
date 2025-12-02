@@ -5,7 +5,7 @@ class G_STABILITY_REMOVE_BACKGROUND: ImageGenerationProtocol {
         return 2.0
     }
 
-    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.STABILITY_REMOVE_BACKGROUND })!
+    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.STABILITY_REMOVE_BACKGROUND.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let user: String

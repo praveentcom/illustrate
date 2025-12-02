@@ -5,7 +5,7 @@ class G_FAL_FLUX_DEV: ImageGenerationProtocol {
         return 0.025
     }
 
-    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.FAL_FLUX_DEV })!
+    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.FAL_FLUX_DEV.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String

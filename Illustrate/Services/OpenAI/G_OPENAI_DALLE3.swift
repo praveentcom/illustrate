@@ -28,7 +28,7 @@ class G_OPENAI_DALLE3: ImageGenerationProtocol {
         }
     }
 
-    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.OPENAI_DALLE3 })!
+    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.OPENAI_DALLE3.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let model: String

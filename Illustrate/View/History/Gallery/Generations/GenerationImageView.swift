@@ -259,7 +259,7 @@ struct GenerationImageView: View {
                             customValueView: ConnectionLabel(connection: connection)
                         )
                     }
-                    if let model = getModel(modelId: getSelectedGeneration()!.modelId) {
+                    if let model = ConnectionService.shared.model(by: getSelectedGeneration()!.modelId) {
                         SectionKeyValueView(
                             icon: "network",
                             key: "Model",

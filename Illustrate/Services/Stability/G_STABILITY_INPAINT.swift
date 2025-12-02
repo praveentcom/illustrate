@@ -5,7 +5,7 @@ class G_STABILITY_INPAINT: ImageGenerationProtocol {
         return 3.0
     }
 
-    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.STABILITY_INPAINT })!
+    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.STABILITY_INPAINT.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String

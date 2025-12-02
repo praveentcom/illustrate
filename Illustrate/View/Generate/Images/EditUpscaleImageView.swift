@@ -8,6 +8,7 @@ struct EditUpscaleImageView: View {
     // MARK: Model Context
 
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var navigationManager: NavigationManager
     @Query(sort: \ConnectionKey.createdAt, order: .reverse) private var connectionKeys: [ConnectionKey]
 
     @State private var selectedConnectionId: String = ""
@@ -18,11 +19,13 @@ struct EditUpscaleImageView: View {
             return []
         }
 
-        return connectionModels.filter { $0.modelSetType == EnumSetType.EDIT_UPSCALE && $0.connectionId.uuidString == selectedConnectionId }
+        return ConnectionService.shared.models(for: EnumSetType.EDIT_UPSCALE).filter {
+            $0.connectionId.uuidString == selectedConnectionId
+        }
     }
 
     func getSelectedModel() -> ConnectionModel? {
-        return connectionModels.first(where: { $0.modelId.uuidString == selectedModelId })
+        return ConnectionService.shared.model(by: selectedModelId)
     }
 
     // MARK: Form States
@@ -101,12 +104,11 @@ struct EditUpscaleImageView: View {
         return nil
     }
 
-    // MARK: Navigation States
-
-    @State private var isNavigationActive: Bool = false
-    @State private var selectedSetId: UUID? = nil
+    // Note: Navigation states removed - using NavigationManager instead
 
     // MARK: View
+
+    // MARK: Helper Functions
 
     var body: some View {
         VStack {
@@ -117,7 +119,7 @@ struct EditUpscaleImageView: View {
                             ForEach(
                                 connections.filter { connection in
                                     connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-                                        connectionModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_UPSCALE }
+                                        ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_UPSCALE }
                                 }, id: \.connectionId
                             ) { connection in
                                 HStack {
@@ -164,8 +166,8 @@ struct EditUpscaleImageView: View {
                     }
                     .disabled(isGenerating)
 
-                    Section("Art Details") {
-                        Picker("Dimensions", selection: $artDimensions) {
+                    Section("Details") {
+                        Picker("Art Dimensions", selection: $artDimensions) {
                             ForEach(getSelectedModel()?.modelSupportedParams.dimensions ?? [], id: \.self) { dimension in
                                 HStack {
                                     #if !os(macOS)
@@ -316,8 +318,14 @@ struct EditUpscaleImageView: View {
                             #endif
                         }
 
-                        if getSelectedModel()?.modelSupportedParams.autoEnhance ?? false {
-                            Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
+                        if (getSelectedModel()?.modelSupportedParams.autoEnhance ?? false) && ConnectionService.shared.isOpenAIConnected(connectionKeys: connectionKeys) {
+                            HStack {
+                                Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
+
+                                Image(systemName: "info.circle")
+                                    .foregroundColor(.secondary)
+                                    .help(Text("Uses OpenAI to enhance your prompt for better results"))
+                            }
                         }
                     }
                     .disabled(isGenerating)
@@ -333,8 +341,8 @@ struct EditUpscaleImageView: View {
                             let response = await generateImage()
                             if response?.status == EnumGenerationStatus.GENERATED && response?.set?.id != nil {
                                 DispatchQueue.main.async {
-                                    selectedSetId = response!.set!.id
-                                    isNavigationActive = true
+                                    // Navigate to the generation page in the main navigation stack
+                                    navigationManager.navigateToGeneration(setId: response!.set!.id)
                                 }
                             } else if response?.status == EnumGenerationStatus.FAILED {
                                 DispatchQueue.main.async {
@@ -397,7 +405,7 @@ struct EditUpscaleImageView: View {
             if !connectionKeys.isEmpty && selectedModelId.isEmpty {
                 let supportedConnections = connections.filter { connection in
                     connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-                        connectionModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_UPSCALE }
+                        ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_UPSCALE }
                 }
 
                 if let firstSupportedConnection = supportedConnections.first,
@@ -465,18 +473,6 @@ struct EditUpscaleImageView: View {
                     .interactiveDismissDisabled()
                 }
         #endif
-                .navigationDestination(isPresented: $isNavigationActive) {
-                    if let _selectedSetId = selectedSetId {
-                        GenerationImageView(setId: _selectedSetId)
-                            .onDisappear {
-                                DispatchQueue.main.async {
-                                    focusedField = nil
-                                    isNavigationActive = false
-                                    selectedSetId = nil
-                                }
-                            }
-                    }
-                }
                 .navigationTitle(labelForItem(.generateEditUpscale))
     }
 }

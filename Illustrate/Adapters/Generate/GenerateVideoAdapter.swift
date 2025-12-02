@@ -56,12 +56,11 @@ protocol VideoGenerationProtocol {
 }
 
 func getVideoGenerationAdapter(videoGenerationRequest: VideoGenerationRequest) throws -> any VideoGenerationProtocol {
-    let model = connectionModels.first(where: { $0.modelId.uuidString == videoGenerationRequest.modelId })
-    if model == nil {
+    guard let model = ConnectionService.shared.model(by: videoGenerationRequest.modelId) else {
         throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
     }
 
-    switch model!.modelCode {
+    switch model.modelCode {
     case EnumConnectionModelCode.STABILITY_IMAGE_TO_VIDEO:
         return G_STABILITY_IMAGE_TO_VIDEO()
     default:
@@ -223,13 +222,19 @@ class GenerateVideoAdapter {
                 }
             }
 
-            let usedModel = connectionModels.first(where: { $0.modelId.uuidString == videoGenerationRequest.modelId })
+            guard let usedModel = ConnectionService.shared.model(by: videoGenerationRequest.modelId) else {
+                return VideoSetResponse(
+                    status: EnumGenerationStatus.FAILED,
+                    errorCode: EnumGenerateVideoAdapterErrorCode.MODEL_ERROR,
+                    errorMessage: "Model not found for ID: \(videoGenerationRequest.modelId)"
+                )
+            }
 
             let set: ImageSet = .init(
                 prompt: videoGenerationRequest.prompt ?? "",
                 modelId: videoGenerationRequest.modelId,
                 artDimensions: videoGenerationRequest.artDimensions,
-                setType: usedModel!.modelSetType,
+                setType: usedModel.modelSetType,
                 negativePrompt: videoGenerationRequest.negativePrompt,
                 searchPrompt: nil
             )

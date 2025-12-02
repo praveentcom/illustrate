@@ -18,11 +18,13 @@ struct EditMaskImageView: View {
             return []
         }
 
-        return connectionModels.filter { $0.modelSetType == EnumSetType.EDIT_MASK && $0.connectionId.uuidString == selectedConnectionId }
+        return ConnectionService.shared.models(for: EnumSetType.EDIT_MASK).filter {
+            $0.connectionId.uuidString == selectedConnectionId
+        }
     }
 
     func getSelectedModel() -> ConnectionModel? {
-        return connectionModels.first(where: { $0.modelId.uuidString == selectedModelId })
+        return ConnectionService.shared.model(by: selectedModelId)
     }
 
     // MARK: Form States
@@ -128,7 +130,7 @@ struct EditMaskImageView: View {
                             ForEach(
                                 connections.filter { connection in
                                     connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-                                        connectionModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_MASK }
+                                        ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_MASK && $0.active }
                                 }, id: \.connectionId
                             ) { connection in
                                 HStack {
@@ -365,16 +367,21 @@ struct EditMaskImageView: View {
                                         .tag(count)
                                 }
                             }
-                            #if !os(macOS)
+#if !os(macOS)
                             .pickerStyle(.navigationLink)
-                            #endif
+#endif
                         }
-
-                        if getSelectedModel()?.modelSupportedParams.autoEnhance ?? false {
-                            Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
+                        
+                        if (getSelectedModel()?.modelSupportedParams.autoEnhance ?? false) && ConnectionService.shared.isOpenAIConnected(connectionKeys: connectionKeys) {
+                            HStack {
+                                Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
+                                
+                                Image(systemName: "info.circle")
+                                    .foregroundColor(.secondary)
+                                    .help(Text("Uses OpenAI to enhance your prompt for better results"))
+                            }
                         }
                     }
-                    .disabled(isGenerating)
 
                     Button(
                         isGenerating ? "Editing, please wait..." : "Perform Edit"
@@ -454,7 +461,7 @@ struct EditMaskImageView: View {
             if !connectionKeys.isEmpty && selectedModelId.isEmpty {
                 let supportedConnections = connections.filter { connection in
                     connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-                        connectionModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_MASK }
+                        ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_MASK && $0.active }
                 }
 
                 if let firstSupportedConnection = supportedConnections.first,

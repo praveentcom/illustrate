@@ -65,12 +65,18 @@ protocol ImageGenerationProtocol {
 }
 
 func getImageGenerationAdapter(imageGenerationRequest: ImageGenerationRequest) throws -> any ImageGenerationProtocol {
-    let model = connectionModels.first(where: { $0.modelId.uuidString == imageGenerationRequest.modelId })
-    if model == nil {
-        throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
+    guard let model = ConnectionService.shared.model(by: imageGenerationRequest.modelId) else {
+        throw NSError(
+            domain: "GenerateImageAdapterError",
+            code: -1,
+            userInfo: [
+                NSLocalizedDescriptionKey: "Invalid model ID: \(imageGenerationRequest.modelId)",
+                "ErrorCode": EnumGenerateImageAdapterErrorCode.MODEL_ERROR
+            ]
+        )
     }
-
-    switch model!.modelCode {
+    
+    switch model.modelCode {
     case EnumConnectionModelCode.OPENAI_DALLE3:
         return G_OPENAI_DALLE3()
     case EnumConnectionModelCode.STABILITY_CORE:
@@ -82,6 +88,14 @@ func getImageGenerationAdapter(imageGenerationRequest: ImageGenerationRequest) t
     case EnumConnectionModelCode.STABILITY_SD3:
         return G_STABILITY_SD3()
     case EnumConnectionModelCode.STABILITY_SD3_TURBO:
+        return G_STABILITY_SD3()
+    case EnumConnectionModelCode.STABILITY_SD35_LARGE:
+        return G_STABILITY_SD3()
+    case EnumConnectionModelCode.STABILITY_SD35_LARGE_TURBO:
+        return G_STABILITY_SD3()
+    case EnumConnectionModelCode.STABILITY_SD35_MEDIUM:
+        return G_STABILITY_SD3()
+    case EnumConnectionModelCode.STABILITY_SD35_FLASH:
         return G_STABILITY_SD3()
     case EnumConnectionModelCode.STABILITY_CREATIVE_UPSCALE:
         return G_STABILITY_CREATIVE_UPSCALE()
@@ -259,7 +273,13 @@ class GenerateImageAdapter {
                 }
             }
 
-            let usedModel = connectionModels.first(where: { $0.modelId.uuidString == imageGenerationRequest.modelId })
+            guard let usedModel = ConnectionService.shared.model(by: imageGenerationRequest.modelId) else {
+                return ImageSetResponse(
+                    status: EnumGenerationStatus.FAILED,
+                    errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,
+                    errorMessage: "Model not found for ID: \(imageGenerationRequest.modelId)"
+                )
+            }
 
             let set: ImageSet = .init(
                 prompt: imageGenerationRequest.prompt,
@@ -267,7 +287,7 @@ class GenerateImageAdapter {
                 artStyle: imageGenerationRequest.artStyle,
                 artVariant: imageGenerationRequest.artVariant,
                 artDimensions: imageGenerationRequest.artDimensions,
-                setType: usedModel!.modelSetType,
+                setType: usedModel.modelSetType,
                 negativePrompt: imageGenerationRequest.negativePrompt,
                 searchPrompt: nil
             )

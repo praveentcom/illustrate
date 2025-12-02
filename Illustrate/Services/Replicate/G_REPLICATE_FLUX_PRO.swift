@@ -5,7 +5,7 @@ class G_REPLICATE_FLUX_PRO: ImageGenerationProtocol {
         return 0.055
     }
 
-    let model: ConnectionModel = connectionModels.first(where: { $0.modelCode == EnumConnectionModelCode.REPLICATE_FLUX_PRO })!
+    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.REPLICATE_FLUX_PRO.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String

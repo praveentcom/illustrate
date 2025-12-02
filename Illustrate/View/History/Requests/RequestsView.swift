@@ -74,7 +74,7 @@ struct RequestsView: View {
         }
         .width(min: 160, ideal: 160, max: 200)
         TableColumn("Model", value: \.modelId) { generation in
-            Text(getModel(modelId: generation.modelId)?.modelName ?? "N/A")
+            Text(ConnectionService.shared.model(by: generation.modelId)?.modelName ?? "N/A")
         }
         .width(min: 160, ideal: 160, max: 200)
     }
@@ -129,9 +129,9 @@ struct RequestsView: View {
     var actionColumns: some TableColumnContent<Generation, KeyPathComparator<Generation>> {
         TableColumn("Actions", value: \.id) { generation in
             NavigationLink(value: generation.contentType == .IMAGE_2D ? EnumNavigationItem.generationImage(setId: generation.setId) : EnumNavigationItem.generationVideo(setId: generation.setId)) {
-                Button("View") {}
-                    .buttonStyle(BorderedButtonStyle())
+                Text("View")
             }
+            .buttonStyle(BorderedButtonStyle())
         }
         .width(min: 120, ideal: 120, max: 120)
     }
@@ -154,12 +154,13 @@ struct RequestsView: View {
                         TableRow(generation)
                             .contextMenu {
                                 NavigationLink(value: generation.contentType == .IMAGE_2D ? EnumNavigationItem.generationImage(setId: generation.setId) : EnumNavigationItem.generationVideo(setId: generation.setId)) {
-                                    Button("View") {}
+                                    Text("View")
                                 }
+                                .buttonStyle(.plain)
                             }
                     }
                 }
-                .onChange(of: sortOrder) {
+                .onChange(of: sortOrder) { _, _ in
                     filteredGenerations.sort(using: sortOrder)
                 }
             }
