@@ -32,7 +32,7 @@ struct DesktopView: View {
                     Text("Select an item")
                 }
             }
-            .navigationSplitViewColumnWidth(min: 640, ideal: 800, max: .infinity)
+            .navigationSplitViewColumnWidth(min: 920, ideal: 920, max: .infinity)
         }
         .inspector(isPresented: .constant(true)) {
             QueueSidebarView(queueManager: queueManager)

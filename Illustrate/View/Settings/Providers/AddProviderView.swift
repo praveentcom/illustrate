@@ -39,7 +39,14 @@ struct AddProviderView: View {
                 Label("Once you link the key here, the same will be stored securely in your Apple Keychain. Illustrate will authenticate your requests with the provider via this key.", systemImage: "2.circle.fill")
                 Label("To remove or revoke, simply delete from here or via the Keychain access application. Note that Illustrate never stores your keys outside your Keychain.", systemImage: "3.circle.fill")
                 Label("Illustrate doesn't manage billing for these providers. Generation and other workflows might incur charges based on your usage. Refer to your provider for details.", systemImage: "4.circle.fill")
-                Link("Visit connnection provider website for assistance", destination: URL(string: provider.providerOnboardingUrl)!)
+                Button("Get \(provider.keyType == EnumProviderKeyType.JSON ? "JSON credential" : "API key")") {
+                    guard let url = URL(string: provider.providerOnboardingUrl) else { return }
+                    #if os(macOS)
+                    NSWorkspace.shared.open(url)
+                    #else
+                    UIApplication.shared.open(url)
+                    #endif
+                }
             }
         }
         .formStyle(.grouped)

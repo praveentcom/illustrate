@@ -12,9 +12,9 @@ struct PendingProviderView: View {
 
     let columns: [GridItem] = {
         #if os(macOS)
-            return Array(repeating: GridItem(.flexible(), spacing: 8), count: 4)
+            return Array(repeating: GridItem(.flexible(), spacing: 8), count: 2)
         #else
-            return Array(repeating: GridItem(.flexible(), spacing: 12), count: UIDevice.current.userInterfaceIdiom == .pad ? 4 : 1)
+            return Array(repeating: GridItem(.flexible(), spacing: 12), count: UIDevice.current.userInterfaceIdiom == .pad ? 2 : 1)
         #endif
     }()
 

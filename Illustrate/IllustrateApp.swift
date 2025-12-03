@@ -41,9 +41,7 @@ struct IllustrateApp: App {
                 )
             #if os(macOS)
                 .frame(
-                    minWidth: 1200,
-                    maxWidth: .infinity,
-                    minHeight: 760,
+                    minHeight: 800,
                     maxHeight: .infinity
                 )
             #endif
