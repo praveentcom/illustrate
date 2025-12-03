@@ -22,13 +22,13 @@ enum EnumNavigationItem: Identifiable, Hashable {
     case historyVideoGallery
     case historyUsageMetrics
 
-    case settingsConnections
+    case settingsProviders
     case settingsManageStorage
 
     case generationImage(setId: UUID)
     case generationVideo(setId: UUID)
 
-    case addConnection(connectionId: UUID)
+    case addProvider(providerId: UUID)
 
     var id: String {
         switch self {
@@ -36,8 +36,8 @@ enum EnumNavigationItem: Identifiable, Hashable {
             return "generationImage-\(setId.uuidString)"
         case let .generationVideo(setId):
             return "generationVideo-\(setId.uuidString)"
-        case let .addConnection(connectionId):
-            return "addConnection-\(connectionId.uuidString)"
+        case let .addProvider(providerId):
+            return "addProvider-\(providerId.uuidString)"
         default:
             return "\(self)"
         }
@@ -69,7 +69,7 @@ func sectionItems(section: EnumNavigationSection) -> [EnumNavigationItem] {
             return [.historyImageGallery, .historyVideoGallery, .historyUsageMetrics]
         #endif
     case .Settings:
-        return [.settingsConnections, .settingsManageStorage]
+        return [.settingsProviders, .settingsManageStorage]
     }
 }
 
@@ -107,16 +107,16 @@ func labelForItem(_ item: EnumNavigationItem) -> String {
         return "Video Gallery"
     case .historyUsageMetrics:
         return "Usage Metrics"
-    case .settingsConnections:
-        return "Manage Connections"
+    case .settingsProviders:
+        return "Manage Providers"
     case .settingsManageStorage:
         return "Manage Storage"
     case .generationImage:
         return "Image Generation"
     case .generationVideo:
         return "Video Generation"
-    case .addConnection:
-        return "Add Connection"
+    case .addProvider:
+        return "Add Provider"
     }
 }
 
@@ -154,16 +154,16 @@ func subLabelForItem(_ item: EnumNavigationItem) -> String {
         return "Gallery for your generated videos"
     case .historyUsageMetrics:
         return "View your generation usage metrics"
-    case .settingsConnections:
-        return "Link and manage your connections"
+    case .settingsProviders:
+        return "Link and manage your providers"
     case .settingsManageStorage:
         return "Clear your Illustrate iCloud storage"
     case .generationImage:
         return "View the generated image"
     case .generationVideo:
         return "View the generated video"
-    case .addConnection:
-        return "Add a new connection"
+    case .addProvider:
+        return "Add a new provider"
     }
 }
 
@@ -201,7 +201,7 @@ func iconForItem(_ item: EnumNavigationItem) -> String {
         return "film.stack"
     case .historyUsageMetrics:
         return "chart.bar.xaxis"
-    case .settingsConnections:
+    case .settingsProviders:
         return "link"
     case .settingsManageStorage:
         return "lock.icloud"
@@ -209,7 +209,7 @@ func iconForItem(_ item: EnumNavigationItem) -> String {
         return "sparkles"
     case .generationVideo:
         return "video"
-    case .addConnection:
+    case .addProvider:
         return "plus"
     }
 }
@@ -249,15 +249,15 @@ func viewForItem(_ item: EnumNavigationItem) -> some View {
         GalleryVideoView()
     case .historyUsageMetrics:
         UsageMetricsView()
-    case .settingsConnections:
-        ConnectionsView()
+    case .settingsProviders:
+        ProvidersView()
     case .settingsManageStorage:
         ManageStorageView()
     case let .generationImage(setId):
         GenerationImageView(setId: setId)
     case let .generationVideo(setId):
         GenerationVideoView(setId: setId)
-    case let .addConnection(connectionId):
-        AddConnectionView(connectionId: connectionId)
+    case let .addProvider(providerId):
+        AddProviderView(providerId: providerId)
     }
 }

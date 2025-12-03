@@ -2,16 +2,16 @@ import Foundation
 
 struct ReplicateModels {
     
-    static func createModels() -> [ConnectionModel] {
+    static func createModels() -> [ProviderModel] {
         return [
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_FLUX_SCHNELL.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_FLUX_SCHNELL,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_FLUX_SCHNELL.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_FLUX_SCHNELL,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "FLUX.1 [schnell]",
                 modelDescription: "The fastest image generation model tailored for local development and personal use.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 256,
@@ -28,14 +28,14 @@ struct ReplicateModels {
                 modelAPIDocumentationURL: "https://replicate.com/black-forest-labs/flux-schnell?input=http",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_FLUX_DEV.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_FLUX_DEV,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_FLUX_DEV.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_FLUX_DEV,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "FLUX.1 [dev]",
                 modelDescription: "A 12 billion parameter rectified flow transformer capable of generating images from text descriptions.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 256,
@@ -52,14 +52,14 @@ struct ReplicateModels {
                 modelAPIDocumentationURL: "https://replicate.com/black-forest-labs/flux-dev?input=http",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_FLUX_PRO.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_FLUX_PRO,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_FLUX_PRO.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_FLUX_PRO,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "FLUX.1 [pro]",
                 modelDescription: "State-of-the-art image generation with top of the line prompt following, visual quality, image detail and output diversity.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 256,
@@ -76,14 +76,14 @@ struct ReplicateModels {
                 modelAPIDocumentationURL: "https://replicate.com/black-forest-labs/flux-pro?input=http",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_SEEDREAM_3.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_SEEDREAM_3,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_SEEDREAM_3.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_SEEDREAM_3,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Seedream 3",
                 modelDescription: "A text-to-image model from ByteDance with support for native high-resolution (2K) image generation.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 512,
@@ -100,14 +100,14 @@ struct ReplicateModels {
                 modelAPIDocumentationURL: "https://replicate.com/bytedance/seedream-3",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_SEEDREAM_4.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_SEEDREAM_4,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_SEEDREAM_4.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_SEEDREAM_4,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Seedream 4",
                 modelDescription: "Next-generation text-to-image model from ByteDance with native 4K resolution support and enhanced prompt understanding.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 512,
@@ -124,14 +124,14 @@ struct ReplicateModels {
                 modelAPIDocumentationURL: "https://replicate.com/bytedance/seedream-4",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_SEEDREAM_4_EDIT.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_SEEDREAM_4_EDIT,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_SEEDREAM_4_EDIT.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_SEEDREAM_4_EDIT,
                 modelSetType: EnumSetType.EDIT_PROMPT,
                 modelName: "Seedream 4",
                 modelDescription: "Edit images with text prompts using ByteDance's Seedream 4 model with multi-reference image support.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 512,
@@ -148,14 +148,14 @@ struct ReplicateModels {
                 modelAPIDocumentationURL: "https://replicate.com/bytedance/seedream-4",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_SEEDREAM_4_5.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_SEEDREAM_4_5,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_SEEDREAM_4_5.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_SEEDREAM_4_5,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Seedream 4.5",
                 modelDescription: "Latest ByteDance text-to-image model with enhanced quality. Currently in beta with 2K resolution and 1:1 aspect ratio support.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 512,
@@ -172,14 +172,14 @@ struct ReplicateModels {
                 modelAPIDocumentationURL: "https://replicate.com/bytedance/seedream-4.5",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_SEEDREAM_4_5_EDIT.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_SEEDREAM_4_5_EDIT,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_SEEDREAM_4_5_EDIT.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_SEEDREAM_4_5_EDIT,
                 modelSetType: EnumSetType.EDIT_PROMPT,
                 modelName: "Seedream 4.5",
                 modelDescription: "Edit images with text prompts using ByteDance's latest Seedream 4.5 model. Currently in beta.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 512,
@@ -196,14 +196,14 @@ struct ReplicateModels {
                 modelAPIDocumentationURL: "https://replicate.com/bytedance/seedream-4.5",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_DREAMINA_3_1.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_DREAMINA_3_1,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_DREAMINA_3_1.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_DREAMINA_3_1,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Dreamina 3.1",
                 modelDescription: "4MP text-to-image with enhanced cinematic quality, precise style control, improved text rendering, and commercial design optimization.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 512,
@@ -220,14 +220,14 @@ struct ReplicateModels {
                 modelAPIDocumentationURL: "https://replicate.com/bytedance/dreamina-3.1",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO,
                 modelSetType: EnumSetType.VIDEO_TEXT,
                 modelName: "Seedance 1 Pro",
                 modelDescription: "Text-to-video generation from ByteDance at up to 1080p resolution.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 512,
@@ -248,14 +248,14 @@ struct ReplicateModels {
                 modelAPIDocumentationURL: "https://replicate.com/bytedance/seedance-1-pro",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO_EDIT.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO_EDIT,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_EDIT.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_EDIT,
                 modelSetType: EnumSetType.VIDEO_IMAGE,
                 modelName: "Seedance 1 Pro",
                 modelDescription: "Image-to-video generation from ByteDance at up to 1080p resolution.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 512,
@@ -277,14 +277,14 @@ struct ReplicateModels {
                 modelAPIDocumentationURL: "https://replicate.com/bytedance/seedance-1-pro",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO_FAST.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO_FAST,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_FAST.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_FAST,
                 modelSetType: EnumSetType.VIDEO_TEXT,
                 modelName: "Seedance 1 Pro Fast",
                 modelDescription: "30-60% faster text-to-video generation from ByteDance with ~60% reduced cost.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 512,
@@ -305,14 +305,14 @@ struct ReplicateModels {
                 modelAPIDocumentationURL: "https://replicate.com/bytedance/seedance-1-pro-fast",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO_FAST_EDIT.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO_FAST_EDIT,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_FAST_EDIT.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_FAST_EDIT,
                 modelSetType: EnumSetType.VIDEO_IMAGE,
                 modelName: "Seedance 1 Pro Fast",
                 modelDescription: "30-60% faster image-to-video generation from ByteDance with ~60% reduced cost.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 512,
@@ -334,14 +334,14 @@ struct ReplicateModels {
                 modelAPIDocumentationURL: "https://replicate.com/bytedance/seedance-1-pro-fast",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_SEEDANCE_1_LITE.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_SEEDANCE_1_LITE,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_SEEDANCE_1_LITE.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_SEEDANCE_1_LITE,
                 modelSetType: EnumSetType.VIDEO_TEXT,
                 modelName: "Seedance 1 Lite",
                 modelDescription: "Lightweight text-to-video generation from ByteDance at up to 1080p resolution.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 512,
@@ -362,14 +362,14 @@ struct ReplicateModels {
                 modelAPIDocumentationURL: "https://replicate.com/bytedance/seedance-1-lite",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.REPLICATE.connectionId,
-                modelId: EnumConnectionModelCode.REPLICATE_SEEDANCE_1_LITE_EDIT.modelId,
-                modelCode: EnumConnectionModelCode.REPLICATE_SEEDANCE_1_LITE_EDIT,
+            ProviderModel(
+                providerId: EnumProviderCode.REPLICATE.providerId,
+                modelId: EnumProviderModelCode.REPLICATE_SEEDANCE_1_LITE_EDIT.modelId,
+                modelCode: EnumProviderModelCode.REPLICATE_SEEDANCE_1_LITE_EDIT,
                 modelSetType: EnumSetType.VIDEO_IMAGE,
                 modelName: "Seedance 1 Lite",
                 modelDescription: "Lightweight image-to-video generation from ByteDance at up to 1080p resolution.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 512,

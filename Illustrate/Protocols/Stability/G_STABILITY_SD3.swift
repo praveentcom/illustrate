@@ -5,7 +5,7 @@ class G_STABILITY_SD3: ImageGenerationProtocol {
         return CostEstimator.getCreditsUsed(request: request)
     }
 
-    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.STABILITY_SD3.modelId.uuidString)!
+    let model: ProviderModel = ProviderService.shared.model(by: EnumProviderModelCode.STABILITY_SD3.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String
@@ -43,7 +43,7 @@ class G_STABILITY_SD3: ImageGenerationProtocol {
     func transformRequest(request: ImageGenerationRequest) -> ServiceRequest {
         let aspectRatio = getImageDimensions(artDimensions: request.artDimensions)
 
-        let model = ConnectionService.shared.model(by: request.modelId)
+        let model = ProviderService.shared.model(by: request.modelId)
         let modelString: String
 
         switch model?.modelCode {
@@ -153,7 +153,7 @@ class G_STABILITY_SD3: ImageGenerationProtocol {
                 method: "POST",
                 body: transformedRequest,
                 headers: [
-                    "Authorization": "\(request.connectionSecret)",
+                    "Authorization": "\(request.providerSecret)",
                     "Content-Type": "multipart/form-data",
                     "Accept": "application/json",
                 ]

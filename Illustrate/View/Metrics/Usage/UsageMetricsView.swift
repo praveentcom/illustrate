@@ -13,19 +13,24 @@ struct UsageMetricsUnit: Identifiable {
 struct UsageMetrics {
     var dailyMetrics: [UsageMetricsUnit]
     var generationMetrics: [UsageMetricsUnit]
-    var overallMetrics: UsageMetricsUnit?
+    var totalMetrics: UsageMetricsUnit?
+    var totalImages: Int = 0
+    var totalVideos: Int = 0
 }
 
 struct UsageMetricsView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \ConnectionKey.createdAt, order: .reverse) private var connectionKeys: [ConnectionKey]
+    @Query(sort: \ProviderKey.createdAt, order: .reverse) private var providerKeys: [ProviderKey]
 
-    @State private var selectedConnectionKey: ConnectionKey? = nil
+    @State private var selectedProviderKey: ProviderKey? = nil
 
     func getMetrics() -> UsageMetrics {
-        if let connection = connections.first(where: { $0.connectionId == selectedConnectionKey?.connectionId }) {
-            let models: [ConnectionModel] = ConnectionService.shared.allModels.filter { $0.connectionId == connection.connectionId }
+        if let provider = providers.first(where: { $0.providerId == selectedProviderKey?.providerId }) {
+            let models: [ProviderModel] = ProviderService.shared.allModels.filter { $0.providerId == provider.providerId }
             let modelIds: [String] = models.map { $0.modelId.uuidString }
+            let videoModelIds: Set<String> = Set(models.filter { 
+                $0.modelSetType == .VIDEO_IMAGE || $0.modelSetType == .VIDEO_TEXT || $0.modelSetType == .VIDEO_VIDEO 
+            }.map { $0.modelId.uuidString })
             let dateLimit = Date().addingTimeInterval(-30 * 24 * 60 * 60)
             let fetchDescriptor = FetchDescriptor<Generation>(
                 predicate: #Predicate { modelIds.contains($0.modelId) },
@@ -56,7 +61,7 @@ struct UsageMetricsView: View {
                     }
                     .sorted(by: { $0.date > $1.date })
 
-                let overallMetrics: [UsageMetricsUnit] = generations
+                let totalMetricsData: [UsageMetricsUnit] = generations
                     .compactMap {
                         .init(
                             date: $0.createdAt,
@@ -65,23 +70,28 @@ struct UsageMetricsView: View {
                             totalGenerations: 1
                         )
                     }
+                
+                let totalVideos = generations.filter { videoModelIds.contains($0.modelId) }.count
+                let totalImages = generations.count - totalVideos
 
                 return UsageMetrics(
                     dailyMetrics: dailyMetrics,
                     generationMetrics: generationMetrics,
-                    overallMetrics: .init(
+                    totalMetrics: .init(
                         date: Date(),
-                        sizeUtilized: overallMetrics.reduce(0) { $0 + $1.sizeUtilized },
-                        costIncurred: overallMetrics.reduce(0) { $0 + $1.costIncurred },
-                        totalGenerations: overallMetrics.reduce(0) { $0 + $1.totalGenerations }
-                    )
+                        sizeUtilized: totalMetricsData.reduce(0) { $0 + $1.sizeUtilized },
+                        costIncurred: totalMetricsData.reduce(0) { $0 + $1.costIncurred },
+                        totalGenerations: totalMetricsData.reduce(0) { $0 + $1.totalGenerations }
+                    ),
+                    totalImages: totalImages,
+                    totalVideos: totalVideos
                 )
             } catch {
                 print("Error fetching data: \(error)")
             }
         }
 
-        return UsageMetrics(dailyMetrics: [], generationMetrics: [], overallMetrics: nil)
+        return UsageMetrics(dailyMetrics: [], generationMetrics: [], totalMetrics: nil)
     }
 
     let columns: [GridItem] = {
@@ -94,49 +104,59 @@ struct UsageMetricsView: View {
 
     var body: some View {
         Form {
-            Section("Select Connection") {
-                if connectionKeys.isEmpty {
-                    Text("No connections available to select.")
+            Section("Select Provider") {
+                if providerKeys.isEmpty {
+                    Text("No providers available to select.")
                         .foregroundStyle(secondaryLabel)
                         .padding()
                 } else {
-                    Picker("Connection", selection: $selectedConnectionKey) {
-                        ForEach(connectionKeys, id: \.connectionId) { connectionKey in
-                            let connection = getConnection(connectionId: connectionKey.connectionId)
+                    Picker("Provider", selection: $selectedProviderKey) {
+                        ForEach(providerKeys, id: \.providerId) { providerKey in
+                            let provider = getProvider(providerId: providerKey.providerId)
 
-                            Text(connection?.connectionName ?? "").tag(connectionKey as ConnectionKey?)
+                            Text(provider?.providerName ?? "").tag(providerKey as ProviderKey?)
                         }
                     }
                 }
 
-                if selectedConnectionKey != nil {
+                if selectedProviderKey != nil {
                     HStack {
-                        Text("Overall Generations")
+                        Text("Total Generations")
                         Spacer()
-                        Text(getMetrics().overallMetrics?.totalGenerations.formatted() ?? "")
+                        Text(getMetrics().totalMetrics?.totalGenerations.formatted() ?? "")
                     }
                     HStack {
-                        Text("Overall Cost")
+                        Text("Images Generated")
                         Spacer()
-                        if let doubleValue = getMetrics().overallMetrics?.costIncurred {
-                            if getConnection(connectionId: selectedConnectionKey!.connectionId)!.creditCurrency == .USD {
+                        Text(getMetrics().totalImages.formatted())
+                    }
+                    HStack {
+                        Text("Videos Generated")
+                        Spacer()
+                        Text(getMetrics().totalVideos.formatted())
+                    }
+                    HStack {
+                        Text("Cost Incurred")
+                        Spacer()
+                        if let doubleValue = getMetrics().totalMetrics?.costIncurred {
+                            if getProvider(providerId: selectedProviderKey!.providerId)!.creditCurrency == .USD {
                                 Text("$\(doubleValue, specifier: "%.2f")")
-                            } else if getConnection(connectionId: selectedConnectionKey!.connectionId)!.creditCurrency == .CREDITS {
+                            } else if getProvider(providerId: selectedProviderKey!.providerId)!.creditCurrency == .CREDITS {
                                 Text("\(doubleValue, specifier: "%.0f") credits")
                             }
                         }
                     }
                     HStack {
-                        Text("Overall Storage")
+                        Text("Storage Consumed")
                         Spacer()
-                        if let doubleValue = getMetrics().overallMetrics?.sizeUtilized {
+                        if let doubleValue = getMetrics().totalMetrics?.sizeUtilized {
                             Text("\(doubleValue, specifier: "%.0f") MB")
                         }
                     }
                 }
             }
 
-            if selectedConnectionKey != nil {
+            if selectedProviderKey != nil {
                 Section("Metrics for last 30 days") {
                     VStack(alignment: .leading, spacing: 24) {
                         Text("Total Generations")
@@ -232,9 +252,9 @@ struct UsageMetricsView: View {
                                     AxisTick()
                                     AxisValueLabel {
                                         if let doubleValue = value.as(Double.self) {
-                                            if getConnection(connectionId: selectedConnectionKey!.connectionId)!.creditCurrency == .USD {
+                                            if getProvider(providerId: selectedProviderKey!.providerId)!.creditCurrency == .USD {
                                                 Text("$\(doubleValue, specifier: "%.2f")")
-                                            } else if getConnection(connectionId: selectedConnectionKey!.connectionId)!.creditCurrency == .CREDITS {
+                                            } else if getProvider(providerId: selectedProviderKey!.providerId)!.creditCurrency == .CREDITS {
                                                 Text("\(doubleValue, specifier: "%.0f") credits")
                                             }
                                         }
@@ -249,7 +269,7 @@ struct UsageMetricsView: View {
                     .frame(alignment: .topLeading)
 
                     VStack(alignment: .leading, spacing: 24) {
-                        Text("Storage Utilized")
+                        Text("Storage Consumed")
                             .font(.subheadline)
                             .fontWeight(.medium)
                         if getMetrics().dailyMetrics.isEmpty {
@@ -315,8 +335,8 @@ struct UsageMetricsView: View {
     }
 
     func loadData() {
-        if !connectionKeys.isEmpty {
-            selectedConnectionKey = connectionKeys.first
+        if !providerKeys.isEmpty {
+            selectedProviderKey = providerKeys.first
         }
     }
 }

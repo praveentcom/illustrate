@@ -1,12 +1,12 @@
 import Foundation
 import SwiftUI
 
-struct PendingConnectionView: View {
+struct PendingProviderView: View {
     var setType: EnumSetType
 
-    var connectionsWithSetTypeSupport: [Connection] {
-        return connections.filter { connection in
-            ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == setType && $0.active }
+    var providersWithSetTypeSupport: [Provider] {
+        return providers.filter { provider in
+            ProviderService.shared.allModels.contains { $0.providerId == provider.providerId && $0.modelSetType == setType && $0.active }
         }
     }
 
@@ -20,29 +20,29 @@ struct PendingConnectionView: View {
 
     var body: some View {
         Form {
-            Section("Connection pending") {
+            Section("Provider pending") {
                 VStack(spacing: 8) {
-                    Text("No connections that support \(labelForSetType(setType)) are linked yet.")
+                    Text("No providers that support \(labelForSetType(setType)) are linked yet.")
                         .font(.headline)
                         .multilineTextAlignment(.center)
-                    Text("You can connect via the connections page.")
+                    Text("You can connect via the providers page.")
                         .font(.subheadline)
                         .multilineTextAlignment(.center)
                 }
                 .padding(.all, 12)
                 .frame(maxWidth: .infinity)
-                NavigationLink(value: EnumNavigationItem.settingsConnections) {
-                    Label("Manage Connections", systemImage: "link")
+                NavigationLink(value: EnumNavigationItem.settingsProviders) {
+                    Label("Manage Providers", systemImage: "link")
                 }
             }
-            Section("Supported Models") {
+            Section("Supported Providers") {
                 VStack(alignment: .leading) {
-                    if connectionsWithSetTypeSupport.isEmpty {
-                        Text("No connections that support \(labelForSetType(setType)) are available yet.")
+                    if providersWithSetTypeSupport.isEmpty {
+                        Text("No providers that support \(labelForSetType(setType)) are available yet.")
                     } else {
                         LazyVGrid(columns: columns, spacing: 8) {
-                            ForEach(connectionsWithSetTypeSupport, id: \.self) { item in
-                                WorkspaceConnectionShortcut(item: item, setType: setType, showModels: true)
+                            ForEach(providersWithSetTypeSupport, id: \.self) { item in
+                                WorkspaceProviderShortcut(item: item, setType: setType, showModels: true)
                             }
                         }
                     }

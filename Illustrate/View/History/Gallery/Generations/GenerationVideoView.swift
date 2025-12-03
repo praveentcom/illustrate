@@ -200,15 +200,15 @@ struct GenerationVideoView: View {
                 }
 
                 Section("Model Response") {
-                    if let connection = getConnection(modelId: getSelectedGeneration()!.modelId) {
+                    if let provider = getProvider(modelId: getSelectedGeneration()!.modelId) {
                         SectionKeyValueView(
                             icon: "link",
-                            key: "Connection",
+                            key: "Provider",
                             value: "",
-                            customValueView: ConnectionLabel(connection: connection)
+                            customValueView: ProviderLabel(provider: provider)
                         )
                     }
-                    if let model = ConnectionService.shared.model(by: getSelectedGeneration()!.modelId) {
+                    if let model = ProviderService.shared.model(by: getSelectedGeneration()!.modelId) {
                         SectionKeyValueView(
                             icon: "network",
                             key: "Model",
@@ -229,7 +229,7 @@ struct GenerationVideoView: View {
                     {
                         SectionKeyValueView(icon: "text.quote", key: "Response Prompt", value: modelRevisedPrompt)
                     }
-                    SectionKeyValueView(icon: "dollarsign", key: "Cost", value: "\(String(format: "%.3f", getSelectedGeneration()!.creditUsed).replacingOccurrences(of: ".000", with: "")) \(getConnection(modelId: getSelectedGeneration()!.modelId)?.creditCurrency.rawValue ?? "Credits")")
+                    SectionKeyValueView(icon: "dollarsign", key: "Cost", value: "\(String(format: "%.3f", getSelectedGeneration()!.creditUsed).replacingOccurrences(of: ".000", with: "")) \(getProvider(modelId: getSelectedGeneration()!.modelId)?.creditCurrency.rawValue ?? "Credits")")
                 }
 
                 Section("Video Metadata") {

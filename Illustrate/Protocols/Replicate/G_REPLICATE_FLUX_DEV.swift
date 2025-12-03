@@ -5,7 +5,7 @@ class G_REPLICATE_FLUX_DEV: ImageGenerationProtocol {
         return CostEstimator.getCreditsUsed(request: request)
     }
 
-    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.REPLICATE_FLUX_DEV.modelId.uuidString)!
+    let model: ProviderModel = ProviderService.shared.model(by: EnumProviderModelCode.REPLICATE_FLUX_DEV.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String
@@ -137,7 +137,7 @@ class G_REPLICATE_FLUX_DEV: ImageGenerationProtocol {
 
         do {
             let headers: [String: String] = [
-                "Authorization": "Bearer \(request.connectionSecret)",
+                "Authorization": "Bearer \(request.providerSecret)",
                 "Content-Type": "application/json",
             ]
 

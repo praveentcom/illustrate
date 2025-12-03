@@ -2,21 +2,8 @@ import SwiftData
 import SwiftUI
 
 struct OnboardingView: View {
-    @Environment(\.modelContext) private var modelContext
-
-    var connectionKeysCount: Int {
-        let descriptor = FetchDescriptor<ConnectionKey>()
-        let count = (try? modelContext.fetchCount(descriptor)) ?? 0
-
-        return count
-    }
-
-    var generationsCount: Int {
-        let descriptor = FetchDescriptor<Generation>()
-        let count = (try? modelContext.fetchCount(descriptor)) ?? 0
-
-        return count
-    }
+    @Query private var providerKeys: [ProviderKey]
+    @Query private var generations: [Generation]
 
     struct OnboardingChecklist {
         let icon: String
@@ -30,16 +17,16 @@ struct OnboardingView: View {
         [
             OnboardingChecklist(
                 icon: "1.circle",
-                label: "Connect Models",
+                label: "Connect Provider Models",
                 subLabel: "Securely connect to leading AI models",
-                isCompleted: connectionKeysCount > 0,
-                item: .settingsConnections
+                isCompleted: !providerKeys.isEmpty,
+                item: .settingsProviders
             ),
             OnboardingChecklist(
                 icon: "2.circle",
-                label: "Generate Images",
+                label: "Generate Images & Videos",
                 subLabel: "Go ahead and generate your first image",
-                isCompleted: generationsCount > 0,
+                isCompleted: !generations.isEmpty,
                 item: .generateGenerate
             ),
         ]

@@ -5,7 +5,7 @@ class G_REPLICATE_SEEDREAM_4_EDIT: ImageGenerationProtocol {
         return CostEstimator.getCreditsUsed(request: request)
     }
 
-    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.REPLICATE_SEEDREAM_4_EDIT.modelId.uuidString)!
+    let model: ProviderModel = ProviderService.shared.model(by: EnumProviderModelCode.REPLICATE_SEEDREAM_4_EDIT.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String
@@ -150,11 +150,11 @@ class G_REPLICATE_SEEDREAM_4_EDIT: ImageGenerationProtocol {
 
         do {
             let headers: [String: String] = [
-                "Authorization": "Bearer \(request.connectionSecret)",
+                "Authorization": "Bearer \(request.providerSecret)",
                 "Content-Type": "application/json",
             ]
 
-            let imageUrl = try await ReplicateFileUploader.uploadImage(base64Image: clientImage, apiToken: request.connectionSecret)
+            let imageUrl = try await ReplicateFileUploader.uploadImage(base64Image: clientImage, apiToken: request.providerSecret)
             
             let transformedRequest = createServiceRequest(request: request, imageUrl: imageUrl)
 

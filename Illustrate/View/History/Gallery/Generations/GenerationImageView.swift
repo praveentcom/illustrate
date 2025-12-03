@@ -138,15 +138,15 @@ struct GenerationImageView: View {
                 }
 
                 Section("Model Response") {
-                    if let connection = getConnection(modelId: generation.modelId) {
+                    if let provider = getProvider(modelId: generation.modelId) {
                         SectionKeyValueView(
                             icon: "link",
-                            key: "Connection",
+                            key: "Provider",
                             value: "",
-                            customValueView: ConnectionLabel(connection: connection)
+                            customValueView: ProviderLabel(provider: provider)
                         )
                     }
-                    if let model = ConnectionService.shared.model(by: generation.modelId) {
+                    if let model = ProviderService.shared.model(by: generation.modelId) {
                         SectionKeyValueView(
                             icon: "network",
                             key: "Model",
@@ -161,7 +161,7 @@ struct GenerationImageView: View {
                     if let modelRevisedPrompt = generation.modelRevisedPrompt, !modelRevisedPrompt.isEmpty {
                         SectionKeyValueView(icon: "text.quote", key: "Response Prompt", value: modelRevisedPrompt)
                     }
-                    SectionKeyValueView(icon: "dollarsign", key: "Cost", value: "\(String(format: "%.3f", generation.creditUsed).replacingOccurrences(of: ".000", with: "")) \(getConnection(modelId: generation.modelId)?.creditCurrency.rawValue ?? "Credits")")
+                    SectionKeyValueView(icon: "dollarsign", key: "Cost", value: "\(String(format: "%.3f", generation.creditUsed).replacingOccurrences(of: ".000", with: "")) \(getProvider(modelId: generation.modelId)?.creditCurrency.rawValue ?? "Credits")")
                 }
 
                 Section("Image Metadata") {

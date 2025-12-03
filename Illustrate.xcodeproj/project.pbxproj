@@ -19,15 +19,15 @@
 		AC2CE30D2C69478300893DC2 /* IllustrateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE30C2C69478300893DC2 /* IllustrateApp.swift */; };
 		AC2CE3132C69478400893DC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC2CE3122C69478400893DC2 /* Assets.xcassets */; };
 		AC2CE3172C69478400893DC2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC2CE3162C69478400893DC2 /* Preview Assets.xcassets */; };
-		AC2CE31F2C694B5D00893DC2 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE31E2C694B5D00893DC2 /* Connection.swift */; };
-		AC2CE3212C694E2A00893DC2 /* ConnectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE3202C694E2A00893DC2 /* ConnectionModel.swift */; };
-		AC2CE3232C69504800893DC2 /* ConnectionKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE3222C69504800893DC2 /* ConnectionKey.swift */; };
+		AC2CE31F2C694B5D00893DC2 /* Provider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE31E2C694B5D00893DC2 /* Provider.swift */; };
+		AC2CE3212C694E2A00893DC2 /* ProviderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE3202C694E2A00893DC2 /* ProviderModel.swift */; };
+		AC2CE3232C69504800893DC2 /* ProviderKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE3222C69504800893DC2 /* ProviderKey.swift */; };
 		AC2CE3292C69C7DE00893DC2 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE3282C69C7DE00893DC2 /* MainView.swift */; };
 		AC2CE32C2C69C88600893DC2 /* GenerateImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE32B2C69C88600893DC2 /* GenerateImageView.swift */; };
 		AC2CE32F2C69C8BD00893DC2 /* GalleryImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE32E2C69C8BD00893DC2 /* GalleryImageView.swift */; };
 		AC2CE3312C69C8CA00893DC2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE3302C69C8CA00893DC2 /* SettingsView.swift */; };
-		AC2CE3342C69C90B00893DC2 /* ConnectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE3332C69C90B00893DC2 /* ConnectionsView.swift */; };
-		AC2CE33A2C69D1B900893DC2 /* AddConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE3392C69D1B900893DC2 /* AddConnectionView.swift */; };
+		AC2CE3342C69C90B00893DC2 /* ProvidersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE3332C69C90B00893DC2 /* ProvidersView.swift */; };
+		AC2CE33A2C69D1B900893DC2 /* AddProviderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE3392C69D1B900893DC2 /* AddProviderView.swift */; };
 		AC2CE33C2C69F09A00893DC2 /* Generation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE33B2C69F09A00893DC2 /* Generation.swift */; };
 		AC2CE33E2C69F13300893DC2 /* ImageSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE33D2C69F13300893DC2 /* ImageSet.swift */; };
 		AC2CE3412C69F77B00893DC2 /* NetworkAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2CE3402C69F77B00893DC2 /* NetworkAdapter.swift */; };
@@ -45,7 +45,7 @@
 		AC48BD3D2C7B7E820054F1AC /* G_FAL_FLUX_DEV.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC48BD3C2C7B7E820054F1AC /* G_FAL_FLUX_DEV.swift */; };
 		AC48BD3F2C7B7EAA0054F1AC /* G_FAL_FLUX_PRO.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC48BD3E2C7B7EAA0054F1AC /* G_FAL_FLUX_PRO.swift */; };
 		AC48BD412C7B84A00054F1AC /* StorageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC48BD402C7B84A00054F1AC /* StorageAdapter.swift */; };
-		AC6AEA1F6CC9CA45B8999C9B /* ConnectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5DC7B1CFF1F64D65A564A5 /* ConnectionService.swift */; };
+		AC6AEA1F6CC9CA45B8999C9B /* ProviderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5DC7B1CFF1F64D65A564A5 /* ProviderService.swift */; };
 		ACA0FF572C6D3BE600A8C1D5 /* G_STABILITY_CORE.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0FF562C6D3BE600A8C1D5 /* G_STABILITY_CORE.swift */; };
 		ACA0FF592C6D489D00A8C1D5 /* G_STABILITY_SDXL.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0FF582C6D489D00A8C1D5 /* G_STABILITY_SDXL.swift */; };
 		ACA0FF5B2C6D496500A8C1D5 /* G_STABILITY_ULTRA.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0FF5A2C6D496500A8C1D5 /* G_STABILITY_ULTRA.swift */; };
@@ -115,8 +115,8 @@
 		ACE44C352C78DDFA0008BB9D /* MobileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C342C78DDFA0008BB9D /* MobileView.swift */; };
 		ACE44C372C78DF2E0008BB9D /* DesktopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C362C78DF2E0008BB9D /* DesktopView.swift */; };
 		ACE44C3A2C79BB100008BB9D /* ManageStorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C392C79BB100008BB9D /* ManageStorageView.swift */; };
-		ACE44C3F2C79CFD50008BB9D /* PendingConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C3E2C79CFD50008BB9D /* PendingConnectionView.swift */; };
-		ACE44C422C79F3640008BB9D /* ConnectionDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C412C79F3640008BB9D /* ConnectionDetailsView.swift */; };
+		ACE44C3F2C79CFD50008BB9D /* PendingProviderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C3E2C79CFD50008BB9D /* PendingProviderView.swift */; };
+		ACE44C422C79F3640008BB9D /* ProviderDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C412C79F3640008BB9D /* ProviderDetailsView.swift */; };
 		ACEC4D8C2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D8B2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift */; };
 		ACEC4D8E2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D8D2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift */; };
 		ACEC4D902C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D8F2C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift */; };
@@ -157,15 +157,15 @@
 		AC2CE3122C69478400893DC2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AC2CE3142C69478400893DC2 /* illustrate.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = illustrate.entitlements; sourceTree = "<group>"; };
 		AC2CE3162C69478400893DC2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		AC2CE31E2C694B5D00893DC2 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
-		AC2CE3202C694E2A00893DC2 /* ConnectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionModel.swift; sourceTree = "<group>"; };
-		AC2CE3222C69504800893DC2 /* ConnectionKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionKey.swift; sourceTree = "<group>"; };
+		AC2CE31E2C694B5D00893DC2 /* Provider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Provider.swift; sourceTree = "<group>"; };
+		AC2CE3202C694E2A00893DC2 /* ProviderModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderModel.swift; sourceTree = "<group>"; };
+		AC2CE3222C69504800893DC2 /* ProviderKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderKey.swift; sourceTree = "<group>"; };
 		AC2CE3282C69C7DE00893DC2 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		AC2CE32B2C69C88600893DC2 /* GenerateImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateImageView.swift; sourceTree = "<group>"; };
 		AC2CE32E2C69C8BD00893DC2 /* GalleryImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryImageView.swift; sourceTree = "<group>"; };
 		AC2CE3302C69C8CA00893DC2 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		AC2CE3332C69C90B00893DC2 /* ConnectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionsView.swift; sourceTree = "<group>"; };
-		AC2CE3392C69D1B900893DC2 /* AddConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddConnectionView.swift; sourceTree = "<group>"; };
+		AC2CE3332C69C90B00893DC2 /* ProvidersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvidersView.swift; sourceTree = "<group>"; };
+		AC2CE3392C69D1B900893DC2 /* AddProviderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProviderView.swift; sourceTree = "<group>"; };
 		AC2CE33B2C69F09A00893DC2 /* Generation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Generation.swift; sourceTree = "<group>"; };
 		AC2CE33D2C69F13300893DC2 /* ImageSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSet.swift; sourceTree = "<group>"; };
 		AC2CE3402C69F77B00893DC2 /* NetworkAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkAdapter.swift; sourceTree = "<group>"; };
@@ -181,7 +181,7 @@
 		AC48BD3C2C7B7E820054F1AC /* G_FAL_FLUX_DEV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_FAL_FLUX_DEV.swift; sourceTree = "<group>"; };
 		AC48BD3E2C7B7EAA0054F1AC /* G_FAL_FLUX_PRO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_FAL_FLUX_PRO.swift; sourceTree = "<group>"; };
 		AC48BD402C7B84A00054F1AC /* StorageAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageAdapter.swift; sourceTree = "<group>"; };
-		AC5DC7B1CFF1F64D65A564A5 /* ConnectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionService.swift; sourceTree = "<group>"; };
+		AC5DC7B1CFF1F64D65A564A5 /* ProviderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderService.swift; sourceTree = "<group>"; };
 		ACA0FF562C6D3BE600A8C1D5 /* G_STABILITY_CORE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_STABILITY_CORE.swift; sourceTree = "<group>"; };
 		ACA0FF582C6D489D00A8C1D5 /* G_STABILITY_SDXL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_STABILITY_SDXL.swift; sourceTree = "<group>"; };
 		ACA0FF5A2C6D496500A8C1D5 /* G_STABILITY_ULTRA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_STABILITY_ULTRA.swift; sourceTree = "<group>"; };
@@ -251,8 +251,8 @@
 		ACE44C342C78DDFA0008BB9D /* MobileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileView.swift; sourceTree = "<group>"; };
 		ACE44C362C78DF2E0008BB9D /* DesktopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopView.swift; sourceTree = "<group>"; };
 		ACE44C392C79BB100008BB9D /* ManageStorageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageStorageView.swift; sourceTree = "<group>"; };
-		ACE44C3E2C79CFD50008BB9D /* PendingConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingConnectionView.swift; sourceTree = "<group>"; };
-		ACE44C412C79F3640008BB9D /* ConnectionDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDetailsView.swift; sourceTree = "<group>"; };
+		ACE44C3E2C79CFD50008BB9D /* PendingProviderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingProviderView.swift; sourceTree = "<group>"; };
+		ACE44C412C79F3640008BB9D /* ProviderDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderDetailsView.swift; sourceTree = "<group>"; };
 		ACEC4D8B2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_FLUX_SCHNELL.swift; sourceTree = "<group>"; };
 		ACEC4D8D2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_FLUX_DEV.swift; sourceTree = "<group>"; };
 		ACEC4D8F2C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_FLUX_PRO.swift; sourceTree = "<group>"; };
@@ -358,9 +358,9 @@
 			isa = PBXGroup;
 			children = (
 				ACE44C322C78D4A00008BB9D /* Navigation.swift */,
-				AC2CE31E2C694B5D00893DC2 /* Connection.swift */,
-				AC2CE3202C694E2A00893DC2 /* ConnectionModel.swift */,
-				AC2CE3222C69504800893DC2 /* ConnectionKey.swift */,
+				AC2CE31E2C694B5D00893DC2 /* Provider.swift */,
+				AC2CE3202C694E2A00893DC2 /* ProviderModel.swift */,
+				AC2CE3222C69504800893DC2 /* ProviderKey.swift */,
 				AC2CE33B2C69F09A00893DC2 /* Generation.swift */,
 				AC2CE33D2C69F13300893DC2 /* ImageSet.swift */,
 			);
@@ -396,27 +396,27 @@
 			isa = PBXGroup;
 			children = (
 				AC2CE3302C69C8CA00893DC2 /* SettingsView.swift */,
-				AC2CE3322C69C8E000893DC2 /* Connections */,
+				AC2CE3322C69C8E000893DC2 /* Providers */,
 				ACE44C382C79BAF30008BB9D /* Storage */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
 		};
-		AC2CE3322C69C8E000893DC2 /* Connections */ = {
+		AC2CE3322C69C8E000893DC2 /* Providers */ = {
 			isa = PBXGroup;
 			children = (
-				AC2CE3332C69C90B00893DC2 /* ConnectionsView.swift */,
-				AC2CE3392C69D1B900893DC2 /* AddConnectionView.swift */,
+				AC2CE3332C69C90B00893DC2 /* ProvidersView.swift */,
+				AC2CE3392C69D1B900893DC2 /* AddProviderView.swift */,
 			);
-			path = Connections;
+			path = Providers;
 			sourceTree = "<group>";
 		};
 		AC2CE33F2C69F77000893DC2 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				ACA510622EDF905700738A80 /* ConnectionModels */,
+				ACA510622EDF905700738A80 /* ProviderModels */,
 				ACA5105A2EDF899300738A80 /* CostEstimator.swift */,
-				AC5DC7B1CFF1F64D65A564A5 /* ConnectionService.swift */,
+				AC5DC7B1CFF1F64D65A564A5 /* ProviderService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -541,7 +541,7 @@
 			path = Google;
 			sourceTree = "<group>";
 		};
-		ACA510622EDF905700738A80 /* ConnectionModels */ = {
+		ACA510622EDF905700738A80 /* ProviderModels */ = {
 			isa = PBXGroup;
 			children = (
 				ACA5105C2EDF905700738A80 /* FALModels.swift */,
@@ -550,7 +550,7 @@
 				ACA510602EDF905700738A80 /* ReplicateModels.swift */,
 				ACA510612EDF905700738A80 /* StabilityModels.swift */,
 			);
-			path = ConnectionModels;
+			path = ProviderModels;
 			sourceTree = "<group>";
 		};
 		ACA510692EDF906100738A80 /* Protocols */ = {
@@ -712,7 +712,7 @@
 		ACE44C3D2C79CFBE0008BB9D /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				ACE44C3E2C79CFD50008BB9D /* PendingConnectionView.swift */,
+				ACE44C3E2C79CFD50008BB9D /* PendingProviderView.swift */,
 				AC48BD2B2C7A7A960054F1AC /* ICloudImageLoader.swift */,
 				AC48BD2D2C7A82FD0054F1AC /* ICloudVideoLoader.swift */,
 			);
@@ -723,7 +723,7 @@
 			isa = PBXGroup;
 			children = (
 				ACE44C302C78D2FC0008BB9D /* WorkspaceView.swift */,
-				ACE44C412C79F3640008BB9D /* ConnectionDetailsView.swift */,
+				ACE44C412C79F3640008BB9D /* ProviderDetailsView.swift */,
 			);
 			path = Workspace;
 			sourceTree = "<group>";
@@ -842,10 +842,10 @@
 				ACCAC5D52C72235E009A2EA8 /* GenerationVideoView.swift in Sources */,
 				AC48BD2A2C7A6A280054F1AC /* iCloudViewModel.swift in Sources */,
 				24615B1EE76F472AAF096CE3 /* NavigationManager.swift in Sources */,
-				AC2CE3212C694E2A00893DC2 /* ConnectionModel.swift in Sources */,
-				AC6AEA1F6CC9CA45B8999C9B /* ConnectionService.swift in Sources */,
+				AC2CE3212C694E2A00893DC2 /* ProviderModel.swift in Sources */,
+				AC6AEA1F6CC9CA45B8999C9B /* ProviderService.swift in Sources */,
 				ACCAC5D12C71E9B3009A2EA8 /* GenerateVideoAdapter.swift in Sources */,
-				AC2CE33A2C69D1B900893DC2 /* AddConnectionView.swift in Sources */,
+				AC2CE33A2C69D1B900893DC2 /* AddProviderView.swift in Sources */,
 				AC48BD352C7B54680054F1AC /* FieldAdapter.swift in Sources */,
 				ACA0FF6E2C6E57E300A8C1D5 /* G_STABILITY_CONSERVATIVE_UPSCALE.swift in Sources */,
 				ACA0FF702C6E8CC000A8C1D5 /* DrawingAdapter.swift in Sources */,
@@ -865,7 +865,7 @@
 				ACA50E232EDF149900738A80 /* ImageToVideoViewModel.swift in Sources */,
 				ACA50E242EDF149900738A80 /* EditMaskImageViewModel.swift in Sources */,
 				ACCAC5CD2C71E87D009A2EA8 /* ImageToVideoView.swift in Sources */,
-				AC2CE31F2C694B5D00893DC2 /* Connection.swift in Sources */,
+				AC2CE31F2C694B5D00893DC2 /* Provider.swift in Sources */,
 				ACAB78602C6B1C2E00EED0E8 /* GalleryGridView.swift in Sources */,
 				ACEC4D902C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift in Sources */,
 				ACEC4D912C77CF1500928688 /* G_REPLICATE_SEEDREAM_3.swift in Sources */,
@@ -891,15 +891,15 @@
 				ACCAC5BD2C70CE7B009A2EA8 /* G_STABILITY_OUTPAINT.swift in Sources */,
 				ACEC4D8E2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift in Sources */,
 				ACA0FF572C6D3BE600A8C1D5 /* G_STABILITY_CORE.swift in Sources */,
-				ACE44C3F2C79CFD50008BB9D /* PendingConnectionView.swift in Sources */,
+				ACE44C3F2C79CFD50008BB9D /* PendingProviderView.swift in Sources */,
 				AC48BD332C7B49700054F1AC /* DateAdapter.swift in Sources */,
-				AC2CE3342C69C90B00893DC2 /* ConnectionsView.swift in Sources */,
-				ACE44C422C79F3640008BB9D /* ConnectionDetailsView.swift in Sources */,
+				AC2CE3342C69C90B00893DC2 /* ProvidersView.swift in Sources */,
+				ACE44C422C79F3640008BB9D /* ProviderDetailsView.swift in Sources */,
 				ACE44C312C78D2FC0008BB9D /* WorkspaceView.swift in Sources */,
 				ACE44C372C78DF2E0008BB9D /* DesktopView.swift in Sources */,
 				AC48BD412C7B84A00054F1AC /* StorageAdapter.swift in Sources */,
 				ACCAC5BF2C70DC8A009A2EA8 /* G_STABILITY_INPAINT.swift in Sources */,
-				AC2CE3232C69504800893DC2 /* ConnectionKey.swift in Sources */,
+				AC2CE3232C69504800893DC2 /* ProviderKey.swift in Sources */,
 				AC111F212C7D2C2200170D4F /* OnboardingView.swift in Sources */,
 				ACCAC5D32C721F01009A2EA8 /* VideoAdapter.swift in Sources */,
 				ACCAC5BB2C70A71F009A2EA8 /* RemoveBackgroundImageView.swift in Sources */,

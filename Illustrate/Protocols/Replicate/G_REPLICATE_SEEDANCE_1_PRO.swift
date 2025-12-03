@@ -5,7 +5,7 @@ class G_REPLICATE_SEEDANCE_1_PRO: VideoGenerationProtocol {
         return CostEstimator.getCreditsUsed(request: request)
     }
 
-    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO.modelId.uuidString)!
+    let model: ProviderModel = ProviderService.shared.model(by: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String
@@ -204,7 +204,7 @@ class G_REPLICATE_SEEDANCE_1_PRO: VideoGenerationProtocol {
 
         do {
             let headers: [String: String] = [
-                "Authorization": "Bearer \(request.connectionSecret)",
+                "Authorization": "Bearer \(request.providerSecret)",
                 "Content-Type": "application/json",
             ]
             
@@ -212,11 +212,11 @@ class G_REPLICATE_SEEDANCE_1_PRO: VideoGenerationProtocol {
             var lastFrameUrl: String? = nil
             
             if let clientImage = request.clientImage {
-                imageUrl = try await ReplicateFileUploader.uploadImage(base64Image: clientImage, apiToken: request.connectionSecret)
+                imageUrl = try await ReplicateFileUploader.uploadImage(base64Image: clientImage, apiToken: request.providerSecret)
             }
             
             if let clientLastFrame = request.clientLastFrame, imageUrl != nil {
-                lastFrameUrl = try await ReplicateFileUploader.uploadImage(base64Image: clientLastFrame, apiToken: request.connectionSecret)
+                lastFrameUrl = try await ReplicateFileUploader.uploadImage(base64Image: clientLastFrame, apiToken: request.providerSecret)
             }
 
             let serviceRequest = ServiceRequest(

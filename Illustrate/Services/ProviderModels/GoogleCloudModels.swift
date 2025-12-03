@@ -2,16 +2,16 @@ import Foundation
 
 struct GoogleCloudModels {
     
-    static func createModels() -> [ConnectionModel] {
+    static func createModels() -> [ProviderModel] {
         return [
-            ConnectionModel(
-                connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-                modelId: EnumConnectionModelCode.GOOGLE_GEMINI_FLASH_IMAGE.modelId,
-                modelCode: EnumConnectionModelCode.GOOGLE_GEMINI_FLASH_IMAGE,
+            ProviderModel(
+                providerId: EnumProviderCode.GOOGLE_CLOUD.providerId,
+                modelId: EnumProviderModelCode.GOOGLE_GEMINI_FLASH_IMAGE.modelId,
+                modelCode: EnumProviderModelCode.GOOGLE_GEMINI_FLASH_IMAGE,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Nano Banana (2.5 Flash)",
                 modelDescription: "Gemini 2.5 Flash Image - Fast and efficient native image generation at 1024px resolution.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 4000,
@@ -28,14 +28,14 @@ struct GoogleCloudModels {
                 modelAPIDocumentationURL: "https://ai.google.dev/gemini-api/docs/image-generation",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-                modelId: EnumConnectionModelCode.GOOGLE_GEMINI_FLASH_IMAGE_EDIT.modelId,
-                modelCode: EnumConnectionModelCode.GOOGLE_GEMINI_FLASH_IMAGE_EDIT,
+            ProviderModel(
+                providerId: EnumProviderCode.GOOGLE_CLOUD.providerId,
+                modelId: EnumProviderModelCode.GOOGLE_GEMINI_FLASH_IMAGE_EDIT.modelId,
+                modelCode: EnumProviderModelCode.GOOGLE_GEMINI_FLASH_IMAGE_EDIT,
                 modelSetType: EnumSetType.EDIT_PROMPT,
                 modelName: "Nano Banana (2.5 Flash)",
                 modelDescription: "Gemini 2.5 Flash Image - Edit images with text prompts for mask-free modifications.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 4000,
@@ -52,14 +52,14 @@ struct GoogleCloudModels {
                 modelAPIDocumentationURL: "https://ai.google.dev/gemini-api/docs/image-generation",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-                modelId: EnumConnectionModelCode.GOOGLE_GEMINI_PRO_IMAGE.modelId,
-                modelCode: EnumConnectionModelCode.GOOGLE_GEMINI_PRO_IMAGE,
+            ProviderModel(
+                providerId: EnumProviderCode.GOOGLE_CLOUD.providerId,
+                modelId: EnumProviderModelCode.GOOGLE_GEMINI_PRO_IMAGE.modelId,
+                modelCode: EnumProviderModelCode.GOOGLE_GEMINI_PRO_IMAGE,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Nano Banana Pro (3 Pro)",
                 modelDescription: "Gemini 3 Pro Image Preview - Professional image generation. SD=2K, HD=4K resolution.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 4000,
@@ -76,14 +76,14 @@ struct GoogleCloudModels {
                 modelAPIDocumentationURL: "https://ai.google.dev/gemini-api/docs/image-generation",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-                modelId: EnumConnectionModelCode.GOOGLE_GEMINI_PRO_IMAGE_EDIT.modelId,
-                modelCode: EnumConnectionModelCode.GOOGLE_GEMINI_PRO_IMAGE_EDIT,
+            ProviderModel(
+                providerId: EnumProviderCode.GOOGLE_CLOUD.providerId,
+                modelId: EnumProviderModelCode.GOOGLE_GEMINI_PRO_IMAGE_EDIT.modelId,
+                modelCode: EnumProviderModelCode.GOOGLE_GEMINI_PRO_IMAGE_EDIT,
                 modelSetType: EnumSetType.EDIT_PROMPT,
                 modelName: "Nano Banana Pro (3 Pro)",
                 modelDescription: "Gemini 3 Pro Image Preview - Advanced image editing. SD=2K, HD=4K resolution.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 4000,
@@ -100,14 +100,14 @@ struct GoogleCloudModels {
                 modelAPIDocumentationURL: "https://ai.google.dev/gemini-api/docs/image-generation",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-                modelId: EnumConnectionModelCode.GOOGLE_IMAGEN_3.modelId,
-                modelCode: EnumConnectionModelCode.GOOGLE_IMAGEN_3,
+            ProviderModel(
+                providerId: EnumProviderCode.GOOGLE_CLOUD.providerId,
+                modelId: EnumProviderModelCode.GOOGLE_IMAGEN_3.modelId,
+                modelCode: EnumProviderModelCode.GOOGLE_IMAGEN_3,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Imagen 3",
                 modelDescription: "Google's Imagen 3 - High-quality photorealistic image generation at 1K resolution.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 4000,
@@ -124,14 +124,14 @@ struct GoogleCloudModels {
                 modelAPIDocumentationURL: "https://ai.google.dev/gemini-api/docs/imagen",
                 active: false
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-                modelId: EnumConnectionModelCode.GOOGLE_IMAGEN_4_FAST.modelId,
-                modelCode: EnumConnectionModelCode.GOOGLE_IMAGEN_4_FAST,
+            ProviderModel(
+                providerId: EnumProviderCode.GOOGLE_CLOUD.providerId,
+                modelId: EnumProviderModelCode.GOOGLE_IMAGEN_4_FAST.modelId,
+                modelCode: EnumProviderModelCode.GOOGLE_IMAGEN_4_FAST,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Imagen 4 Fast",
                 modelDescription: "Google's Imagen 4 Fast - Quick image generation at 1K resolution. $0.02/image.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 4000,
@@ -148,14 +148,14 @@ struct GoogleCloudModels {
                 modelAPIDocumentationURL: "https://ai.google.dev/gemini-api/docs/imagen",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-                modelId: EnumConnectionModelCode.GOOGLE_IMAGEN_4_STANDARD.modelId,
-                modelCode: EnumConnectionModelCode.GOOGLE_IMAGEN_4_STANDARD,
+            ProviderModel(
+                providerId: EnumProviderCode.GOOGLE_CLOUD.providerId,
+                modelId: EnumProviderModelCode.GOOGLE_IMAGEN_4_STANDARD.modelId,
+                modelCode: EnumProviderModelCode.GOOGLE_IMAGEN_4_STANDARD,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Imagen 4 Standard",
                 modelDescription: "Google's Imagen 4 Standard - High-quality image generation. SD=1K, HD=2K resolution. $0.04/image.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 4000,
@@ -172,14 +172,14 @@ struct GoogleCloudModels {
                 modelAPIDocumentationURL: "https://ai.google.dev/gemini-api/docs/imagen",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-                modelId: EnumConnectionModelCode.GOOGLE_IMAGEN_4_ULTRA.modelId,
-                modelCode: EnumConnectionModelCode.GOOGLE_IMAGEN_4_ULTRA,
+            ProviderModel(
+                providerId: EnumProviderCode.GOOGLE_CLOUD.providerId,
+                modelId: EnumProviderModelCode.GOOGLE_IMAGEN_4_ULTRA.modelId,
+                modelCode: EnumProviderModelCode.GOOGLE_IMAGEN_4_ULTRA,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Imagen 4 Ultra",
                 modelDescription: "Google's Imagen 4 Ultra - Premium quality image generation. SD=1K, HD=2K resolution. $0.06/image.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 4000,
@@ -196,14 +196,14 @@ struct GoogleCloudModels {
                 modelAPIDocumentationURL: "https://ai.google.dev/gemini-api/docs/imagen",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-                modelId: EnumConnectionModelCode.GOOGLE_VEO_31.modelId,
-                modelCode: EnumConnectionModelCode.GOOGLE_VEO_31,
+            ProviderModel(
+                providerId: EnumProviderCode.GOOGLE_CLOUD.providerId,
+                modelId: EnumProviderModelCode.GOOGLE_VEO_31.modelId,
+                modelCode: EnumProviderModelCode.GOOGLE_VEO_31,
                 modelSetType: EnumSetType.VIDEO_TEXT,
                 modelName: "Veo 3.1",
                 modelDescription: "Google's Veo 3.1 - State-of-the-art video generation with native audio. Supports text/image/video input. $0.40/sec.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -226,14 +226,14 @@ struct GoogleCloudModels {
                 modelAPIDocumentationURL: "https://ai.google.dev/gemini-api/docs/video",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-                modelId: EnumConnectionModelCode.GOOGLE_VEO_31_FAST.modelId,
-                modelCode: EnumConnectionModelCode.GOOGLE_VEO_31_FAST,
+            ProviderModel(
+                providerId: EnumProviderCode.GOOGLE_CLOUD.providerId,
+                modelId: EnumProviderModelCode.GOOGLE_VEO_31_FAST.modelId,
+                modelCode: EnumProviderModelCode.GOOGLE_VEO_31_FAST,
                 modelSetType: EnumSetType.VIDEO_TEXT,
                 modelName: "Veo 3.1 Fast",
                 modelDescription: "Google's Veo 3.1 Fast - Quick video generation with audio, optimized for speed. $0.15/sec.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -256,14 +256,14 @@ struct GoogleCloudModels {
                 modelAPIDocumentationURL: "https://ai.google.dev/gemini-api/docs/video",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-                modelId: EnumConnectionModelCode.GOOGLE_VEO_3.modelId,
-                modelCode: EnumConnectionModelCode.GOOGLE_VEO_3,
+            ProviderModel(
+                providerId: EnumProviderCode.GOOGLE_CLOUD.providerId,
+                modelId: EnumProviderModelCode.GOOGLE_VEO_3.modelId,
+                modelCode: EnumProviderModelCode.GOOGLE_VEO_3,
                 modelSetType: EnumSetType.VIDEO_TEXT,
                 modelName: "Veo 3",
                 modelDescription: "Google's Veo 3 - High-quality video generation with native audio.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -286,14 +286,14 @@ struct GoogleCloudModels {
                 modelAPIDocumentationURL: "https://ai.google.dev/gemini-api/docs/video",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-                modelId: EnumConnectionModelCode.GOOGLE_VEO_3_FAST.modelId,
-                modelCode: EnumConnectionModelCode.GOOGLE_VEO_3_FAST,
+            ProviderModel(
+                providerId: EnumProviderCode.GOOGLE_CLOUD.providerId,
+                modelId: EnumProviderModelCode.GOOGLE_VEO_3_FAST.modelId,
+                modelCode: EnumProviderModelCode.GOOGLE_VEO_3_FAST,
                 modelSetType: EnumSetType.VIDEO_TEXT,
                 modelName: "Veo 3 Fast",
                 modelDescription: "Google's Veo 3 Fast - Quick video generation with audio.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -316,14 +316,14 @@ struct GoogleCloudModels {
                 modelAPIDocumentationURL: "https://ai.google.dev/gemini-api/docs/video",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.GOOGLE_CLOUD.connectionId,
-                modelId: EnumConnectionModelCode.GOOGLE_VEO_2.modelId,
-                modelCode: EnumConnectionModelCode.GOOGLE_VEO_2,
+            ProviderModel(
+                providerId: EnumProviderCode.GOOGLE_CLOUD.providerId,
+                modelId: EnumProviderModelCode.GOOGLE_VEO_2.modelId,
+                modelCode: EnumProviderModelCode.GOOGLE_VEO_2,
                 modelSetType: EnumSetType.VIDEO_TEXT,
                 modelName: "Veo 2",
                 modelDescription: "Google's Veo 2 - Video generation at 720p. Silent output (no audio). $0.35/sec.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,

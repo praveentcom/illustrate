@@ -5,7 +5,7 @@ class G_OPENAI_GPT_IMAGE_1_EDIT: ImageGenerationProtocol {
         return CostEstimator.getCreditsUsed(request: request)
     }
 
-    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.OPENAI_GPT_IMAGE_1_EDIT.modelId.uuidString)!
+    let model: ProviderModel = ProviderService.shared.model(by: EnumProviderModelCode.OPENAI_GPT_IMAGE_1_EDIT.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let model: String
@@ -126,7 +126,7 @@ class G_OPENAI_GPT_IMAGE_1_EDIT: ImageGenerationProtocol {
         let transformedRequest = transformRequest(request: request)
 
         let headers: [String: String] = [
-            "Authorization": "Bearer \(request.connectionSecret)",
+            "Authorization": "Bearer \(request.providerSecret)",
             "Content-Type": "multipart/form-data",
             "Accept": "application/json",
         ]

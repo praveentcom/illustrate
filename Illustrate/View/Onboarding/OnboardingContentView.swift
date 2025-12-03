@@ -9,18 +9,7 @@ struct OnboardingContentView: View {
 
     var body: some View {
         Text(content)
-            .font(.body)
-            .multilineTextAlignment(.center)
-            .lineSpacing(4)
-            .opacity(0.8)
+            .font(.callout)
+            .opacity(0.7)
     }
-}
-
-#Preview {
-    VStack(spacing: 20) {
-        OnboardingTitleView("Welcome")
-        OnboardingSubtitleView("Generative AI Sandbox")
-        OnboardingContentView("Generate, enhance and edit images with your secure private sandbox. All data calls are processed on-device.")
-    }
-    .padding()
 }

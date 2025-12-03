@@ -2,7 +2,8 @@ import SwiftData
 import SwiftUI
 
 struct WorkspaceView: View {
-    @Environment(\.modelContext) private var modelContext
+    @Query private var providerKeys: [ProviderKey]
+    @Query private var generations: [Generation]
 
     var timeBasedGreeting: String {
         let hour = Calendar.current.component(.hour, from: Date())
@@ -23,20 +24,8 @@ struct WorkspaceView: View {
         #endif
     }()
 
-    private var connectionKeysCount: Int {
-        let descriptor = FetchDescriptor<ConnectionKey>()
-        let count = (try? modelContext.fetchCount(descriptor)) ?? 0
-        return count
-    }
-
-    private var generationsCount: Int {
-        let descriptor = FetchDescriptor<Generation>()
-        let count = (try? modelContext.fetchCount(descriptor)) ?? 0
-        return count
-    }
-
     private var shouldShowOnboarding: Bool {
-        return connectionKeysCount == 0 || generationsCount == 0
+        return providerKeys.isEmpty || generations.isEmpty
     }
 
     var body: some View {
@@ -83,13 +72,13 @@ struct WorkspaceView: View {
                 }
 
                 VStack(alignment: .leading) {
-                    Text("Supported Connections and Models")
+                    Text("Supported Providers and Models")
                         .font(.caption)
                         .textCase(.uppercase)
                         .opacity(0.5)
                     LazyVGrid(columns: columns, spacing: 8) {
-                        ForEach(connections, id: \.self) { item in
-                            WorkspaceConnectionShortcut(
+                        ForEach(providers, id: \.self) { item in
+                            WorkspaceProviderShortcut(
                                 item: item,
                                 setType: nil,
                                 showModels: false
@@ -142,45 +131,45 @@ struct WorkspaceGenerateShortcut: View {
     }
 }
 
-struct WorkspaceConnectionShortcut: View {
-    @Query private var connectionKeys: [ConnectionKey]
-    @State var isConnectionDetailsOpen: Bool = false
+struct WorkspaceProviderShortcut: View {
+    @Query private var providerKeys: [ProviderKey]
+    @State var isProviderDetailsOpen: Bool = false
     @State private var isHovered: Bool = false
 
-    var item: Connection
+    var item: Provider
     var setType: EnumSetType? = nil
     var showModels: Bool
 
     var isConnected: Bool {
-        connectionKeys.contains { $0.connectionId == item.connectionId }
+        providerKeys.contains { $0.providerId == item.providerId }
     }
 
-    func getModelsForConnection() -> [ConnectionModel] {
+    func getModelsForProvider() -> [ProviderModel] {
         if setType != nil {
-            return ConnectionService.shared.models(for: setType!).filter { $0.connectionId == item.connectionId }
+            return ProviderService.shared.models(for: setType!).filter { $0.providerId == item.providerId }
         } else {
-            return ConnectionService.shared.models(for: item.connectionId)
+            return ProviderService.shared.models(for: item.providerId)
         }
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
-                Image("\(item.connectionCode)_square".lowercased())
+                Image("\(item.providerCode)_square".lowercased())
                     .resizable()
                     .scaledToFit()
                     .frame(width: 16, height: 16)
-                Text(item.connectionName)
+                Text(item.providerName)
                     .font(.headline)
             }
             .frame(maxWidth: .infinity, alignment: .topLeading)
             if showModels {
-                Text("\(getModelsForConnection().map { $0.modelName }.joined(separator: ", "))")
+                Text("\(getModelsForProvider().map { $0.modelName }.joined(separator: ", "))")
                     .multilineTextAlignment(.leading)
                     .opacity(0.7)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
             } else {
-                Text("\(getModelsForConnection().count) variation\(getModelsForConnection().count == 1 ? "" : "s") available")
+                Text("\(getModelsForProvider().count) variation\(getModelsForProvider().count == 1 ? "" : "s") available")
                     .multilineTextAlignment(.leading)
                     .opacity(0.7)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -198,7 +187,7 @@ struct WorkspaceConnectionShortcut: View {
         .cornerRadius(8)
         .onTapGesture {
             DispatchQueue.main.async {
-                isConnectionDetailsOpen = true
+                isProviderDetailsOpen = true
             }
         }
         .onHover { hovering in
@@ -206,8 +195,8 @@ struct WorkspaceConnectionShortcut: View {
                 isHovered = hovering
             }
         }
-        .sheet(isPresented: $isConnectionDetailsOpen) {
-            ConnectionDetailsView(isPresented: $isConnectionDetailsOpen, selectedConnection: item)
+        .sheet(isPresented: $isProviderDetailsOpen) {
+            ProviderDetailsView(isPresented: $isProviderDetailsOpen, selectedProvider: item)
         }
     }
 }

@@ -9,17 +9,7 @@ struct OnboardingSubtitleView: View {
 
     var body: some View {
         Text(subtitle)
-            .font(.title2)
-            .fontWeight(.semibold)
-            .multilineTextAlignment(.center)
-            .lineSpacing(2)
+            .font(.callout)
+            .fontWeight(.medium)
     }
-}
-
-#Preview {
-    VStack {
-        OnboardingTitleView("Welcome")
-        OnboardingSubtitleView("Generative AI Sandbox")
-    }
-    .padding()
 }

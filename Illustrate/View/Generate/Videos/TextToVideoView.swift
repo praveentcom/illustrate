@@ -6,7 +6,7 @@ import SwiftUI
 struct TextToVideoView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var queueManager: QueueManager
-    @Query(sort: \ConnectionKey.createdAt, order: .reverse) private var connectionKeys: [ConnectionKey]
+    @Query(sort: \ProviderKey.createdAt, order: .reverse) private var providerKeys: [ProviderKey]
 
     @StateObject private var viewModel = TextToVideoViewModel()
 
@@ -14,35 +14,35 @@ struct TextToVideoView: View {
 
     var body: some View {
         VStack {
-            if viewModel.hasConnection && !connectionKeys.isEmpty {
+            if viewModel.hasProvider && !providerKeys.isEmpty {
                 Form {
                     Section(header: Text("Select Model")) {
-                        Picker("Connection", selection: $viewModel.selectedConnectionId) {
+                        Picker("Provider", selection: $viewModel.selectedProviderId) {
                             ForEach(
-                                viewModel.getSupportedConnections(connectionKeys: connectionKeys), id: \.connectionId
-                            ) { connection in
+                                viewModel.getSupportedProviders(providerKeys: providerKeys), id: \.providerId
+                            ) { provider in
                                 HStack {
 #if !os(macOS)
-                                    Image("\(connection.connectionCode)_square".lowercased())
+                                    Image("\(provider.providerCode)_square".lowercased())
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 20, height: 20)
 #endif
-                                    Text(connection.connectionName)
+                                    Text(provider.providerName)
                                 }
-                                .tag(connection.connectionId.uuidString)
+                                .tag(provider.providerId.uuidString)
                             }
                         }
 #if !os(macOS)
                         .pickerStyle(.navigationLink)
 #endif
-                        .onChange(of: viewModel.selectedConnectionId) {
-                            let models = viewModel.getSupportedModels(connectionKeys: connectionKeys)
+                        .onChange(of: viewModel.selectedProviderId) {
+                            let models = viewModel.getSupportedModels(providerKeys: providerKeys)
                             viewModel.selectedModelId = models.first?.modelId.uuidString ?? ""
                         }
 
                         Picker("Model", selection: $viewModel.selectedModelId) {
-                            ForEach(viewModel.getSupportedModels(connectionKeys: connectionKeys)) { model in
+                            ForEach(viewModel.getSupportedModels(providerKeys: providerKeys)) { model in
                                 Text(model.modelName)
                                     .tag(model.modelId.uuidString)
                             }
@@ -137,18 +137,18 @@ struct TextToVideoView: View {
                             focusedField = nil
                         }
 
-                        viewModel.submitToQueue(connectionKeys: connectionKeys, queueManager: queueManager, modelContext: modelContext)
+                        viewModel.submitToQueue(providerKeys: providerKeys, queueManager: queueManager, modelContext: modelContext)
                     }
                     .disabled(!viewModel.canGenerate)
                 }
                 .formStyle(.grouped)
 
             } else {
-                PendingConnectionView(setType: .VIDEO_TEXT)
+                PendingProviderView(setType: .VIDEO_TEXT)
             }
         }
         .onAppear {
-            viewModel.initialize(connectionKeys: connectionKeys)
+            viewModel.initialize(providerKeys: providerKeys)
         }
 #if os(macOS)
         .toast(isPresenting: $viewModel.errorState.isShowing, duration: 12, offsetY: 16) {

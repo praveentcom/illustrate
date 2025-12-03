@@ -1,15 +1,15 @@
 import Foundation
 
 class G_GOOGLE_IMAGEN_BASE: ImageGenerationProtocol {
-    let modelCode: EnumConnectionModelCode
+    let modelCode: EnumProviderModelCode
     let costPerImage: Double
     let supportsImageSize: Bool
     
-    var model: ConnectionModel {
-        ConnectionService.shared.model(by: modelCode.modelId.uuidString)!
+    var model: ProviderModel {
+        ProviderService.shared.model(by: modelCode.modelId.uuidString)!
     }
     
-    init(modelCode: EnumConnectionModelCode, costPerImage: Double, supportsImageSize: Bool) {
+    init(modelCode: EnumProviderModelCode, costPerImage: Double, supportsImageSize: Bool) {
         self.modelCode = modelCode
         self.costPerImage = costPerImage
         self.supportsImageSize = supportsImageSize
@@ -129,7 +129,7 @@ class G_GOOGLE_IMAGEN_BASE: ImageGenerationProtocol {
         }
 
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-        components.queryItems = [URLQueryItem(name: "key", value: request.connectionSecret)]
+        components.queryItems = [URLQueryItem(name: "key", value: request.providerSecret)]
 
         guard let finalURL = components.url else {
             return ImageGenerationResponse(

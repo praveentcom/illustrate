@@ -22,19 +22,19 @@ final class AppVersionManager: ObservableObject {
 @main
 struct IllustrateApp: App {
     @StateObject private var appVersionManager = AppVersionManager()
-    @StateObject private var connectionService = ConnectionService.shared
+    @StateObject private var providerService = ProviderService.shared
 
     var body: some Scene {
         WindowGroup {
             MainView()
                 .environmentObject(appVersionManager)
-                .environmentObject(connectionService)
-                .environment(\.connectionService, connectionService)
+                .environmentObject(providerService)
+                .environment(\.providerService, providerService)
                 .modelContainer(
                     for: [
-                        Connection.self,
-                        ConnectionKey.self,
-                        ConnectionModel.self,
+                        Provider.self,
+                        ProviderKey.self,
+                        ProviderModel.self,
                         Generation.self,
                         ImageSet.self,
                     ]

@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>We request tracking permission to enhance your experience when using connections. This allows us to securely manage your identity with these connections.</string>
+	<string>We request tracking permission to enhance your experience when using providers. This allows us to securely manage your identity with these providers.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>UIBackgroundModes</key>

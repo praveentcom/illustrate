@@ -4,7 +4,7 @@ import SwiftUI
 struct CostEstimator {
     
     static func getCreditsUsed(request: ImageGenerationRequest) -> Double {
-        guard let model = ConnectionService.shared.model(by: request.modelId) else {
+        guard let model = ProviderService.shared.model(by: request.modelId) else {
             return 0.0
         }
         return estimatedImageCost(
@@ -16,7 +16,7 @@ struct CostEstimator {
     }
     
     static func getCreditsUsed(request: VideoGenerationRequest) -> Double {
-        guard let model = ConnectionService.shared.model(by: request.modelId) else {
+        guard let model = ProviderService.shared.model(by: request.modelId) else {
             return 0.0
         }
         return estimatedVideoCost(
@@ -28,7 +28,7 @@ struct CostEstimator {
     }
     
     static func estimatedImageCost(
-        modelCode: EnumConnectionModelCode,
+        modelCode: EnumProviderModelCode,
         quality: EnumArtQuality = EnumArtQuality.STANDARD,
         dimensions: String = "1024x1024",
         numberOfImages: Int = 1
@@ -147,7 +147,7 @@ struct CostEstimator {
     }
     
     static func estimatedVideoCost(
-        modelCode: EnumConnectionModelCode,
+        modelCode: EnumProviderModelCode,
         durationSeconds: Int,
         numberOfVideos: Int = 1,
         dimensions: String = "1280x720"
@@ -216,7 +216,7 @@ struct CostEstimator {
         }
     }
     
-    static func isCreditModel(_ modelCode: EnumConnectionModelCode) -> Bool {
+    static func isCreditModel(_ modelCode: EnumProviderModelCode) -> Bool {
         switch modelCode {
         case .STABILITY_ULTRA, .STABILITY_CORE, .STABILITY_SDXL,
              .STABILITY_SD3, .STABILITY_SD3_TURBO,
@@ -235,7 +235,7 @@ struct CostEstimator {
 
 struct EstimatedCostView: View {
     let cost: Double
-    var modelCode: EnumConnectionModelCode?
+    var modelCode: EnumProviderModelCode?
     
     var body: some View {
         let isCredits = modelCode.map { CostEstimator.isCreditModel($0) } ?? false

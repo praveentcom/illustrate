@@ -5,7 +5,7 @@ class G_STABILITY_OUTPAINT: ImageGenerationProtocol {
         return CostEstimator.getCreditsUsed(request: request)
     }
 
-    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.STABILITY_OUTPAINT.modelId.uuidString)!
+    let model: ProviderModel = ProviderService.shared.model(by: EnumProviderModelCode.STABILITY_OUTPAINT.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String
@@ -94,7 +94,7 @@ class G_STABILITY_OUTPAINT: ImageGenerationProtocol {
         let transformedRequest = transformRequest(request: request)
 
         let headers: [String: String] = [
-            "Authorization": "\(request.connectionSecret)",
+            "Authorization": "\(request.providerSecret)",
             "Content-Type": "multipart/form-data",
             "Accept": "application/json",
         ]

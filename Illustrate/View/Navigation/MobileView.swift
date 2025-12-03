@@ -6,6 +6,7 @@ struct MobileView: View {
     @State private var homeNavigationPath = NavigationPath()
     @State private var generationsNavigationPath = NavigationPath()
     @State private var historyNavigationPath = NavigationPath()
+    @State private var metricsNavigationPath = NavigationPath()
     @State private var settingsNavigationPath = NavigationPath()
 
     var body: some View {
@@ -38,6 +39,16 @@ struct MobileView: View {
             }
             .tabItem {
                 Label("History", systemImage: "photo.on.rectangle.angled")
+            }
+
+            NavigationStack(path: $metricsNavigationPath) {
+                UsageMetricsView()
+                    .navigationDestination(for: EnumNavigationItem.self) { item in
+                        viewForItem(item)
+                    }
+            }
+            .tabItem {
+                Label("Metrics", systemImage: "chart.bar.xaxis")
             }
 
             NavigationStack(path: $settingsNavigationPath) {

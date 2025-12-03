@@ -5,29 +5,29 @@ let TEAM_ID = "24J6SG2424"
 var keychainAccessGroup = "\(TEAM_ID).so.illustrate.SharedItems"
 
 @Model
-final class ConnectionKey: Codable {
+final class ProviderKey: Codable {
     enum CodingKeys: CodingKey {
-        case connectionId
+        case providerId
         case createdAt
     }
 
-    var connectionId: UUID = UUID()
+    var providerId: UUID = UUID()
     var createdAt: Date = Date()
 
-    init(connectionId: UUID, createdAt: Date = Date()) {
-        self.connectionId = connectionId
+    init(providerId: UUID, createdAt: Date = Date()) {
+        self.providerId = providerId
         self.createdAt = createdAt
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(connectionId, forKey: .connectionId)
+        try container.encode(providerId, forKey: .providerId)
         try container.encode(createdAt, forKey: .createdAt)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        connectionId = try container.decode(UUID.self, forKey: .connectionId)
+        providerId = try container.decode(UUID.self, forKey: .providerId)
         createdAt = try container.decode(Date.self, forKey: .createdAt)
     }
 }

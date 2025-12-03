@@ -5,7 +5,7 @@ class G_FAL_FLUX_SCHNELL: ImageGenerationProtocol {
         return CostEstimator.getCreditsUsed(request: request)
     }
 
-    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.FAL_FLUX_SCHNELL.modelId.uuidString)!
+    let model: ProviderModel = ProviderService.shared.model(by: EnumProviderModelCode.FAL_FLUX_SCHNELL.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String
@@ -111,7 +111,7 @@ class G_FAL_FLUX_SCHNELL: ImageGenerationProtocol {
 
         do {
             let headers: [String: String] = [
-                "Authorization": "Key \(request.connectionSecret)",
+                "Authorization": "Key \(request.providerSecret)",
                 "Content-Type": "application/json",
             ]
 

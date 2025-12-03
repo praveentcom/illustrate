@@ -5,7 +5,7 @@ class G_GOOGLE_GEMINI_PRO_IMAGE: ImageGenerationProtocol {
         return CostEstimator.getCreditsUsed(request: request)
     }
 
-    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.GOOGLE_GEMINI_PRO_IMAGE.modelId.uuidString)!
+    let model: ProviderModel = ProviderService.shared.model(by: EnumProviderModelCode.GOOGLE_GEMINI_PRO_IMAGE.modelId.uuidString)!
 
     struct ContentPart: Codable {
         var text: String?
@@ -145,7 +145,7 @@ class G_GOOGLE_GEMINI_PRO_IMAGE: ImageGenerationProtocol {
         }
 
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-        components.queryItems = [URLQueryItem(name: "key", value: request.connectionSecret)]
+        components.queryItems = [URLQueryItem(name: "key", value: request.providerSecret)]
 
         guard let finalURL = components.url else {
             return ImageGenerationResponse(

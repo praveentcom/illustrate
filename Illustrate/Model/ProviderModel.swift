@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-enum EnumConnectionModelCode: String, Codable, CaseIterable, Identifiable {
+enum EnumProviderModelCode: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     case OPENAI_DALLE3
@@ -195,7 +195,7 @@ enum EnumResponseModality: String, Codable, CaseIterable, Identifiable {
     }
 }
 
-struct ConnectionModelSupportParams: Codable {
+struct ProviderModelSupportParams: Codable {
     enum CodingKeys: CodingKey {
         case prompt
         case negativePrompt
@@ -295,9 +295,9 @@ struct ConnectionModelSupportParams: Codable {
 }
 
 @Model
-final class ConnectionModel: Codable {
+final class ProviderModel: Codable {
     enum CodingKeys: CodingKey {
-        case connectionId
+        case providerId
         case modelId
         case modelCode
         case modelSetType
@@ -312,13 +312,13 @@ final class ConnectionModel: Codable {
         case active
     }
 
-    var connectionId: UUID = UUID()
+    var providerId: UUID = UUID()
     var modelId: UUID = UUID()
-    var modelCode: EnumConnectionModelCode = EnumConnectionModelCode.OPENAI_DALLE3
+    var modelCode: EnumProviderModelCode = EnumProviderModelCode.OPENAI_DALLE3
     var modelSetType: EnumSetType = EnumSetType.GENERATE
     var modelName: String = ""
     var modelDescription: String = ""
-    var modelSupportedParams: ConnectionModelSupportParams = ConnectionModelSupportParams(
+    var modelSupportedParams: ProviderModelSupportParams = ProviderModelSupportParams(
         prompt: false,
         negativePrompt: false,
         maxPromptLength: 256,
@@ -337,13 +337,13 @@ final class ConnectionModel: Codable {
     var active: Bool = true
 
     init(
-        connectionId: UUID,
+        providerId: UUID,
         modelId: UUID,
-        modelCode: EnumConnectionModelCode,
+        modelCode: EnumProviderModelCode,
         modelSetType: EnumSetType,
         modelName: String,
         modelDescription: String,
-        modelSupportedParams: ConnectionModelSupportParams,
+        modelSupportedParams: ProviderModelSupportParams,
         modelLaunchDate: Date,
         modelDeprecationDate: Date? = nil,
         modelGenerateBaseURL: String,
@@ -351,7 +351,7 @@ final class ConnectionModel: Codable {
         modelAPIDocumentationURL: String,
         active: Bool
     ) {
-        self.connectionId = connectionId
+        self.providerId = providerId
         self.modelId = modelId
         self.modelCode = modelCode
         self.modelSetType = modelSetType
@@ -368,13 +368,13 @@ final class ConnectionModel: Codable {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        connectionId = try container.decode(UUID.self, forKey: .connectionId)
+        providerId = try container.decode(UUID.self, forKey: .providerId)
         modelId = try container.decode(UUID.self, forKey: .modelId)
-        modelCode = try container.decode(EnumConnectionModelCode.self, forKey: .modelCode)
+        modelCode = try container.decode(EnumProviderModelCode.self, forKey: .modelCode)
         modelSetType = try container.decode(EnumSetType.self, forKey: .modelSetType)
         modelName = try container.decode(String.self, forKey: .modelName)
         modelDescription = try container.decode(String.self, forKey: .modelDescription)
-        modelSupportedParams = try container.decode(ConnectionModelSupportParams.self, forKey: .modelSupportedParams)
+        modelSupportedParams = try container.decode(ProviderModelSupportParams.self, forKey: .modelSupportedParams)
         modelLaunchDate = try container.decode(Date.self, forKey: .modelLaunchDate)
         modelDeprecationDate = try container.decodeIfPresent(Date.self, forKey: .modelDeprecationDate)
         modelGenerateBaseURL = try container.decode(String.self, forKey: .modelGenerateBaseURL)
@@ -385,7 +385,7 @@ final class ConnectionModel: Codable {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(connectionId, forKey: .connectionId)
+        try container.encode(providerId, forKey: .providerId)
         try container.encode(modelId, forKey: .modelId)
         try container.encode(modelCode, forKey: .modelCode)
         try container.encode(modelSetType, forKey: .modelSetType)
@@ -403,7 +403,7 @@ final class ConnectionModel: Codable {
 
 
 struct ModelLabel: View {
-    var model: ConnectionModel
+    var model: ProviderModel
 
     var body: some View {
         Text(model.modelName)

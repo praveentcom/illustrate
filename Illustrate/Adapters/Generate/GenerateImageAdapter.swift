@@ -4,7 +4,7 @@ import SwiftData
 
 enum EnumGenerateImageAdapterErrorCode: String, Codable {
     case GENERATOR_ERROR = "Internal Generator Error"
-    case MODEL_ERROR = "Connection Model Error"
+    case MODEL_ERROR = "Provider Model Error"
     case ADAPTER_ERROR = "Internal Adapter Error"
     case TRANSFORM_RESPONSE_ERROR = "Internal Response Transform Error"
 }
@@ -27,8 +27,8 @@ struct ImageGenerationRequest: Codable {
     var artDimensions: String
     var clientImage: String?
     var clientMask: String?
-    var connectionKey: ConnectionKey
-    var connectionSecret: String
+    var providerKey: ProviderKey
+    var providerSecret: String
     var numberOfImages: Int = 1
     var editDirection: ImageEditDirection?
     var responseModalities: [EnumResponseModality] = []
@@ -55,7 +55,7 @@ struct ImageSetResponse: Codable {
 }
 
 protocol ImageGenerationProtocol {
-    var model: ConnectionModel { get }
+    var model: ProviderModel { get }
 
     associatedtype ServiceRequest
 
@@ -66,7 +66,7 @@ protocol ImageGenerationProtocol {
 }
 
 func getImageGenerationAdapter(imageGenerationRequest: ImageGenerationRequest) throws -> any ImageGenerationProtocol {
-    guard let model = ConnectionService.shared.model(by: imageGenerationRequest.modelId) else {
+    guard let model = ProviderService.shared.model(by: imageGenerationRequest.modelId) else {
         throw NSError(
             domain: "GenerateImageAdapterError",
             code: -1,
@@ -78,83 +78,83 @@ func getImageGenerationAdapter(imageGenerationRequest: ImageGenerationRequest) t
     }
     
     switch model.modelCode {
-    case EnumConnectionModelCode.OPENAI_DALLE3:
+    case EnumProviderModelCode.OPENAI_DALLE3:
         return G_OPENAI_DALLE3()
-    case EnumConnectionModelCode.OPENAI_GPT_IMAGE_1:
+    case EnumProviderModelCode.OPENAI_GPT_IMAGE_1:
         return G_OPENAI_GPT_IMAGE_1()
-    case EnumConnectionModelCode.OPENAI_GPT_IMAGE_1_EDIT:
+    case EnumProviderModelCode.OPENAI_GPT_IMAGE_1_EDIT:
         return G_OPENAI_GPT_IMAGE_1_EDIT()
-    case EnumConnectionModelCode.STABILITY_CORE:
+    case EnumProviderModelCode.STABILITY_CORE:
         return G_STABILITY_CORE()
-    case EnumConnectionModelCode.STABILITY_SDXL:
+    case EnumProviderModelCode.STABILITY_SDXL:
         return G_STABILITY_SDXL()
-    case EnumConnectionModelCode.STABILITY_ULTRA:
+    case EnumProviderModelCode.STABILITY_ULTRA:
         return G_STABILITY_ULTRA()
-    case EnumConnectionModelCode.STABILITY_SD3:
+    case EnumProviderModelCode.STABILITY_SD3:
         return G_STABILITY_SD3()
-    case EnumConnectionModelCode.STABILITY_SD3_TURBO:
+    case EnumProviderModelCode.STABILITY_SD3_TURBO:
         return G_STABILITY_SD3()
-    case EnumConnectionModelCode.STABILITY_SD35_LARGE:
+    case EnumProviderModelCode.STABILITY_SD35_LARGE:
         return G_STABILITY_SD3()
-    case EnumConnectionModelCode.STABILITY_SD35_LARGE_TURBO:
+    case EnumProviderModelCode.STABILITY_SD35_LARGE_TURBO:
         return G_STABILITY_SD3()
-    case EnumConnectionModelCode.STABILITY_SD35_MEDIUM:
+    case EnumProviderModelCode.STABILITY_SD35_MEDIUM:
         return G_STABILITY_SD3()
-    case EnumConnectionModelCode.STABILITY_SD35_FLASH:
+    case EnumProviderModelCode.STABILITY_SD35_FLASH:
         return G_STABILITY_SD3()
-    case EnumConnectionModelCode.STABILITY_CREATIVE_UPSCALE:
+    case EnumProviderModelCode.STABILITY_CREATIVE_UPSCALE:
         return G_STABILITY_CREATIVE_UPSCALE()
-    case EnumConnectionModelCode.STABILITY_CONSERVATIVE_UPSCALE:
+    case EnumProviderModelCode.STABILITY_CONSERVATIVE_UPSCALE:
         return G_STABILITY_CONSERVATIVE_UPSCALE()
-    case EnumConnectionModelCode.STABILITY_OUTPAINT:
+    case EnumProviderModelCode.STABILITY_OUTPAINT:
         return G_STABILITY_OUTPAINT()
-    case EnumConnectionModelCode.STABILITY_INPAINT:
+    case EnumProviderModelCode.STABILITY_INPAINT:
         return G_STABILITY_INPAINT()
-    case EnumConnectionModelCode.STABILITY_ERASE:
+    case EnumProviderModelCode.STABILITY_ERASE:
         return G_STABILITY_ERASE()
-    case EnumConnectionModelCode.STABILITY_SEARCH_AND_REPLACE:
+    case EnumProviderModelCode.STABILITY_SEARCH_AND_REPLACE:
         return G_STABILITY_SEARCH_AND_REPLACE()
-    case EnumConnectionModelCode.STABILITY_REMOVE_BACKGROUND:
+    case EnumProviderModelCode.STABILITY_REMOVE_BACKGROUND:
         return G_STABILITY_REMOVE_BACKGROUND()
-    case EnumConnectionModelCode.REPLICATE_FLUX_SCHNELL:
+    case EnumProviderModelCode.REPLICATE_FLUX_SCHNELL:
         return G_REPLICATE_FLUX_SCHNELL()
-    case EnumConnectionModelCode.REPLICATE_FLUX_DEV:
+    case EnumProviderModelCode.REPLICATE_FLUX_DEV:
         return G_REPLICATE_FLUX_DEV()
-    case EnumConnectionModelCode.REPLICATE_FLUX_PRO:
+    case EnumProviderModelCode.REPLICATE_FLUX_PRO:
         return G_REPLICATE_FLUX_PRO()
-    case EnumConnectionModelCode.REPLICATE_SEEDREAM_3:
+    case EnumProviderModelCode.REPLICATE_SEEDREAM_3:
         return G_REPLICATE_SEEDREAM_3()
-    case EnumConnectionModelCode.REPLICATE_SEEDREAM_4:
+    case EnumProviderModelCode.REPLICATE_SEEDREAM_4:
         return G_REPLICATE_SEEDREAM_4()
-    case EnumConnectionModelCode.REPLICATE_SEEDREAM_4_EDIT:
+    case EnumProviderModelCode.REPLICATE_SEEDREAM_4_EDIT:
         return G_REPLICATE_SEEDREAM_4_EDIT()
-    case EnumConnectionModelCode.REPLICATE_SEEDREAM_4_5:
+    case EnumProviderModelCode.REPLICATE_SEEDREAM_4_5:
         return G_REPLICATE_SEEDREAM_4_5()
-    case EnumConnectionModelCode.REPLICATE_SEEDREAM_4_5_EDIT:
+    case EnumProviderModelCode.REPLICATE_SEEDREAM_4_5_EDIT:
         return G_REPLICATE_SEEDREAM_4_5_EDIT()
-    case EnumConnectionModelCode.REPLICATE_DREAMINA_3_1:
+    case EnumProviderModelCode.REPLICATE_DREAMINA_3_1:
         return G_REPLICATE_DREAMINA_3_1()
-    case EnumConnectionModelCode.FAL_FLUX_SCHNELL:
+    case EnumProviderModelCode.FAL_FLUX_SCHNELL:
         return G_FAL_FLUX_SCHNELL()
-    case EnumConnectionModelCode.FAL_FLUX_DEV:
+    case EnumProviderModelCode.FAL_FLUX_DEV:
         return G_FAL_FLUX_DEV()
-    case EnumConnectionModelCode.FAL_FLUX_PRO:
+    case EnumProviderModelCode.FAL_FLUX_PRO:
         return G_FAL_FLUX_PRO()
-    case EnumConnectionModelCode.GOOGLE_GEMINI_FLASH_IMAGE:
+    case EnumProviderModelCode.GOOGLE_GEMINI_FLASH_IMAGE:
         return G_GOOGLE_GEMINI_FLASH_IMAGE()
-    case EnumConnectionModelCode.GOOGLE_GEMINI_FLASH_IMAGE_EDIT:
+    case EnumProviderModelCode.GOOGLE_GEMINI_FLASH_IMAGE_EDIT:
         return G_GOOGLE_GEMINI_FLASH_IMAGE_EDIT()
-    case EnumConnectionModelCode.GOOGLE_GEMINI_PRO_IMAGE:
+    case EnumProviderModelCode.GOOGLE_GEMINI_PRO_IMAGE:
         return G_GOOGLE_GEMINI_PRO_IMAGE()
-    case EnumConnectionModelCode.GOOGLE_GEMINI_PRO_IMAGE_EDIT:
+    case EnumProviderModelCode.GOOGLE_GEMINI_PRO_IMAGE_EDIT:
         return G_GOOGLE_GEMINI_PRO_IMAGE_EDIT()
-    case EnumConnectionModelCode.GOOGLE_IMAGEN_3:
+    case EnumProviderModelCode.GOOGLE_IMAGEN_3:
         return G_GOOGLE_IMAGEN_3()
-    case EnumConnectionModelCode.GOOGLE_IMAGEN_4_FAST:
+    case EnumProviderModelCode.GOOGLE_IMAGEN_4_FAST:
         return G_GOOGLE_IMAGEN_4_FAST()
-    case EnumConnectionModelCode.GOOGLE_IMAGEN_4_STANDARD:
+    case EnumProviderModelCode.GOOGLE_IMAGEN_4_STANDARD:
         return G_GOOGLE_IMAGEN_4_STANDARD()
-    case EnumConnectionModelCode.GOOGLE_IMAGEN_4_ULTRA:
+    case EnumProviderModelCode.GOOGLE_IMAGEN_4_ULTRA:
         return G_GOOGLE_IMAGEN_4_ULTRA()
     default:
         throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
@@ -300,7 +300,7 @@ class GenerateImageAdapter {
                 }
             }
 
-            guard let usedModel = ConnectionService.shared.model(by: imageGenerationRequest.modelId) else {
+            guard let usedModel = ProviderService.shared.model(by: imageGenerationRequest.modelId) else {
                 return ImageSetResponse(
                     status: EnumGenerationStatus.FAILED,
                     errorCode: EnumGenerateImageAdapterErrorCode.MODEL_ERROR,

@@ -4,7 +4,7 @@ import SwiftData
 
 enum EnumGenerateVideoAdapterErrorCode: String, Codable {
     case GENERATOR_ERROR = "Internal Generator Error"
-    case MODEL_ERROR = "Connection Model Error"
+    case MODEL_ERROR = "Provider Model Error"
     case ADAPTER_ERROR = "Internal Adapter Error"
     case TRANSFORM_RESPONSE_ERROR = "Internal Response Transform Error"
 }
@@ -19,8 +19,8 @@ struct VideoGenerationRequest: Codable {
     var clientMask: String?
     var clientLastFrame: String?
     var clientVideo: String?
-    var connectionKey: ConnectionKey
-    var connectionSecret: String
+    var providerKey: ProviderKey
+    var providerSecret: String
     var numberOfVideos: Int = 1
     var motion: Int?
     var stickyness: Int?
@@ -51,7 +51,7 @@ struct VideoSetResponse: Codable {
 }
 
 protocol VideoGenerationProtocol {
-    var model: ConnectionModel { get }
+    var model: ProviderModel { get }
 
     associatedtype ServiceRequest
 
@@ -62,38 +62,38 @@ protocol VideoGenerationProtocol {
 }
 
 func getVideoGenerationAdapter(videoGenerationRequest: VideoGenerationRequest) throws -> any VideoGenerationProtocol {
-    guard let model = ConnectionService.shared.model(by: videoGenerationRequest.modelId) else {
+    guard let model = ProviderService.shared.model(by: videoGenerationRequest.modelId) else {
         throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
     }
 
     switch model.modelCode {
-    case EnumConnectionModelCode.STABILITY_IMAGE_TO_VIDEO:
+    case EnumProviderModelCode.STABILITY_IMAGE_TO_VIDEO:
         return G_STABILITY_IMAGE_TO_VIDEO()
-    case EnumConnectionModelCode.OPENAI_SORA_2:
+    case EnumProviderModelCode.OPENAI_SORA_2:
         return G_OPENAI_SORA_2()
-    case EnumConnectionModelCode.OPENAI_SORA_2_PRO:
+    case EnumProviderModelCode.OPENAI_SORA_2_PRO:
         return G_OPENAI_SORA_2_PRO()
-    case EnumConnectionModelCode.GOOGLE_VEO_31:
+    case EnumProviderModelCode.GOOGLE_VEO_31:
         return G_GOOGLE_VEO_31()
-    case EnumConnectionModelCode.GOOGLE_VEO_31_FAST:
+    case EnumProviderModelCode.GOOGLE_VEO_31_FAST:
         return G_GOOGLE_VEO_31_FAST()
-    case EnumConnectionModelCode.GOOGLE_VEO_3:
+    case EnumProviderModelCode.GOOGLE_VEO_3:
         return G_GOOGLE_VEO_3()
-    case EnumConnectionModelCode.GOOGLE_VEO_3_FAST:
+    case EnumProviderModelCode.GOOGLE_VEO_3_FAST:
         return G_GOOGLE_VEO_3_FAST()
-    case EnumConnectionModelCode.GOOGLE_VEO_2:
+    case EnumProviderModelCode.GOOGLE_VEO_2:
         return G_GOOGLE_VEO_2()
-    case EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO:
+    case EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO:
         return G_REPLICATE_SEEDANCE_1_PRO()
-    case EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO_EDIT:
+    case EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_EDIT:
         return G_REPLICATE_SEEDANCE_1_PRO()
-    case EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO_FAST:
+    case EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_FAST:
         return G_REPLICATE_SEEDANCE_1_PRO()
-    case EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO_FAST_EDIT:
+    case EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_FAST_EDIT:
         return G_REPLICATE_SEEDANCE_1_PRO()
-    case EnumConnectionModelCode.REPLICATE_SEEDANCE_1_LITE:
+    case EnumProviderModelCode.REPLICATE_SEEDANCE_1_LITE:
         return G_REPLICATE_SEEDANCE_1_PRO()
-    case EnumConnectionModelCode.REPLICATE_SEEDANCE_1_LITE_EDIT:
+    case EnumProviderModelCode.REPLICATE_SEEDANCE_1_LITE_EDIT:
         return G_REPLICATE_SEEDANCE_1_PRO()
     default:
         throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
@@ -250,7 +250,7 @@ class GenerateVideoAdapter {
                 }
             }
 
-            guard let usedModel = ConnectionService.shared.model(by: videoGenerationRequest.modelId) else {
+            guard let usedModel = ProviderService.shared.model(by: videoGenerationRequest.modelId) else {
                 return VideoSetResponse(
                     status: EnumGenerationStatus.FAILED,
                     errorCode: EnumGenerateVideoAdapterErrorCode.MODEL_ERROR,

@@ -3,21 +3,21 @@ import KeychainSwift
 import SwiftData
 import SwiftUI
 
-struct LinkedConnectionView: View {
+struct LinkedProviderView: View {
     @Environment(\.modelContext) private var modelContext
 
     @State private var isLongPressActive = false
     @State private var showDeleteConfirmation = false
 
-    let connection: Connection
-    let connectionKey: ConnectionKey
+    let provider: Provider
+    let providerKey: ProviderKey
 
     var body: some View {
         HStack {
             Label {
-                Text("\(connection.connectionName)")
+                Text("\(provider.providerName)")
             } icon: {
-                Image("\(connection.connectionCode)_square".lowercased())
+                Image("\(provider.providerCode)_square".lowercased())
                     .resizable()
                     .scaledToFit()
                     .frame(width: 20, height: 20)
@@ -33,12 +33,12 @@ struct LinkedConnectionView: View {
                 }
         }
         .confirmationDialog(
-            "Are you sure you want to disconnect \(connection.connectionName)?",
+            "Are you sure you want to remove \(provider.providerName)?",
             isPresented: $showDeleteConfirmation,
             titleVisibility: .visible
         ) {
-            Button("Disconnect", role: .destructive) {
-                deleteConnectionKey(connectionKey)
+            Button("Remove", role: .destructive) {
+                deleteProviderKey(providerKey)
             }
 
             Button("Cancel", role: .cancel) {
@@ -49,23 +49,23 @@ struct LinkedConnectionView: View {
         }
     }
 
-    private func deleteConnectionKey(_ connectionKey: ConnectionKey) {
+    private func deleteProviderKey(_ providerKey: ProviderKey) {
         let keychain = KeychainSwift()
         keychain.accessGroup = keychainAccessGroup
         keychain.synchronizable = true
 
-        if keychain.get(connectionKey.connectionId.uuidString) != nil {
-            keychain.delete(connectionKey.connectionId.uuidString)
+        if keychain.get(providerKey.providerId.uuidString) != nil {
+            keychain.delete(providerKey.providerId.uuidString)
         }
 
-        modelContext.delete(connectionKey)
+        modelContext.delete(providerKey)
 
         try? modelContext.save()
     }
 }
 
-struct ConnectionsView: View {
-    @Query(sort: \ConnectionKey.createdAt, order: .reverse) private var connectionKeys: [ConnectionKey]
+struct ProvidersView: View {
+    @Query(sort: \ProviderKey.createdAt, order: .reverse) private var providerKeys: [ProviderKey]
     @AppStorage("hasRequestedTrackingAuthorization") private var hasRequestedTrackingAuthorization = false
 
     func requestTrackingAuthorization() {
@@ -87,38 +87,38 @@ struct ConnectionsView: View {
         }
     }
 
-    func getLinkedConnections() -> [Connection] {
-        return connections.filter { connection in
-            connectionKeys.contains(where: { connection.connectionId == $0.connectionId })
+    func getLinkedProviders() -> [Provider] {
+        return providers.filter { provider in
+            providerKeys.contains(where: { provider.providerId == $0.providerId })
         }
     }
 
-    func getUnlinkedConnections() -> [Connection] {
-        return connections.filter { connection in
-            !connectionKeys.contains(where: { connection.connectionId == $0.connectionId })
+    func getUnlinkedProviders() -> [Provider] {
+        return providers.filter { provider in
+            !providerKeys.contains(where: { provider.providerId == $0.providerId })
         }
     }
 
     var body: some View {
         Form {
-            if getLinkedConnections().count > 0 {
-                Section("Linked Connections") {
-                    ForEach(getLinkedConnections(), id: \.self) { connection in
-                        if let connectionKey = connectionKeys.first(where: { $0.connectionId == connection.connectionId }) {
-                            LinkedConnectionView(connection: connection, connectionKey: connectionKey)
+            if getLinkedProviders().count > 0 {
+                Section("Linked Providers") {
+                    ForEach(getLinkedProviders(), id: \.self) { provider in
+                        if let providerKey = providerKeys.first(where: { $0.providerId == provider.providerId }) {
+                            LinkedProviderView(provider: provider, providerKey: providerKey)
                         }
                     }
                 }
             }
 
-            if getUnlinkedConnections().count > 0 {
-                Section("Available Connections") {
-                    ForEach(getUnlinkedConnections(), id: \.self) { connection in
-                        NavigationLink(value: EnumNavigationItem.addConnection(connectionId: connection.connectionId)) {
+            if getUnlinkedProviders().count > 0 {
+                Section("Available Providers") {
+                    ForEach(getUnlinkedProviders(), id: \.self) { provider in
+                        NavigationLink(value: EnumNavigationItem.addProvider(providerId: provider.providerId)) {
                             Label {
-                                Text("\(connection.connectionName)")
+                                Text("\(provider.providerName)")
                             } icon: {
-                                Image("\(connection.connectionCode)_square".lowercased())
+                                Image("\(provider.providerCode)_square".lowercased())
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 20, height: 20)
@@ -134,6 +134,6 @@ struct ConnectionsView: View {
                 requestTrackingAuthorization()
             }
         }
-        .navigationTitle(labelForItem(.settingsConnections))
+        .navigationTitle(labelForItem(.settingsProviders))
     }
 }

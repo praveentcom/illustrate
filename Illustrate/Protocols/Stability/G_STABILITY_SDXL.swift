@@ -5,7 +5,7 @@ class G_STABILITY_SDXL: ImageGenerationProtocol {
         return CostEstimator.getCreditsUsed(request: request)
     }
 
-    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.STABILITY_SDXL.modelId.uuidString)!
+    let model: ProviderModel = ProviderService.shared.model(by: EnumProviderModelCode.STABILITY_SDXL.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let text_prompts: [TextPrompt]
@@ -149,7 +149,7 @@ class G_STABILITY_SDXL: ImageGenerationProtocol {
                 method: "POST",
                 body: transformedRequest,
                 headers: [
-                    "Authorization": "\(request.connectionSecret)",
+                    "Authorization": "\(request.providerSecret)",
                     "Accept": "application/json",
                 ]
             )

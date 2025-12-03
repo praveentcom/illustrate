@@ -1,14 +1,22 @@
 import SwiftData
 import SwiftUI
 
-struct ConnectionDetailsView: View {
+struct ProviderDetailsView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var connectionKeys: [ConnectionKey]
+    @EnvironmentObject var navigationManager: NavigationManager
+    @Query private var providerKeys: [ProviderKey]
     @Binding var isPresented: Bool
-    @State var selectedConnection: Connection
+    @State var selectedProvider: Provider
 
     var isConnected: Bool {
-        connectionKeys.contains { $0.connectionId == selectedConnection.connectionId }
+        providerKeys.contains { $0.providerId == selectedProvider.providerId }
+    }
+
+    private func navigateToAddProvider() {
+        isPresented = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            navigationManager.navigate(to: .addProvider(providerId: selectedProvider.providerId))
+        }
     }
 
     var body: some View {
@@ -16,15 +24,15 @@ struct ConnectionDetailsView: View {
             Section("Details") {
                 SectionKeyValueView(
                     key: "Provider Logo",
-                    value: selectedConnection.connectionName,
-                    customValueView: Image("\(selectedConnection.connectionCode)_trimmed".lowercased()).resizable().scaledToFit().frame(height: 20)
+                    value: selectedProvider.providerName,
+                    customValueView: Image("\(selectedProvider.providerCode)_trimmed".lowercased()).resizable().scaledToFit().frame(height: 20)
                 )
-                SectionKeyValueView(key: "Provider Name", value: selectedConnection.connectionName)
-                SectionKeyValueView(key: "Description", value: selectedConnection.connectionDescription)
+                SectionKeyValueView(key: "Provider Name", value: selectedProvider.providerName)
+                SectionKeyValueView(key: "Description", value: selectedProvider.providerDescription)
             }
             Section("Available Models") {
                 ForEach(EnumSetType.allCases, id: \.self) { set in
-                    let models = ConnectionService.shared.models(for: set).filter { $0.connectionId == selectedConnection.connectionId }
+                    let models = ProviderService.shared.models(for: set).filter { $0.providerId == selectedProvider.providerId }
                     if !models.isEmpty {
                         SectionKeyValueView(
                             icon: iconForSetType(set),
@@ -47,14 +55,9 @@ struct ConnectionDetailsView: View {
                 }
                 if !isConnected {
                     ToolbarItem(placement: .confirmationAction) {
-                        NavigationLink(value: EnumNavigationItem.addConnection(connectionId: selectedConnection.connectionId)) {
-                            Text("Connect")
+                        Button("Connect") {
+                            navigateToAddProvider()
                         }
-                        .simultaneousGesture(TapGesture().onEnded {
-                            DispatchQueue.main.async {
-                                isPresented = false
-                            }
-                        })
                     }
                 }
             }
@@ -64,14 +67,9 @@ struct ConnectionDetailsView: View {
             .toolbar {
                 if !isConnected {
                     ToolbarItem(placement: .confirmationAction) {
-                        NavigationLink(value: EnumNavigationItem.addConnection(connectionId: selectedConnection.connectionId)) {
-                            Text("Connect")
+                        Button("Connect") {
+                            navigateToAddProvider()
                         }
-                        .simultaneousGesture(TapGesture().onEnded {
-                            DispatchQueue.main.async {
-                                isPresented = false
-                            }
-                        })
                     }
                 }
             }

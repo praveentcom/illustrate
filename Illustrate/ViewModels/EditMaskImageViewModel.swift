@@ -7,10 +7,10 @@ import SwiftUI
 @MainActor
 class EditMaskImageViewModel: ObservableObject {
     private let modelContext: ModelContext?
-    private let connectionService: ConnectionService
+    private let providerService: ProviderService
     private let keychain: KeychainSwift
 
-    @Published var selectedConnectionId: String = ""
+    @Published var selectedProviderId: String = ""
     @Published var selectedModelId: String = ""
     @Published var errorState = ErrorState(message: "", isShowing: false)
     @Published var isNavigationActive: Bool = false
@@ -43,52 +43,52 @@ class EditMaskImageViewModel: ObservableObject {
 
     init(
         modelContext: ModelContext?,
-        connectionService: ConnectionService = ConnectionService.shared,
+        providerService: ProviderService = ProviderService.shared,
         keychain: KeychainSwift = KeychainSwift()
     ) {
         self.modelContext = modelContext
-        self.connectionService = connectionService
+        self.providerService = providerService
         self.keychain = keychain
 
         self.keychain.accessGroup = keychainAccessGroup
         self.keychain.synchronizable = true
     }
 
-    func getSupportedModels() -> [ConnectionModel] {
-        guard !selectedConnectionId.isEmpty else { return [] }
+    func getSupportedModels() -> [ProviderModel] {
+        guard !selectedProviderId.isEmpty else { return [] }
 
-        return connectionService.models(for: .EDIT_MASK).filter {
-            $0.connectionId.uuidString == selectedConnectionId
+        return providerService.models(for: .EDIT_MASK).filter {
+            $0.providerId.uuidString == selectedProviderId
         }
     }
 
-    func getSelectedModel() -> ConnectionModel? {
+    func getSelectedModel() -> ProviderModel? {
         guard !selectedModelId.isEmpty else { return nil }
-        return connectionService.model(by: selectedModelId)
+        return providerService.model(by: selectedModelId)
     }
 
-    func getSupportedConnections(connectionKeys: [ConnectionKey]) -> [Connection] {
-        return connections.filter { connection in
-            connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-            connectionService.allModels.contains {
-                $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_MASK && $0.active
+    func getSupportedProviders(providerKeys: [ProviderKey]) -> [Provider] {
+        return providers.filter { provider in
+            providerKeys.contains { $0.providerId == provider.providerId } &&
+            providerService.allModels.contains {
+                $0.providerId == provider.providerId && $0.modelSetType == .EDIT_MASK && $0.active
             }
         }
     }
 
-    func initialize(connectionKeys: [ConnectionKey]) {
-        guard !connectionKeys.isEmpty && selectedModelId.isEmpty else { return }
+    func initialize(providerKeys: [ProviderKey]) {
+        guard !providerKeys.isEmpty && selectedModelId.isEmpty else { return }
 
-        let supportedConnections = getSupportedConnections(connectionKeys: connectionKeys)
+        let supportedProviders = getSupportedProviders(providerKeys: providerKeys)
 
-        if let firstSupportedConnection = supportedConnections.first,
-           let key = connectionKeys.first(where: { $0.connectionId == firstSupportedConnection.connectionId }) {
-            selectedConnectionId = key.connectionId.uuidString
+        if let firstSupportedProvider = supportedProviders.first,
+           let key = providerKeys.first(where: { $0.providerId == firstSupportedProvider.providerId }) {
+            selectedProviderId = key.providerId.uuidString
 
             let models = getSupportedModels()
             selectedModelId = models.first?.modelId.uuidString ?? ""
 
-            if !selectedConnectionId.isEmpty, !selectedModelId.isEmpty {
+            if !selectedProviderId.isEmpty, !selectedModelId.isEmpty {
                 artDimensions = getSelectedModel()?.modelSupportedParams.dimensions.first ?? ""
             }
         }
@@ -159,7 +159,7 @@ class EditMaskImageViewModel: ObservableObject {
         maskPath = path
     }
 
-    func submitToQueue(connectionKeys: [ConnectionKey], queueManager: QueueManager) {
+    func submitToQueue(providerKeys: [ProviderKey], queueManager: QueueManager) {
         guard let selectedModel = getSelectedModel(),
               let selectedImage = selectedImage else {
             errorState = ErrorState(
@@ -169,7 +169,7 @@ class EditMaskImageViewModel: ObservableObject {
             return
         }
 
-        guard let connectionSecret = keychain.get(selectedModel.connectionId.uuidString) else {
+        guard let providerSecret = keychain.get(selectedModel.providerId.uuidString) else {
             errorState = ErrorState(
                 message: "Keychain record not found",
                 isShowing: true
@@ -177,11 +177,11 @@ class EditMaskImageViewModel: ObservableObject {
             return
         }
 
-        guard let connectionKey = connectionKeys.first(where: {
-            $0.connectionId == selectedModel.connectionId
+        guard let providerKey = providerKeys.first(where: {
+            $0.providerId == selectedModel.providerId
         }) else {
             errorState = ErrorState(
-                message: "Connection key not found",
+                message: "Provider key not found",
                 isShowing: true
             )
             return
@@ -199,8 +199,8 @@ class EditMaskImageViewModel: ObservableObject {
             artDimensions: artDimensions,
             clientImage: selectedImage.toBase64PNG(),
             clientMask: clientMask?.toBase64PNG(),
-            connectionKey: connectionKey,
-            connectionSecret: connectionSecret
+            providerKey: providerKey,
+            providerSecret: providerSecret
         )
 
         _ = queueManager.submitImageGeneration(
@@ -215,7 +215,7 @@ class EditMaskImageViewModel: ObservableObject {
         return selectedImage != nil && !maskPath.isEmpty
     }
 
-    var hasConnection: Bool {
+    var hasProvider: Bool {
         return !selectedModelId.isEmpty
     }
 

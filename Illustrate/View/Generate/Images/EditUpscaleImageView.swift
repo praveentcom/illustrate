@@ -7,23 +7,23 @@ import SwiftUI
 struct EditUpscaleImageView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var navigationManager: NavigationManager
-    @Query(sort: \ConnectionKey.createdAt, order: .reverse) private var connectionKeys: [ConnectionKey]
+    @Query(sort: \ProviderKey.createdAt, order: .reverse) private var providerKeys: [ProviderKey]
 
-    @State private var selectedConnectionId: String = ""
+    @State private var selectedProviderId: String = ""
     @State private var selectedModelId: String = ""
 
-    func getSupportedModels() -> [ConnectionModel] {
-        if selectedConnectionId == "" {
+    func getSupportedModels() -> [ProviderModel] {
+        if selectedProviderId == "" {
             return []
         }
 
-        return ConnectionService.shared.models(for: EnumSetType.EDIT_UPSCALE).filter {
-            $0.connectionId.uuidString == selectedConnectionId
+        return ProviderService.shared.models(for: EnumSetType.EDIT_UPSCALE).filter {
+            $0.providerId.uuidString == selectedProviderId
         }
     }
 
-    func getSelectedModel() -> ConnectionModel? {
-        return ConnectionService.shared.model(by: selectedModelId)
+    func getSelectedModel() -> ProviderModel? {
+        return ProviderService.shared.model(by: selectedModelId)
     }
 
     private enum Field: Int, CaseIterable {
@@ -67,7 +67,7 @@ struct EditUpscaleImageView: View {
         keychain.accessGroup = keychainAccessGroup
         keychain.synchronizable = true
 
-        guard let connectionSecret = keychain.get(selectedModel.connectionId.uuidString) else {
+        guard let providerSecret = keychain.get(selectedModel.providerId.uuidString) else {
             errorState = ErrorState(
                 message: "Keychain record not found",
                 isShowing: true
@@ -75,9 +75,9 @@ struct EditUpscaleImageView: View {
             return
         }
         
-        guard let connectionKey = connectionKeys.first(where: { $0.connectionId == selectedModel.connectionId }) else {
+        guard let providerKey = providerKeys.first(where: { $0.providerId == selectedModel.providerId }) else {
             errorState = ErrorState(
-                message: "Connection key not found",
+                message: "Provider key not found",
                 isShowing: true
             )
             return
@@ -89,8 +89,8 @@ struct EditUpscaleImageView: View {
             negativePrompt: negativePrompt,
             artDimensions: artDimensions,
             clientImage: selectedImage?.toBase64PNG(),
-            connectionKey: connectionKey,
-            connectionSecret: connectionSecret
+            providerKey: providerKey,
+            providerSecret: providerSecret
         )
         
         _ = queueManager.submitImageGeneration(
@@ -103,32 +103,32 @@ struct EditUpscaleImageView: View {
 
     var body: some View {
         VStack {
-            if selectedModelId != "" && !connectionKeys.isEmpty {
+            if selectedModelId != "" && !providerKeys.isEmpty {
                 Form {
                     Section(header: Text("Select Model")) {
-                        Picker("Connection", selection: $selectedConnectionId) {
+                        Picker("Provider", selection: $selectedProviderId) {
                             ForEach(
-                                connections.filter { connection in
-                                    connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-                                        ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_UPSCALE }
-                                }, id: \.connectionId
-                            ) { connection in
+                                providers.filter { provider in
+                                    providerKeys.contains { $0.providerId == provider.providerId } &&
+                                        ProviderService.shared.allModels.contains { $0.providerId == provider.providerId && $0.modelSetType == .EDIT_UPSCALE }
+                                }, id: \.providerId
+                            ) { provider in
                                 HStack {
                                     #if !os(macOS)
-                                        Image("\(connection.connectionCode)_square".lowercased())
+                                        Image("\(provider.providerCode)_square".lowercased())
                                             .resizable()
                                             .scaledToFit()
                                             .frame(width: 20, height: 20)
                                     #endif
-                                    Text(connection.connectionName)
+                                    Text(provider.providerName)
                                 }
-                                .tag(connection.connectionId.uuidString)
+                                .tag(provider.providerId.uuidString)
                             }
                         }
                         #if !os(macOS)
                         .pickerStyle(.navigationLink)
                         #endif
-                        .onChange(of: selectedConnectionId) {
+                        .onChange(of: selectedProviderId) {
                             selectedModelId = getSupportedModels().first?.modelId.uuidString ?? ""
                         }
 
@@ -306,7 +306,7 @@ struct EditUpscaleImageView: View {
                             #endif
                         }
 
-                        if (getSelectedModel()?.modelSupportedParams.autoEnhance ?? false) && ConnectionService.shared.isOpenAIConnected(connectionKeys: connectionKeys) {
+                        if (getSelectedModel()?.modelSupportedParams.autoEnhance ?? false) && ProviderService.shared.isOpenAIConnected(providerKeys: providerKeys) {
                             HStack {
                                 Toggle("Auto-enhance prompt?", isOn: $promptEnhanceOpted)
 
@@ -378,23 +378,23 @@ struct EditUpscaleImageView: View {
                     )
                 }
             } else {
-                PendingConnectionView(setType: .EDIT_UPSCALE)
+                PendingProviderView(setType: .EDIT_UPSCALE)
             }
         }
         .onAppear {
-            if !connectionKeys.isEmpty && selectedModelId.isEmpty {
-                let supportedConnections = connections.filter { connection in
-                    connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-                        ConnectionService.shared.allModels.contains { $0.connectionId == connection.connectionId && $0.modelSetType == .EDIT_UPSCALE }
+            if !providerKeys.isEmpty && selectedModelId.isEmpty {
+                let supportedProviders = providers.filter { provider in
+                    providerKeys.contains { $0.providerId == provider.providerId } &&
+                        ProviderService.shared.allModels.contains { $0.providerId == provider.providerId && $0.modelSetType == .EDIT_UPSCALE }
                 }
 
-                if let firstSupportedConnection = supportedConnections.first,
-                   let key = connectionKeys.first(where: { $0.connectionId == firstSupportedConnection.connectionId })
+                if let firstSupportedProvider = supportedProviders.first,
+                   let key = providerKeys.first(where: { $0.providerId == firstSupportedProvider.providerId })
                 {
-                    selectedConnectionId = key.connectionId.uuidString
+                    selectedProviderId = key.providerId.uuidString
                     selectedModelId = getSupportedModels().first?.modelId.uuidString ?? ""
 
-                    if !selectedConnectionId.isEmpty, !selectedModelId.isEmpty {
+                    if !selectedProviderId.isEmpty, !selectedModelId.isEmpty {
                         artDimensions = getSelectedModel()?.modelSupportedParams.dimensions.first ?? ""
                     }
                 }

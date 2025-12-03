@@ -6,10 +6,10 @@ import SwiftUI
 @MainActor
 class GenerateImageViewModel: ObservableObject {
     private let modelContext: ModelContext?
-    private let connectionService: ConnectionService
+    private let providerService: ProviderService
     private let keychain: KeychainSwift
 
-    @Published var selectedConnectionId: String = ""
+    @Published var selectedProviderId: String = ""
     @Published var selectedModelId: String = ""
     @Published var isGenerating: Bool = false
     @Published var errorState = ErrorState(message: "", isShowing: false)
@@ -33,54 +33,54 @@ class GenerateImageViewModel: ObservableObject {
 
     init(
         modelContext: ModelContext?,
-        connectionService: ConnectionService = ConnectionService.shared,
+        providerService: ProviderService = ProviderService.shared,
         keychain: KeychainSwift = KeychainSwift()
     ) {
         self.modelContext = modelContext
-        self.connectionService = connectionService
+        self.providerService = providerService
         self.keychain = keychain
 
         self.keychain.accessGroup = keychainAccessGroup
         self.keychain.synchronizable = true
     }
 
-    func getSupportedModels() -> [ConnectionModel] {
-        guard !selectedConnectionId.isEmpty else { return [] }
+    func getSupportedModels() -> [ProviderModel] {
+        guard !selectedProviderId.isEmpty else { return [] }
 
-        return connectionService.allModels.filter {
+        return providerService.allModels.filter {
             $0.modelSetType == .GENERATE &&
-            $0.connectionId.uuidString == selectedConnectionId &&
+            $0.providerId.uuidString == selectedProviderId &&
             $0.active
         }
     }
 
-    func getSelectedModel() -> ConnectionModel? {
+    func getSelectedModel() -> ProviderModel? {
         guard !selectedModelId.isEmpty else { return nil }
-        return connectionService.model(by: selectedModelId)
+        return providerService.model(by: selectedModelId)
     }
 
-    func getSupportedConnections(connectionKeys: [ConnectionKey]) -> [Connection] {
-        return connections.filter { connection in
-            connectionKeys.contains { $0.connectionId == connection.connectionId } &&
-            connectionService.allModels.contains {
-                $0.connectionId == connection.connectionId && $0.modelSetType == .GENERATE && $0.active
+    func getSupportedProviders(providerKeys: [ProviderKey]) -> [Provider] {
+        return providers.filter { provider in
+            providerKeys.contains { $0.providerId == provider.providerId } &&
+            providerService.allModels.contains {
+                $0.providerId == provider.providerId && $0.modelSetType == .GENERATE && $0.active
             }
         }
     }
 
-    func initialize(connectionKeys: [ConnectionKey]) {
-        guard !connectionKeys.isEmpty && selectedModelId.isEmpty else { return }
+    func initialize(providerKeys: [ProviderKey]) {
+        guard !providerKeys.isEmpty && selectedModelId.isEmpty else { return }
 
-        let supportedConnections = getSupportedConnections(connectionKeys: connectionKeys)
+        let supportedProviders = getSupportedProviders(providerKeys: providerKeys)
 
-        if let firstSupportedConnection = supportedConnections.first,
-           let key = connectionKeys.first(where: { $0.connectionId == firstSupportedConnection.connectionId }) {
-            selectedConnectionId = key.connectionId.uuidString
+        if let firstSupportedProvider = supportedProviders.first,
+           let key = providerKeys.first(where: { $0.providerId == firstSupportedProvider.providerId }) {
+            selectedProviderId = key.providerId.uuidString
 
             let models = getSupportedModels()
             selectedModelId = models.first?.modelId.uuidString ?? ""
 
-            if !selectedConnectionId.isEmpty, !selectedModelId.isEmpty {
+            if !selectedProviderId.isEmpty, !selectedModelId.isEmpty {
                 artDimensions = getSelectedModel()?.modelSupportedParams.dimensions.first ?? ""
             }
         }
@@ -97,15 +97,15 @@ class GenerateImageViewModel: ObservableObject {
         }
     }
 
-    func generateImage(connectionKeys: [ConnectionKey]) async -> ImageSetResponse? {
+    func generateImage(providerKeys: [ProviderKey]) async -> ImageSetResponse? {
         guard !isGenerating,
               let selectedModel = getSelectedModel() else {
             return nil
         }
 
-        let connectionSecret = keychain.get(selectedModel.connectionId.uuidString)
+        let providerSecret = keychain.get(selectedModel.providerId.uuidString)
 
-        guard let secret = connectionSecret else {
+        guard let secret = providerSecret else {
             await MainActor.run {
                 isGenerating = false
             }
@@ -116,8 +116,8 @@ class GenerateImageViewModel: ObservableObject {
             )
         }
 
-        guard let connectionKey = connectionKeys.first(where: {
-            $0.connectionId == selectedModel.connectionId
+        guard let providerKey = providerKeys.first(where: {
+            $0.providerId == selectedModel.providerId
         }) else {
             await MainActor.run {
                 isGenerating = false
@@ -125,7 +125,7 @@ class GenerateImageViewModel: ObservableObject {
             return ImageSetResponse(
                 status: .FAILED,
                 errorCode: .ADAPTER_ERROR,
-                errorMessage: "Connection key not found"
+                errorMessage: "Provider key not found"
             )
         }
 
@@ -142,8 +142,8 @@ class GenerateImageViewModel: ObservableObject {
                 artQuality: artQuality,
                 artStyle: artStyle,
                 artDimensions: artDimensions,
-                connectionKey: connectionKey,
-                connectionSecret: secret,
+                providerKey: providerKey,
+                providerSecret: secret,
                 numberOfImages: numberOfImages
             )
 
@@ -163,16 +163,6 @@ class GenerateImageViewModel: ObservableObject {
             #endif
 
             return response
-
-        } catch {
-            await MainActor.run {
-                isGenerating = false
-                errorState = ErrorState(
-                    message: "Failed to generate image: \(error.localizedDescription)",
-                    isShowing: true
-                )
-            }
-            return nil
         }
     }
 
@@ -194,7 +184,7 @@ class GenerateImageViewModel: ObservableObject {
         return !isGenerating && !prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    var hasConnection: Bool {
+    var hasProvider: Bool {
         return !selectedModelId.isEmpty
     }
 

@@ -2,16 +2,16 @@ import Foundation
 
 struct FALModels {
     
-    static func createModels() -> [ConnectionModel] {
+    static func createModels() -> [ProviderModel] {
         return [
-            ConnectionModel(
-                connectionId: EnumConnectionCode.FAL_AI.connectionId,
-                modelId: EnumConnectionModelCode.FAL_FLUX_SCHNELL.modelId,
-                modelCode: EnumConnectionModelCode.FAL_FLUX_SCHNELL,
+            ProviderModel(
+                providerId: EnumProviderCode.FAL_AI.providerId,
+                modelId: EnumProviderModelCode.FAL_FLUX_SCHNELL.modelId,
+                modelCode: EnumProviderModelCode.FAL_FLUX_SCHNELL,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "FLUX.1 [schnell]",
                 modelDescription: "The fastest image generation model tailored for local development and personal use.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 256,
@@ -27,14 +27,14 @@ struct FALModels {
                 modelAPIDocumentationURL: "https://fal.ai/models/fal-ai/flux/schnell",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.FAL_AI.connectionId,
-                modelId: EnumConnectionModelCode.FAL_FLUX_DEV.modelId,
-                modelCode: EnumConnectionModelCode.FAL_FLUX_DEV,
+            ProviderModel(
+                providerId: EnumProviderCode.FAL_AI.providerId,
+                modelId: EnumProviderModelCode.FAL_FLUX_DEV.modelId,
+                modelCode: EnumProviderModelCode.FAL_FLUX_DEV,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "FLUX.1 [dev]",
                 modelDescription: "A 12 billion parameter rectified flow transformer capable of generating images from text descriptions.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 256,
@@ -50,14 +50,14 @@ struct FALModels {
                 modelAPIDocumentationURL: "https://fal.ai/models/fal-ai/flux/dev",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.FAL_AI.connectionId,
-                modelId: EnumConnectionModelCode.FAL_FLUX_PRO.modelId,
-                modelCode: EnumConnectionModelCode.FAL_FLUX_PRO,
+            ProviderModel(
+                providerId: EnumProviderCode.FAL_AI.providerId,
+                modelId: EnumProviderModelCode.FAL_FLUX_PRO.modelId,
+                modelCode: EnumProviderModelCode.FAL_FLUX_PRO,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "FLUX.1 [pro]",
                 modelDescription: "State-of-the-art image generation with top of the line prompt following, visual quality, image detail and output diversity.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 256,

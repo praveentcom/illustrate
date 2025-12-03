@@ -5,7 +5,7 @@ class G_REPLICATE_DREAMINA_3_1: ImageGenerationProtocol {
         return CostEstimator.getCreditsUsed(request: request)
     }
 
-    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.REPLICATE_DREAMINA_3_1.modelId.uuidString)!
+    let model: ProviderModel = ProviderService.shared.model(by: EnumProviderModelCode.REPLICATE_DREAMINA_3_1.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String
@@ -175,7 +175,7 @@ class G_REPLICATE_DREAMINA_3_1: ImageGenerationProtocol {
 
         do {
             let headers: [String: String] = [
-                "Authorization": "Bearer \(request.connectionSecret)",
+                "Authorization": "Bearer \(request.providerSecret)",
                 "Content-Type": "application/json",
             ]
 

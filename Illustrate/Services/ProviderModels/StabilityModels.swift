@@ -2,16 +2,16 @@ import Foundation
 
 struct StabilityModels {
     
-    static func createModels() -> [ConnectionModel] {
+    static func createModels() -> [ProviderModel] {
         return [
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_ULTRA.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_ULTRA,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_ULTRA.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_ULTRA,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Stable Ultra",
                 modelDescription: "Stable Image Ultra creates the highest quality images with unprecedented prompt understanding.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -27,14 +27,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Generate/paths/~1v2beta~1stable-image~1generate~1ultra/post",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_CORE.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_CORE,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_CORE.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_CORE,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Stable Core",
                 modelDescription: "Stable Image Core represents the best quality achievable at high speed.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -50,14 +50,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Generate/paths/~1v2beta~1stable-image~1generate~1core/post",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_SDXL.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_SDXL,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_SDXL.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_SDXL,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Stable XL 1.0 (SDXL)",
                 modelDescription: "Stable Diffusion XL (SDXL) is a powerful text-to-image generation model.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -73,14 +73,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/SDXL-and-SD1.6",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_SD3.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_SD3,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_SD3.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_SD3,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Stable 3.0 Large",
                 modelDescription: "Generate images using Stable Diffusion 3 Large (SD3). This model is deprecated - please use SD 3.5 models instead.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -97,14 +97,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Generate/paths/~1v2beta~1stable-image~1generate~1sd3/post",
                 active: false
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_SD3_TURBO.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_SD3_TURBO,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_SD3_TURBO.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_SD3_TURBO,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Stable 3.0 Turbo",
                 modelDescription: "Generate images using Stable Diffusion 3 Large Turbo (SD3 Turbo). This model is deprecated - please use SD 3.5 Large Turbo instead.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -121,14 +121,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Generate/paths/~1v2beta~1stable-image~1generate~1sd3/post",
                 active: false
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_SD35_LARGE.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_SD35_LARGE,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_SD35_LARGE.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_SD35_LARGE,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Stable 3.5 Large",
                 modelDescription: "Generate images using Stable Diffusion 3.5 Large (SD3.5), our most capable model for high-quality image generation.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -144,14 +144,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Generate/paths/~1v2beta~1stable-image~1generate~1sd3/post",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_SD35_LARGE_TURBO.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_SD35_LARGE_TURBO,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_SD35_LARGE_TURBO.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_SD35_LARGE_TURBO,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Stable 3.5 Large Turbo",
                 modelDescription: "Generate images using Stable Diffusion 3.5 Large Turbo (SD3.5 Turbo), a faster version of our most capable model.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -167,14 +167,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Generate/paths/~1v2beta~1stable-image~1generate~1sd3/post",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_SD35_MEDIUM.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_SD35_MEDIUM,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_SD35_MEDIUM.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_SD35_MEDIUM,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Stable 3.5 Medium",
                 modelDescription: "Generate images using Stable Diffusion 3.5 Medium (SD3.5), balancing quality and speed for efficient generation.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -190,14 +190,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Generate/paths/~1v2beta~1stable-image~1generate~1sd3/post",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_SD35_FLASH.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_SD35_FLASH,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_SD35_FLASH.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_SD35_FLASH,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "Stable 3.5 Flash",
                 modelDescription: "Generate images using Stable Diffusion 3.5 Flash (SD3.5), our fastest model for quick generations.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -213,14 +213,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Generate/paths/~1v2beta~1stable-image~1generate~1sd3/post",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_CREATIVE_UPSCALE.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_CREATIVE_UPSCALE,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_CREATIVE_UPSCALE.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_CREATIVE_UPSCALE,
                 modelSetType: EnumSetType.EDIT_UPSCALE,
                 modelName: "Stable Creative Upscale",
                 modelDescription: "Takes images between 64x64 and 1 megapixel and upscales them all the way to 4K resolution.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -236,14 +236,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Upscale/paths/~1v2beta~1stable-image~1upscale~1creative/post",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_CONSERVATIVE_UPSCALE.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_CONSERVATIVE_UPSCALE,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_CONSERVATIVE_UPSCALE.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_CONSERVATIVE_UPSCALE,
                 modelSetType: EnumSetType.EDIT_UPSCALE,
                 modelName: "Stable Conservative Upscale",
                 modelDescription: "Takes images between 64x64 and 1 megapixel and upscales them all the way to 4K resolution.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -259,14 +259,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Upscale/paths/~1v2beta~1stable-image~1upscale~1conservative/post",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_ERASE.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_ERASE,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_ERASE.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_ERASE,
                 modelSetType: EnumSetType.EDIT_MASK_ERASE,
                 modelName: "Stable Erase",
                 modelDescription: "The Erase service removes unwanted objects, such as blemishes on portraits or items on desks, using image masks.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -282,14 +282,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Edit/paths/~1v2beta~1stable-image~1edit~1erase/post",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_INPAINT.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_INPAINT,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_INPAINT.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_INPAINT,
                 modelSetType: EnumSetType.EDIT_MASK,
                 modelName: "Stable Inpaint",
                 modelDescription: "Intelligently modify images by filling in or replacing specified areas with new content based on the content of a mask image.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -305,14 +305,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Edit/paths/~1v2beta~1stable-image~1edit~1inpaint/post",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_OUTPAINT.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_OUTPAINT,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_OUTPAINT.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_OUTPAINT,
                 modelSetType: EnumSetType.EDIT_EXPAND,
                 modelName: "Stable Outpaint",
                 modelDescription: "The Outpaint service inserts additional content in an image to fill in the space in any direction.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -328,14 +328,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Edit/paths/~1v2beta~1stable-image~1edit~1outpaint/post",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_SEARCH_AND_REPLACE.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_SEARCH_AND_REPLACE,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_SEARCH_AND_REPLACE.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_SEARCH_AND_REPLACE,
                 modelSetType: EnumSetType.EDIT_REPLACE,
                 modelName: "Stable Search and Replace",
                 modelDescription: "The Search and Replace service is a specific version of inpainting that does not require a mask.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -351,14 +351,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Edit/paths/~1v2beta~1stable-image~1edit~1search-and-replace/post",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_REMOVE_BACKGROUND.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_REMOVE_BACKGROUND,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_REMOVE_BACKGROUND.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_REMOVE_BACKGROUND,
                 modelSetType: EnumSetType.REMOVE_BACKGROUND,
                 modelName: "Stable Remove Background",
                 modelDescription: "The Remove Background service accurately segments the foreground from an image and implements and removes the background.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,
@@ -374,14 +374,14 @@ struct StabilityModels {
                 modelAPIDocumentationURL: "https://platform.stability.ai/docs/api-reference#tag/Edit/paths/~1v2beta~1stable-image~1edit~1remove-background/post",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.STABILITY_AI.connectionId,
-                modelId: EnumConnectionModelCode.STABILITY_IMAGE_TO_VIDEO.modelId,
-                modelCode: EnumConnectionModelCode.STABILITY_IMAGE_TO_VIDEO,
+            ProviderModel(
+                providerId: EnumProviderCode.STABILITY_AI.providerId,
+                modelId: EnumProviderModelCode.STABILITY_IMAGE_TO_VIDEO.modelId,
+                modelCode: EnumProviderModelCode.STABILITY_IMAGE_TO_VIDEO,
                 modelSetType: EnumSetType.VIDEO_IMAGE,
                 modelName: "Stable Image to Video",
                 modelDescription: "Generate a short video based on an initial image with Stable Video Diffusion, a latent video diffusion model.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: true,
                     maxPromptLength: 1024,

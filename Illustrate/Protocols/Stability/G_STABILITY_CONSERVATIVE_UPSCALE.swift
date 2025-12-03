@@ -5,7 +5,7 @@ class G_STABILITY_CONSERVATIVE_UPSCALE: ImageGenerationProtocol {
         return CostEstimator.getCreditsUsed(request: request)
     }
 
-    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.STABILITY_CONSERVATIVE_UPSCALE.modelId.uuidString)!
+    let model: ProviderModel = ProviderService.shared.model(by: EnumProviderModelCode.STABILITY_CONSERVATIVE_UPSCALE.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String
@@ -85,7 +85,7 @@ class G_STABILITY_CONSERVATIVE_UPSCALE: ImageGenerationProtocol {
         let transformedRequest = transformRequest(request: request)
 
         let headers: [String: String] = [
-            "Authorization": "\(request.connectionSecret)",
+            "Authorization": "\(request.providerSecret)",
             "Content-Type": "multipart/form-data",
             "Accept": "application/json",
         ]

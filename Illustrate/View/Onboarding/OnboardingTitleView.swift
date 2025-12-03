@@ -9,14 +9,8 @@ struct OnboardingTitleView: View {
 
     var body: some View {
         Text(title)
-            .font(.largeTitle)
-            .fontWeight(.bold)
+            .font(.title3)
+            .fontWeight(.semibold)
             .multilineTextAlignment(.center)
-            .lineSpacing(4)
     }
-}
-
-#Preview {
-    OnboardingTitleView("Welcome to\nIllustrate")
-        .padding()
 }

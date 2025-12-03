@@ -61,20 +61,20 @@ struct RequestsView: View {
 
     @TableColumnBuilder<Generation, KeyPathComparator<Generation>>
     var modelInfoColumns: some TableColumnContent<Generation, KeyPathComparator<Generation>> {
-        TableColumn("Connection", value: \.modelId) { generation in
-            if let connection = getConnection(modelId: generation.modelId) {
+        TableColumn("Provider", value: \.modelId) { generation in
+            if let provider = getProvider(modelId: generation.modelId) {
                 HStack {
-                    Image("\(connection.connectionCode)_square".lowercased())
+                    Image("\(provider.providerCode)_square".lowercased())
                         .resizable()
                         .scaledToFit()
                         .frame(width: 20, height: 20)
-                    Text(connection.connectionName)
+                    Text(provider.providerName)
                 }
             }
         }
         .width(min: 160, ideal: 160, max: 200)
         TableColumn("Model", value: \.modelId) { generation in
-            Text(ConnectionService.shared.model(by: generation.modelId)?.modelName ?? "N/A")
+            Text(ProviderService.shared.model(by: generation.modelId)?.modelName ?? "N/A")
         }
         .width(min: 160, ideal: 160, max: 200)
     }
@@ -105,7 +105,7 @@ struct RequestsView: View {
         }
         .width(min: 120, ideal: 120, max: 120)
         TableColumn("Cost", value: \.creditUsed) { generation in
-            Text("\(String(format: "%.3f", generation.creditUsed).replacingOccurrences(of: ".000", with: "")) \(getConnection(modelId: generation.modelId)?.creditCurrency.rawValue ?? "Credits")")
+            Text("\(String(format: "%.3f", generation.creditUsed).replacingOccurrences(of: ".000", with: "")) \(getProvider(modelId: generation.modelId)?.creditCurrency.rawValue ?? "Credits")")
         }
         .width(min: 120, ideal: 120, max: 120)
         TableColumn("Color Style", value: \.artStyle.rawValue)

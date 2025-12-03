@@ -1,18 +1,18 @@
 import Foundation
 
 class G_OPENAI_SORA_BASE: VideoGenerationProtocol {
-    let modelCode: EnumConnectionModelCode
+    let modelCode: EnumProviderModelCode
     let modelName: String
     
-    var model: ConnectionModel {
-        ConnectionService.shared.model(by: modelCode.modelId.uuidString)!
+    var model: ProviderModel {
+        ProviderService.shared.model(by: modelCode.modelId.uuidString)!
     }
     
     var defaultDuration: Int {
         model.modelSupportedParams.supportedDurations.first ?? 4
     }
     
-    init(modelCode: EnumConnectionModelCode, modelName: String) {
+    init(modelCode: EnumProviderModelCode, modelName: String) {
         self.modelCode = modelCode
         self.modelName = modelName
     }
@@ -133,7 +133,7 @@ class G_OPENAI_SORA_BASE: VideoGenerationProtocol {
         
         do {
             let headers: [String: String] = [
-                "Authorization": "Bearer \(request.connectionSecret)",
+                "Authorization": "Bearer \(request.providerSecret)",
                 "Content-Type": "multipart/form-data",
                 "Accept": "application/json",
             ]
@@ -176,7 +176,7 @@ class G_OPENAI_SORA_BASE: VideoGenerationProtocol {
             }
             
             if let url = videoURL {
-                let videoData = try await downloadVideo(url: url, apiKey: request.connectionSecret)
+                let videoData = try await downloadVideo(url: url, apiKey: request.providerSecret)
                 let base64Video = videoData.base64EncodedString()
                 
                 return VideoGenerationResponse(
@@ -197,11 +197,11 @@ class G_OPENAI_SORA_BASE: VideoGenerationProtocol {
             
             let finalResult = try await pollForResult(
                 videoId: id,
-                apiKey: request.connectionSecret
+                apiKey: request.providerSecret
             )
             
             if let outputVideo = finalResult["output_video"] as? String {
-                let videoData = try await downloadVideo(url: outputVideo, apiKey: request.connectionSecret)
+                let videoData = try await downloadVideo(url: outputVideo, apiKey: request.providerSecret)
                 let base64Video = videoData.base64EncodedString()
                 
                 return VideoGenerationResponse(

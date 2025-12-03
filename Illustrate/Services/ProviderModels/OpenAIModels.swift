@@ -2,16 +2,16 @@ import Foundation
 
 struct OpenAIModels {
     
-    static func createModels() -> [ConnectionModel] {
+    static func createModels() -> [ProviderModel] {
         return [
-            ConnectionModel(
-                connectionId: EnumConnectionCode.OPENAI.connectionId,
-                modelId: EnumConnectionModelCode.OPENAI_DALLE3.modelId,
-                modelCode: EnumConnectionModelCode.OPENAI_DALLE3,
+            ProviderModel(
+                providerId: EnumProviderCode.OPENAI.providerId,
+                modelId: EnumProviderModelCode.OPENAI_DALLE3.modelId,
+                modelCode: EnumProviderModelCode.OPENAI_DALLE3,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "DALL·E 3",
                 modelDescription: "DALL·E 3 represents a leap forward in our ability to generate images that exactly adhere to the text you provide.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 4000,
@@ -27,14 +27,14 @@ struct OpenAIModels {
                 modelAPIDocumentationURL: "https://platform.openai.com/docs/api-reference/images/create",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.OPENAI.connectionId,
-                modelId: EnumConnectionModelCode.OPENAI_GPT_IMAGE_1.modelId,
-                modelCode: EnumConnectionModelCode.OPENAI_GPT_IMAGE_1,
+            ProviderModel(
+                providerId: EnumProviderCode.OPENAI.providerId,
+                modelId: EnumProviderModelCode.OPENAI_GPT_IMAGE_1.modelId,
+                modelCode: EnumProviderModelCode.OPENAI_GPT_IMAGE_1,
                 modelSetType: EnumSetType.GENERATE,
                 modelName: "GPT Image 1",
                 modelDescription: "GPT Image 1 is OpenAI's latest image generation model with excellent prompt understanding and high-quality output.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 4000,
@@ -50,14 +50,14 @@ struct OpenAIModels {
                 modelAPIDocumentationURL: "https://platform.openai.com/docs/api-reference/images/create",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.OPENAI.connectionId,
-                modelId: EnumConnectionModelCode.OPENAI_GPT_IMAGE_1_EDIT.modelId,
-                modelCode: EnumConnectionModelCode.OPENAI_GPT_IMAGE_1_EDIT,
+            ProviderModel(
+                providerId: EnumProviderCode.OPENAI.providerId,
+                modelId: EnumProviderModelCode.OPENAI_GPT_IMAGE_1_EDIT.modelId,
+                modelCode: EnumProviderModelCode.OPENAI_GPT_IMAGE_1_EDIT,
                 modelSetType: EnumSetType.EDIT_MASK,
                 modelName: "GPT Image 1",
                 modelDescription: "GPT Image 1 edit mode - modify images using prompts and optional masks for precise control.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 4000,
@@ -73,14 +73,14 @@ struct OpenAIModels {
                 modelAPIDocumentationURL: "https://platform.openai.com/docs/api-reference/images/createEdit",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.OPENAI.connectionId,
-                modelId: EnumConnectionModelCode.OPENAI_SORA_2.modelId,
-                modelCode: EnumConnectionModelCode.OPENAI_SORA_2,
+            ProviderModel(
+                providerId: EnumProviderCode.OPENAI.providerId,
+                modelId: EnumProviderModelCode.OPENAI_SORA_2.modelId,
+                modelCode: EnumProviderModelCode.OPENAI_SORA_2,
                 modelSetType: EnumSetType.VIDEO_TEXT,
                 modelName: "Sora 2",
                 modelDescription: "OpenAI's Sora 2 - Generate stunning videos from text prompts.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 4000,
@@ -100,14 +100,14 @@ struct OpenAIModels {
                 modelAPIDocumentationURL: "https://platform.openai.com/docs/api-reference/videos/create",
                 active: true
             ),
-            ConnectionModel(
-                connectionId: EnumConnectionCode.OPENAI.connectionId,
-                modelId: EnumConnectionModelCode.OPENAI_SORA_2_PRO.modelId,
-                modelCode: EnumConnectionModelCode.OPENAI_SORA_2_PRO,
+            ProviderModel(
+                providerId: EnumProviderCode.OPENAI.providerId,
+                modelId: EnumProviderModelCode.OPENAI_SORA_2_PRO.modelId,
+                modelCode: EnumProviderModelCode.OPENAI_SORA_2_PRO,
                 modelSetType: EnumSetType.VIDEO_TEXT,
                 modelName: "Sora 2 Pro",
                 modelDescription: "OpenAI's Sora 2 Pro - Premium video generation with higher resolution support.",
-                modelSupportedParams: ConnectionModelSupportParams(
+                modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
                     negativePrompt: false,
                     maxPromptLength: 4000,

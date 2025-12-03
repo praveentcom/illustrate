@@ -5,7 +5,7 @@ class G_STABILITY_IMAGE_TO_VIDEO: VideoGenerationProtocol {
         return CostEstimator.getCreditsUsed(request: request)
     }
 
-    let model: ConnectionModel = ConnectionService.shared.model(by: EnumConnectionModelCode.STABILITY_IMAGE_TO_VIDEO.modelId.uuidString)!
+    let model: ProviderModel = ProviderService.shared.model(by: EnumProviderModelCode.STABILITY_IMAGE_TO_VIDEO.modelId.uuidString)!
 
     struct ServiceRequest: Codable {
         let prompt: String?
@@ -127,7 +127,7 @@ class G_STABILITY_IMAGE_TO_VIDEO: VideoGenerationProtocol {
         let transformedRequest = transformRequest(request: request)
 
         let headers: [String: String] = [
-            "Authorization": "\(request.connectionSecret)",
+            "Authorization": "\(request.providerSecret)",
             "Content-Type": "multipart/form-data",
             "Accept": "application/json",
         ]
