@@ -20,7 +20,7 @@ struct DesktopView: View {
                     }
                 }
             }
-            .frame(minWidth: 240)
+            .navigationSplitViewColumnWidth(min: 240, ideal: 240, max: 240)
         } detail: {
             NavigationStack(path: $desktopNavigationPath) {
                 if let currentItem = selectedItem {
@@ -32,7 +32,7 @@ struct DesktopView: View {
                     Text("Select an item")
                 }
             }
-            .frame(minWidth: 600)
+            .navigationSplitViewColumnWidth(min: 640, ideal: 800, max: .infinity)
         }
         .inspector(isPresented: .constant(true)) {
             QueueSidebarView(queueManager: queueManager)
