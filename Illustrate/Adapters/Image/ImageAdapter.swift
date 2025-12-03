@@ -521,6 +521,18 @@ extension UniversalColor {
 #endif
 
 func getAspectRatio(dimension: String) -> (width: Int, height: Int, actualWidth: Int, actualHeight: Int, ratio: String) {
+    if dimension.contains(":") {
+        let ratioParts = dimension.split(separator: ":")
+        if ratioParts.count == 2,
+           let ratioW = Int(ratioParts[0]),
+           let ratioH = Int(ratioParts[1]),
+           ratioW > 0, ratioH > 0 {
+            let dims = getVideoDimensions(resolution: "1080p", aspectRatio: dimension)
+            return (width: ratioW, height: ratioH, actualWidth: dims.width, actualHeight: dims.height, ratio: dimension)
+        }
+        return (width: 0, height: 0, actualWidth: 0, actualHeight: 0, ratio: "0:0")
+    }
+    
     let dimensions = dimension.split(separator: "x")
 
     guard dimensions.count == 2,
@@ -536,4 +548,72 @@ func getAspectRatio(dimension: String) -> (width: Int, height: Int, actualWidth:
     return (
         width: width / gcdValue, height: height / gcdValue, actualWidth: width, actualHeight: height, ratio: "\(width / gcdValue):\(height / gcdValue)"
     )
+}
+
+func getVideoDimensions(resolution: String, aspectRatio: String) -> (width: Int, height: Int) {
+    let dimensionMap: [String: [String: (Int, Int)]] = [
+        "480p": [
+            "16:9": (854, 480),
+            "9:16": (480, 854),
+            "4:3": (640, 480),
+            "3:4": (480, 640),
+            "1:1": (480, 480),
+            "21:9": (1120, 480),
+            "9:21": (480, 1120),
+            "3:2": (720, 480),
+            "2:3": (480, 720)
+        ],
+        "720p": [
+            "16:9": (1280, 720),
+            "9:16": (720, 1280),
+            "4:3": (960, 720),
+            "3:4": (720, 960),
+            "1:1": (720, 720),
+            "21:9": (1680, 720),
+            "9:21": (720, 1680),
+            "3:2": (1080, 720),
+            "2:3": (720, 1080)
+        ],
+        "1080p": [
+            "16:9": (1920, 1080),
+            "9:16": (1080, 1920),
+            "4:3": (1440, 1080),
+            "3:4": (1080, 1440),
+            "1:1": (1080, 1080),
+            "21:9": (2520, 1080),
+            "9:21": (1080, 2520),
+            "3:2": (1620, 1080),
+            "2:3": (1080, 1620)
+        ]
+    ]
+    
+    if let resolutionMap = dimensionMap[resolution],
+       let dimensions = resolutionMap[aspectRatio] {
+        return dimensions
+    }
+    
+    let baseHeight: Int
+    switch resolution {
+    case "480p": baseHeight = 480
+    case "720p": baseHeight = 720
+    case "1080p": baseHeight = 1080
+    default: baseHeight = 1080
+    }
+    
+    let ratioParts = aspectRatio.split(separator: ":")
+    if ratioParts.count == 2,
+       let ratioW = Double(ratioParts[0]),
+       let ratioH = Double(ratioParts[1]),
+       ratioW > 0, ratioH > 0 {
+        let ratio = ratioW / ratioH
+        if ratio >= 1 {
+            let width = Int(Double(baseHeight) * ratio)
+            return (width, baseHeight)
+        } else {
+            let height = Int(Double(baseHeight) / ratio)
+            return (baseHeight, height)
+        }
+    }
+    
+    return (1920, 1080)
 }

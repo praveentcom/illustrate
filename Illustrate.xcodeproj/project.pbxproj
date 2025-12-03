@@ -120,6 +120,14 @@
 		ACEC4D8C2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D8B2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift */; };
 		ACEC4D8E2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D8D2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift */; };
 		ACEC4D902C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D8F2C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift */; };
+		ACEC4D912C77CF1500928688 /* G_REPLICATE_SEEDREAM_3.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D902C77CF1500928688 /* G_REPLICATE_SEEDREAM_3.swift */; };
+		ACEC4D932C77CF1600928688 /* G_REPLICATE_SEEDREAM_4.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D922C77CF1600928688 /* G_REPLICATE_SEEDREAM_4.swift */; };
+		ACEC4D952C77CF1700928688 /* G_REPLICATE_SEEDREAM_4_EDIT.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D942C77CF1700928688 /* G_REPLICATE_SEEDREAM_4_EDIT.swift */; };
+		ACEC4D962C77CF1800928688 /* G_REPLICATE_SEEDREAM_4_5.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D952C77CF1800928688 /* G_REPLICATE_SEEDREAM_4_5.swift */; };
+		ACEC4D982C77CF1900928688 /* G_REPLICATE_SEEDREAM_4_5_EDIT.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D972C77CF1900928688 /* G_REPLICATE_SEEDREAM_4_5_EDIT.swift */; };
+		ACEC4D992C77CF2000928688 /* ReplicateFileUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D982C77CF2000928688 /* ReplicateFileUploader.swift */; };
+		ACEC4D9B2C77CF2200928688 /* G_REPLICATE_DREAMINA_3_1.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D9A2C77CF2200928688 /* G_REPLICATE_DREAMINA_3_1.swift */; };
+		ACEC4D9C2C77CF2300928688 /* G_REPLICATE_SEEDANCE_1_PRO.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D9B2C77CF2300928688 /* G_REPLICATE_SEEDANCE_1_PRO.swift */; };
 		ACEC4D922C77D1D700928688 /* EditPromptImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D912C77D1D700928688 /* EditPromptImageView.swift */; };
 /* End PBXBuildFile section */
 
@@ -248,6 +256,14 @@
 		ACEC4D8B2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_FLUX_SCHNELL.swift; sourceTree = "<group>"; };
 		ACEC4D8D2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_FLUX_DEV.swift; sourceTree = "<group>"; };
 		ACEC4D8F2C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_FLUX_PRO.swift; sourceTree = "<group>"; };
+		ACEC4D902C77CF1500928688 /* G_REPLICATE_SEEDREAM_3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_SEEDREAM_3.swift; sourceTree = "<group>"; };
+		ACEC4D922C77CF1600928688 /* G_REPLICATE_SEEDREAM_4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_SEEDREAM_4.swift; sourceTree = "<group>"; };
+		ACEC4D942C77CF1700928688 /* G_REPLICATE_SEEDREAM_4_EDIT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_SEEDREAM_4_EDIT.swift; sourceTree = "<group>"; };
+		ACEC4D952C77CF1800928688 /* G_REPLICATE_SEEDREAM_4_5.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_SEEDREAM_4_5.swift; sourceTree = "<group>"; };
+		ACEC4D972C77CF1900928688 /* G_REPLICATE_SEEDREAM_4_5_EDIT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_SEEDREAM_4_5_EDIT.swift; sourceTree = "<group>"; };
+		ACEC4D982C77CF2000928688 /* ReplicateFileUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplicateFileUploader.swift; sourceTree = "<group>"; };
+		ACEC4D9A2C77CF2200928688 /* G_REPLICATE_DREAMINA_3_1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_DREAMINA_3_1.swift; sourceTree = "<group>"; };
+		ACEC4D9B2C77CF2300928688 /* G_REPLICATE_SEEDANCE_1_PRO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_SEEDANCE_1_PRO.swift; sourceTree = "<group>"; };
 		ACEC4D912C77D1D700928688 /* EditPromptImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPromptImageView.swift; sourceTree = "<group>"; };
 		ACEC4D952C77DFCA00928688 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -313,12 +329,21 @@
 				AC2CE3242C69509100893DC2 /* View */,
 				AC2CE31D2C694B4B00893DC2 /* Model */,
 				AC48BD282C7A6A160054F1AC /* ViewModels */,
+				ACEC4D9A2C77CF2100928688 /* Utils */,
 				AC2CE30C2C69478300893DC2 /* IllustrateApp.swift */,
 				AC2CE3122C69478400893DC2 /* Assets.xcassets */,
 				AC2CE3142C69478400893DC2 /* illustrate.entitlements */,
 				AC2CE3152C69478400893DC2 /* Preview Content */,
 			);
 			path = Illustrate;
+			sourceTree = "<group>";
+		};
+		ACEC4D9A2C77CF2100928688 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				ACEC4D982C77CF2000928688 /* ReplicateFileUploader.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 		AC2CE3152C69478400893DC2 /* Preview Content */ = {
@@ -709,6 +734,13 @@
 				ACEC4D8B2C77C2D000928688 /* G_REPLICATE_FLUX_SCHNELL.swift */,
 				ACEC4D8D2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift */,
 				ACEC4D8F2C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift */,
+				ACEC4D902C77CF1500928688 /* G_REPLICATE_SEEDREAM_3.swift */,
+				ACEC4D922C77CF1600928688 /* G_REPLICATE_SEEDREAM_4.swift */,
+				ACEC4D942C77CF1700928688 /* G_REPLICATE_SEEDREAM_4_EDIT.swift */,
+				ACEC4D952C77CF1800928688 /* G_REPLICATE_SEEDREAM_4_5.swift */,
+				ACEC4D972C77CF1900928688 /* G_REPLICATE_SEEDREAM_4_5_EDIT.swift */,
+				ACEC4D9A2C77CF2200928688 /* G_REPLICATE_DREAMINA_3_1.swift */,
+				ACEC4D9B2C77CF2300928688 /* G_REPLICATE_SEEDANCE_1_PRO.swift */,
 			);
 			path = Replicate;
 			sourceTree = "<group>";
@@ -836,6 +868,14 @@
 				AC2CE31F2C694B5D00893DC2 /* Connection.swift in Sources */,
 				ACAB78602C6B1C2E00EED0E8 /* GalleryGridView.swift in Sources */,
 				ACEC4D902C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift in Sources */,
+				ACEC4D912C77CF1500928688 /* G_REPLICATE_SEEDREAM_3.swift in Sources */,
+				ACEC4D932C77CF1600928688 /* G_REPLICATE_SEEDREAM_4.swift in Sources */,
+				ACEC4D952C77CF1700928688 /* G_REPLICATE_SEEDREAM_4_EDIT.swift in Sources */,
+				ACEC4D962C77CF1800928688 /* G_REPLICATE_SEEDREAM_4_5.swift in Sources */,
+				ACEC4D982C77CF1900928688 /* G_REPLICATE_SEEDREAM_4_5_EDIT.swift in Sources */,
+				ACEC4D992C77CF2000928688 /* ReplicateFileUploader.swift in Sources */,
+				ACEC4D9B2C77CF2200928688 /* G_REPLICATE_DREAMINA_3_1.swift in Sources */,
+				ACEC4D9C2C77CF2300928688 /* G_REPLICATE_SEEDANCE_1_PRO.swift in Sources */,
 				ACA50E292EDF18EB00738A80 /* InfoLabel.swift in Sources */,
 				ACA50E2A2EDF18EB00738A80 /* InfoTooltip.swift in Sources */,
 				ACCAC5B92C70A70C009A2EA8 /* SearchReplaceImageView.swift in Sources */,

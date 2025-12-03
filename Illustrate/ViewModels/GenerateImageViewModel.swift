@@ -63,7 +63,7 @@ class GenerateImageViewModel: ObservableObject {
         return connections.filter { connection in
             connectionKeys.contains { $0.connectionId == connection.connectionId } &&
             connectionService.allModels.contains {
-                $0.connectionId == connection.connectionId && $0.modelSetType == .GENERATE
+                $0.connectionId == connection.connectionId && $0.modelSetType == .GENERATE && $0.active
             }
         }
     }

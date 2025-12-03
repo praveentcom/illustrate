@@ -18,6 +18,8 @@ class TextToVideoViewModel: ObservableObject {
     @Published var prompt: String = ""
     @Published var negativePrompt: String = ""
     @Published var artDimensions: String = ""
+    @Published var selectedResolution: String = ""
+    @Published var selectedFPS: Int = 24
     @Published var durationSeconds: Int = 8
     @Published var generateAudio: Bool = true
 
@@ -55,7 +57,7 @@ class TextToVideoViewModel: ObservableObject {
         return connections.filter { connection in
             connectionKeys.contains { $0.connectionId == connection.connectionId } &&
             connectionService.allModels.contains {
-                $0.connectionId == connection.connectionId && $0.modelSetType == .VIDEO_TEXT
+                $0.connectionId == connection.connectionId && $0.modelSetType == .VIDEO_TEXT && $0.active
             }
         }
     }
@@ -66,16 +68,32 @@ class TextToVideoViewModel: ObservableObject {
         return durations.isEmpty ? [8] : durations
     }
     
-    var is1080p: Bool {
-        return artDimensions.contains("1080") || artDimensions.contains("1920")
+    func getValidatedDuration() -> Int {
+        let supported = getSupportedDurations().sorted()
+        if supported.contains(durationSeconds) {
+            return durationSeconds
+        }
+
+        let lower = supported.filter { $0 <= durationSeconds }
+        return lower.last ?? supported.first ?? durationSeconds
     }
     
-    func getAvailableDurations() -> [Int] {
-        let allDurations = getSupportedDurations()
-        if is1080p {
-            return [8]
-        }
-        return allDurations
+    func getSupportedResolutions() -> [String] {
+        guard let model = getSelectedModel() else { return [] }
+        return model.modelSupportedParams.supportedResolutions
+    }
+    
+    var hasResolutionOptions: Bool {
+        return !getSupportedResolutions().isEmpty
+    }
+    
+    func getSupportedFPS() -> [Int] {
+        guard let model = getSelectedModel() else { return [] }
+        return model.modelSupportedParams.supportedFPS
+    }
+    
+    var hasFPSOptions: Bool {
+        return !getSupportedFPS().isEmpty
     }
     
     var supportsAudio: Bool {
@@ -96,6 +114,8 @@ class TextToVideoViewModel: ObservableObject {
 
             if !selectedConnectionId.isEmpty, !selectedModelId.isEmpty {
                 artDimensions = getSelectedModel()?.modelSupportedParams.dimensions.first ?? ""
+                selectedResolution = getSupportedResolutions().last ?? ""
+                selectedFPS = getSupportedFPS().first ?? 24
                 durationSeconds = getSupportedDurations().last ?? 8
             }
         }
@@ -109,6 +129,16 @@ class TextToVideoViewModel: ObservableObject {
             artDimensions = supportedDimensions.first ?? ""
         } else if !supportedDimensions.contains(artDimensions) {
             artDimensions = supportedDimensions.first ?? ""
+        }
+        
+        let supportedResolutions = getSupportedResolutions()
+        if selectedResolution.isEmpty || !supportedResolutions.contains(selectedResolution) {
+            selectedResolution = supportedResolutions.last ?? ""
+        }
+        
+        let supportedFPS = getSupportedFPS()
+        if !supportedFPS.contains(selectedFPS) {
+            selectedFPS = supportedFPS.first ?? 24
         }
         
         let supportedDurations = getSupportedDurations()
@@ -152,7 +182,12 @@ class TextToVideoViewModel: ObservableObject {
             return
         }
         
-        let resolution = artDimensions.contains("1080") || artDimensions.contains("1920") ? "1080p" : "720p"
+        let resolution: String
+        if hasResolutionOptions {
+            resolution = selectedResolution
+        } else {
+            resolution = artDimensions.contains("1080") || artDimensions.contains("1920") ? "1080p" : "720p"
+        }
 
         let request = VideoGenerationRequest(
             modelId: selectedModel.modelId.uuidString,
@@ -161,8 +196,9 @@ class TextToVideoViewModel: ObservableObject {
             artDimensions: artDimensions,
             connectionKey: connectionKey,
             connectionSecret: connectionSecret,
-            durationSeconds: durationSeconds,
+            durationSeconds: getValidatedDuration(),
             resolution: resolution,
+            fps: hasFPSOptions ? selectedFPS : nil,
             generateAudio: supportsAudio ? generateAudio : nil
         )
 

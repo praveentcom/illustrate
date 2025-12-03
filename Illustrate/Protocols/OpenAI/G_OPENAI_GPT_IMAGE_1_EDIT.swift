@@ -145,7 +145,6 @@ class G_OPENAI_GPT_IMAGE_1_EDIT: ImageGenerationProtocol {
             )
         ]
 
-        // Add mask if provided (optional for gpt-image-1)
         if let clientMask = request.clientMask {
             attachments.append(
                 NetworkRequestAttachment(

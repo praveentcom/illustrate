@@ -56,7 +56,7 @@ struct TextToVideoView: View {
                     }
 
                     Section("Video Settings") {
-                        Picker("Dimensions", selection: $viewModel.artDimensions) {
+                        Picker("Aspect Ratio", selection: $viewModel.artDimensions) {
                             ForEach(viewModel.getSelectedModel()?.modelSupportedParams.dimensions ?? [], id: \.self) { dimension in
                                 Text(dimension)
                                     .tag(dimension)
@@ -65,21 +65,42 @@ struct TextToVideoView: View {
 #if !os(macOS)
                         .pickerStyle(.navigationLink)
 #endif
-                        .onChange(of: viewModel.artDimensions) {
-                            if viewModel.is1080p && viewModel.durationSeconds != 8 {
-                                viewModel.durationSeconds = 8
+                        
+                        if viewModel.hasResolutionOptions {
+                            Picker("Resolution", selection: $viewModel.selectedResolution) {
+                                ForEach(viewModel.getSupportedResolutions(), id: \.self) { resolution in
+                                    Text(resolution)
+                                        .tag(resolution)
+                                }
                             }
+#if !os(macOS)
+                            .pickerStyle(.navigationLink)
+#endif
+                        }
+                        
+                        if viewModel.hasFPSOptions {
+                            Picker("Frame Rate", selection: $viewModel.selectedFPS) {
+                                ForEach(viewModel.getSupportedFPS(), id: \.self) { fps in
+                                    Text("\(fps) fps")
+                                        .tag(fps)
+                                }
+                            }
+#if !os(macOS)
+                            .pickerStyle(.navigationLink)
+#endif
                         }
 
-                        Picker("Duration", selection: $viewModel.durationSeconds) {
-                            ForEach(viewModel.getAvailableDurations(), id: \.self) { duration in
-                                Text("\(duration) seconds")
-                                    .tag(duration)
-                            }
+                        VStack(alignment: .leading) {
+                            Text("Duration: \(viewModel.durationSeconds) seconds")
+                            Slider(
+                                value: Binding(
+                                    get: { Double(viewModel.durationSeconds) },
+                                    set: { viewModel.durationSeconds = Int($0) }
+                                ),
+                                in: Double(viewModel.getSupportedDurations().first ?? 4)...Double(viewModel.getSupportedDurations().last ?? 8),
+                                step: 1
+                            )
                         }
-#if !os(macOS)
-                        .pickerStyle(.navigationLink)
-#endif
                         
                         if viewModel.supportsAudio {
                             Toggle("Generate Audio", isOn: $viewModel.generateAudio)

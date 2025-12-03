@@ -8,7 +8,7 @@ struct InfoLabel: View {
     }
 
     var body: some View {
-        HStack {
+        HStack (spacing: 4) {
             Image(systemName: "info.circle")
             label
         }

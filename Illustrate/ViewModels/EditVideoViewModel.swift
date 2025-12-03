@@ -68,7 +68,8 @@ class EditVideoViewModel: ObservableObject {
             connectionKeys.contains { $0.connectionId == connection.connectionId } &&
             connectionService.allModels.contains {
                 $0.connectionId == connection.connectionId &&
-                $0.modelSupportedParams.supportsVideoInput
+                $0.modelSupportedParams.supportsVideoInput &&
+                $0.active
             }
         }
     }
@@ -101,9 +102,10 @@ class EditVideoViewModel: ObservableObject {
             artDimensions = supportedDimensions.first ?? ""
         }
     }
-    
-    func getAvailableDurations() -> [Int] {
-        return [8]
+
+    func getSupportedDurations() -> [Int] {
+        guard let model = getSelectedModel() else { return [] }
+        return model.modelSupportedParams.supportedDurations
     }
 
     func processSelectedVideo() async {

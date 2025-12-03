@@ -19,6 +19,8 @@ class ImageToVideoViewModel: ObservableObject {
     @Published var prompt: String = ""
     @Published var negativePrompt: String = ""
     @Published var artDimensions: String = ""
+    @Published var selectedResolution: String = ""
+    @Published var selectedFPS: Int = 24
     @Published var artQuality: EnumArtQuality = .HD
     @Published var artStyle: EnumArtStyle = .VIVID
     @Published var artVariant: EnumArtVariant = .NORMAL
@@ -81,7 +83,8 @@ class ImageToVideoViewModel: ObservableObject {
             connectionKeys.contains { $0.connectionId == connection.connectionId } &&
             connectionService.allModels.contains {
                 $0.connectionId == connection.connectionId && 
-                ($0.modelSetType == .VIDEO_IMAGE || $0.modelSetType == .VIDEO_TEXT)
+                ($0.modelSetType == .VIDEO_IMAGE || $0.modelSetType == .VIDEO_TEXT) &&
+                $0.active
             }
         }
     }
@@ -99,8 +102,22 @@ class ImageToVideoViewModel: ObservableObject {
         return getSelectedModel()?.modelSupportedParams.supportsAudio ?? false
     }
     
-    var is1080p: Bool {
-        return artDimensions.contains("1080") || artDimensions.contains("1920")
+    func getSupportedResolutions() -> [String] {
+        guard let model = getSelectedModel() else { return [] }
+        return model.modelSupportedParams.supportedResolutions
+    }
+    
+    var hasResolutionOptions: Bool {
+        return !getSupportedResolutions().isEmpty
+    }
+    
+    func getSupportedFPS() -> [Int] {
+        guard let model = getSelectedModel() else { return [] }
+        return model.modelSupportedParams.supportedFPS
+    }
+    
+    var hasFPSOptions: Bool {
+        return !getSupportedFPS().isEmpty
     }
     
     func getSupportedDurations() -> [Int] {
@@ -108,12 +125,14 @@ class ImageToVideoViewModel: ObservableObject {
         return model.modelSupportedParams.supportedDurations
     }
     
-    func getAvailableDurations() -> [Int] {
-        let allDurations = getSupportedDurations()
-        if is1080p {
-            return [8]
+    func getValidatedDuration() -> Int {
+        let supported = getSupportedDurations().sorted()
+        if supported.contains(durationSeconds) {
+            return durationSeconds
         }
-        return allDurations
+
+        let lower = supported.filter { $0 <= durationSeconds }
+        return lower.last ?? supported.first ?? durationSeconds
     }
 
     func initialize(connectionKeys: [ConnectionKey]) {
@@ -130,6 +149,8 @@ class ImageToVideoViewModel: ObservableObject {
 
             if !selectedConnectionId.isEmpty, !selectedModelId.isEmpty {
                 artDimensions = getSelectedModel()?.modelSupportedParams.dimensions.first ?? ""
+                selectedResolution = getSupportedResolutions().last ?? ""
+                selectedFPS = getSupportedFPS().first ?? 24
                 if isVeoModel {
                     durationSeconds = getSupportedDurations().last ?? 8
                 }
@@ -154,6 +175,16 @@ class ImageToVideoViewModel: ObservableObject {
             artDimensions = supportedDimensions.first ?? ""
         } else if !supportedDimensions.contains(artDimensions) {
             artDimensions = supportedDimensions.first ?? ""
+        }
+        
+        let supportedResolutions = getSupportedResolutions()
+        if selectedResolution.isEmpty || !supportedResolutions.contains(selectedResolution) {
+            selectedResolution = supportedResolutions.last ?? ""
+        }
+        
+        let supportedFPS = getSupportedFPS()
+        if !supportedFPS.contains(selectedFPS) {
+            selectedFPS = supportedFPS.first ?? 24
         }
         
         if isVeoModel {
@@ -183,10 +214,17 @@ class ImageToVideoViewModel: ObservableObject {
     }
 
     func handleImageCropping(image: PlatformImage) {
-        let targetSize = CGSize(
-            width: getAspectRatio(dimension: artDimensions).actualWidth,
-            height: getAspectRatio(dimension: artDimensions).actualHeight
-        )
+        let targetSize: CGSize
+        
+        if artDimensions.contains(":") {
+            let dims = getVideoDimensions(resolution: selectedResolution, aspectRatio: artDimensions)
+            targetSize = CGSize(width: dims.width, height: dims.height)
+        } else {
+            targetSize = CGSize(
+                width: getAspectRatio(dimension: artDimensions).actualWidth,
+                height: getAspectRatio(dimension: artDimensions).actualHeight
+            )
+        }
 
         selectedImage = image.resizeImage(targetSize: targetSize)
 
@@ -216,10 +254,17 @@ class ImageToVideoViewModel: ObservableObject {
     }
 
     func handleLastFrameCropping(image: PlatformImage) {
-        let targetSize = CGSize(
-            width: getAspectRatio(dimension: artDimensions).actualWidth,
-            height: getAspectRatio(dimension: artDimensions).actualHeight
-        )
+        let targetSize: CGSize
+        
+        if artDimensions.contains(":") {
+            let dims = getVideoDimensions(resolution: selectedResolution, aspectRatio: artDimensions)
+            targetSize = CGSize(width: dims.width, height: dims.height)
+        } else {
+            targetSize = CGSize(
+                width: getAspectRatio(dimension: artDimensions).actualWidth,
+                height: getAspectRatio(dimension: artDimensions).actualHeight
+            )
+        }
 
         selectedLastFrame = image.resizeImage(targetSize: targetSize)
         isLastFrameCropSheetOpen = false
@@ -258,7 +303,9 @@ class ImageToVideoViewModel: ObservableObject {
         }
         
         var resolution: String? = nil
-        if isVeoModel {
+        if hasResolutionOptions {
+            resolution = selectedResolution
+        } else if isVeoModel {
             resolution = artDimensions.contains("1080") || artDimensions.contains("1920") ? "1080p" : "720p"
         }
 
@@ -273,8 +320,9 @@ class ImageToVideoViewModel: ObservableObject {
             connectionSecret: connectionSecret,
             motion: isVeoModel ? nil : Int(motion),
             stickyness: isVeoModel ? nil : Int(stickyness),
-            durationSeconds: isVeoModel ? durationSeconds : nil,
+            durationSeconds: isVeoModel ? getValidatedDuration() : nil,
             resolution: resolution,
+            fps: hasFPSOptions ? selectedFPS : nil,
             generateAudio: supportsAudio ? generateAudio : nil
         )
 

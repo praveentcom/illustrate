@@ -30,6 +30,18 @@ enum EnumConnectionModelCode: String, Codable, CaseIterable, Identifiable {
     case REPLICATE_FLUX_SCHNELL
     case REPLICATE_FLUX_DEV
     case REPLICATE_FLUX_PRO
+    case REPLICATE_SEEDREAM_3
+    case REPLICATE_SEEDREAM_4
+    case REPLICATE_SEEDREAM_4_EDIT
+    case REPLICATE_SEEDREAM_4_5
+    case REPLICATE_SEEDREAM_4_5_EDIT
+    case REPLICATE_DREAMINA_3_1
+    case REPLICATE_SEEDANCE_1_PRO
+    case REPLICATE_SEEDANCE_1_PRO_EDIT
+    case REPLICATE_SEEDANCE_1_PRO_FAST
+    case REPLICATE_SEEDANCE_1_PRO_FAST_EDIT
+    case REPLICATE_SEEDANCE_1_LITE
+    case REPLICATE_SEEDANCE_1_LITE_EDIT
     case FAL_FLUX_SCHNELL
     case FAL_FLUX_DEV
     case FAL_FLUX_PRO
@@ -99,6 +111,30 @@ enum EnumConnectionModelCode: String, Codable, CaseIterable, Identifiable {
             return UUID(uuidString: "20000000-0000-0000-0000-000000000402")!
         case .REPLICATE_FLUX_PRO:
             return UUID(uuidString: "20000000-0000-0000-0000-000000000403")!
+        case .REPLICATE_SEEDREAM_3:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000404")!
+        case .REPLICATE_SEEDREAM_4:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000405")!
+        case .REPLICATE_SEEDREAM_4_EDIT:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000406")!
+        case .REPLICATE_SEEDREAM_4_5:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000407")!
+        case .REPLICATE_SEEDREAM_4_5_EDIT:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000408")!
+        case .REPLICATE_DREAMINA_3_1:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000409")!
+        case .REPLICATE_SEEDANCE_1_PRO:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000410")!
+        case .REPLICATE_SEEDANCE_1_PRO_EDIT:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000411")!
+        case .REPLICATE_SEEDANCE_1_PRO_FAST:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000412")!
+        case .REPLICATE_SEEDANCE_1_PRO_FAST_EDIT:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000413")!
+        case .REPLICATE_SEEDANCE_1_LITE:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000414")!
+        case .REPLICATE_SEEDANCE_1_LITE_EDIT:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000415")!
         case .FAL_FLUX_SCHNELL:
             return UUID(uuidString: "20000000-0000-0000-0000-000000000501")!
         case .FAL_FLUX_DEV:
@@ -172,9 +208,12 @@ struct ConnectionModelSupportParams: Codable {
         case autoEnhance
         case responseModalities
         case supportedDurations
+        case supportedResolutions
+        case supportedFPS
         case supportsAudio
         case supportsLastFrame
         case supportsVideoInput
+        case cameraFixed
     }
 
     var prompt: Bool = false
@@ -188,9 +227,12 @@ struct ConnectionModelSupportParams: Codable {
     var autoEnhance: Bool = false
     var responseModalities: [EnumResponseModality] = []
     var supportedDurations: [Int] = []
+    var supportedResolutions: [String] = []
+    var supportedFPS: [Int] = []
     var supportsAudio: Bool = false
     var supportsLastFrame: Bool = false
     var supportsVideoInput: Bool = false
+    var cameraFixed: Bool = false
 
     init(
         prompt: Bool,
@@ -204,9 +246,12 @@ struct ConnectionModelSupportParams: Codable {
         autoEnhance: Bool,
         responseModalities: [EnumResponseModality] = [],
         supportedDurations: [Int] = [],
+        supportedResolutions: [String] = [],
+        supportedFPS: [Int] = [],
         supportsAudio: Bool = false,
         supportsLastFrame: Bool = false,
-        supportsVideoInput: Bool = false
+        supportsVideoInput: Bool = false,
+        cameraFixed: Bool = false
     ) {
         self.prompt = prompt
         self.negativePrompt = negativePrompt
@@ -219,9 +264,12 @@ struct ConnectionModelSupportParams: Codable {
         self.autoEnhance = autoEnhance
         self.responseModalities = responseModalities
         self.supportedDurations = supportedDurations
+        self.supportedResolutions = supportedResolutions
+        self.supportedFPS = supportedFPS
         self.supportsAudio = supportsAudio
         self.supportsLastFrame = supportsLastFrame
         self.supportsVideoInput = supportsVideoInput
+        self.cameraFixed = cameraFixed
     }
 
     func encode(to encoder: Encoder) throws {
@@ -237,9 +285,12 @@ struct ConnectionModelSupportParams: Codable {
         try container.encode(autoEnhance, forKey: .autoEnhance)
         try container.encode(responseModalities, forKey: .responseModalities)
         try container.encode(supportedDurations, forKey: .supportedDurations)
+        try container.encode(supportedResolutions, forKey: .supportedResolutions)
+        try container.encode(supportedFPS, forKey: .supportedFPS)
         try container.encode(supportsAudio, forKey: .supportsAudio)
         try container.encode(supportsLastFrame, forKey: .supportsLastFrame)
         try container.encode(supportsVideoInput, forKey: .supportsVideoInput)
+        try container.encode(cameraFixed, forKey: .cameraFixed)
     }
 }
 

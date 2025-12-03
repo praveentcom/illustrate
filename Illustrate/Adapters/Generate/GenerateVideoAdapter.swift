@@ -26,6 +26,7 @@ struct VideoGenerationRequest: Codable {
     var stickyness: Int?
     var durationSeconds: Int?
     var resolution: String?
+    var fps: Int?
     var generateAudio: Bool?
 }
 
@@ -82,6 +83,18 @@ func getVideoGenerationAdapter(videoGenerationRequest: VideoGenerationRequest) t
         return G_GOOGLE_VEO_3_FAST()
     case EnumConnectionModelCode.GOOGLE_VEO_2:
         return G_GOOGLE_VEO_2()
+    case EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO:
+        return G_REPLICATE_SEEDANCE_1_PRO()
+    case EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO_EDIT:
+        return G_REPLICATE_SEEDANCE_1_PRO()
+    case EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO_FAST:
+        return G_REPLICATE_SEEDANCE_1_PRO()
+    case EnumConnectionModelCode.REPLICATE_SEEDANCE_1_PRO_FAST_EDIT:
+        return G_REPLICATE_SEEDANCE_1_PRO()
+    case EnumConnectionModelCode.REPLICATE_SEEDANCE_1_LITE:
+        return G_REPLICATE_SEEDANCE_1_PRO()
+    case EnumConnectionModelCode.REPLICATE_SEEDANCE_1_LITE_EDIT:
+        return G_REPLICATE_SEEDANCE_1_PRO()
     default:
         throw NSError(domain: "Unknown model", code: -1, userInfo: nil)
     }

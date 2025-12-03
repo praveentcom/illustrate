@@ -105,7 +105,7 @@ struct EditVideoView: View {
 #endif
 
                         Picker("Extension Duration", selection: $viewModel.durationSeconds) {
-                            ForEach(viewModel.getAvailableDurations(), id: \.self) { duration in
+                            ForEach(viewModel.getSupportedDurations(), id: \.self) { duration in
                                 Text("\(duration) seconds")
                                     .tag(duration)
                             }

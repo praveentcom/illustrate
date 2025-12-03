@@ -102,9 +102,16 @@ struct CostEstimator {
         case .REPLICATE_FLUX_SCHNELL:
             baseCost = 0.003
         case .REPLICATE_FLUX_DEV:
-            baseCost = 0.025
+            baseCost = 0.03
         case .REPLICATE_FLUX_PRO:
             baseCost = 0.055
+        case .REPLICATE_SEEDREAM_3, .REPLICATE_SEEDREAM_4, .REPLICATE_SEEDREAM_4_EDIT,
+             .REPLICATE_SEEDREAM_4_5, .REPLICATE_SEEDREAM_4_5_EDIT, .REPLICATE_DREAMINA_3_1:
+            baseCost = 0.03
+        case .REPLICATE_SEEDANCE_1_PRO, .REPLICATE_SEEDANCE_1_PRO_EDIT,
+             .REPLICATE_SEEDANCE_1_PRO_FAST, .REPLICATE_SEEDANCE_1_PRO_FAST_EDIT,
+             .REPLICATE_SEEDANCE_1_LITE, .REPLICATE_SEEDANCE_1_LITE_EDIT:
+            baseCost = 0.0
         case .FAL_FLUX_SCHNELL:
             baseCost = 0.003
         case .FAL_FLUX_DEV:
@@ -161,6 +168,30 @@ struct CostEstimator {
             costPerSecond = 0.15
         case .GOOGLE_VEO_2:
             costPerSecond = 0.35
+        case .REPLICATE_SEEDANCE_1_PRO, .REPLICATE_SEEDANCE_1_PRO_EDIT:
+            if dimensions.contains("1080") {
+                costPerSecond = 0.15
+            } else if dimensions.contains("720") {
+                costPerSecond = 0.06
+            } else {
+                costPerSecond = 0.03
+            }
+        case .REPLICATE_SEEDANCE_1_PRO_FAST, .REPLICATE_SEEDANCE_1_PRO_FAST_EDIT:
+            if dimensions.contains("1080") {
+                costPerSecond = 0.06
+            } else if dimensions.contains("720") {
+                costPerSecond = 0.025
+            } else {
+                costPerSecond = 0.015
+            }
+        case .REPLICATE_SEEDANCE_1_LITE, .REPLICATE_SEEDANCE_1_LITE_EDIT:
+            if dimensions.contains("1080") {
+                costPerSecond = 0.072
+            } else if dimensions.contains("720") {
+                costPerSecond = 0.036
+            } else {
+                costPerSecond = 0.018
+            }
             
         default:
             costPerSecond = 0.0

@@ -122,6 +122,18 @@ func getImageGenerationAdapter(imageGenerationRequest: ImageGenerationRequest) t
         return G_REPLICATE_FLUX_DEV()
     case EnumConnectionModelCode.REPLICATE_FLUX_PRO:
         return G_REPLICATE_FLUX_PRO()
+    case EnumConnectionModelCode.REPLICATE_SEEDREAM_3:
+        return G_REPLICATE_SEEDREAM_3()
+    case EnumConnectionModelCode.REPLICATE_SEEDREAM_4:
+        return G_REPLICATE_SEEDREAM_4()
+    case EnumConnectionModelCode.REPLICATE_SEEDREAM_4_EDIT:
+        return G_REPLICATE_SEEDREAM_4_EDIT()
+    case EnumConnectionModelCode.REPLICATE_SEEDREAM_4_5:
+        return G_REPLICATE_SEEDREAM_4_5()
+    case EnumConnectionModelCode.REPLICATE_SEEDREAM_4_5_EDIT:
+        return G_REPLICATE_SEEDREAM_4_5_EDIT()
+    case EnumConnectionModelCode.REPLICATE_DREAMINA_3_1:
+        return G_REPLICATE_DREAMINA_3_1()
     case EnumConnectionModelCode.FAL_FLUX_SCHNELL:
         return G_FAL_FLUX_SCHNELL()
     case EnumConnectionModelCode.FAL_FLUX_DEV:
