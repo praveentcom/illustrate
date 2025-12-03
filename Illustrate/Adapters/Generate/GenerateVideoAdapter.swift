@@ -68,6 +68,10 @@ func getVideoGenerationAdapter(videoGenerationRequest: VideoGenerationRequest) t
     switch model.modelCode {
     case EnumConnectionModelCode.STABILITY_IMAGE_TO_VIDEO:
         return G_STABILITY_IMAGE_TO_VIDEO()
+    case EnumConnectionModelCode.OPENAI_SORA_2:
+        return G_OPENAI_SORA_2()
+    case EnumConnectionModelCode.OPENAI_SORA_2_PRO:
+        return G_OPENAI_SORA_2_PRO()
     case EnumConnectionModelCode.GOOGLE_VEO_31:
         return G_GOOGLE_VEO_31()
     case EnumConnectionModelCode.GOOGLE_VEO_31_FAST:

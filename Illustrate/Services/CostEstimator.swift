@@ -22,7 +22,8 @@ struct CostEstimator {
         return estimatedVideoCost(
             modelCode: model.modelCode,
             durationSeconds: request.durationSeconds ?? 8,
-            numberOfVideos: request.numberOfVideos
+            numberOfVideos: request.numberOfVideos,
+            dimensions: request.artDimensions
         )
     }
     
@@ -37,6 +38,13 @@ struct CostEstimator {
         switch modelCode {
         case .OPENAI_DALLE3:
             baseCost = OpenAIDallE3Cost(quality: quality, dimensions: dimensions)
+        case .OPENAI_GPT_IMAGE_1, .OPENAI_GPT_IMAGE_1_EDIT:
+            baseCost = quality == .HD ? 0.17 : 0.04
+        case .OPENAI_SORA_2:
+            baseCost = 0.1
+        case .OPENAI_SORA_2_PRO:
+            let isHighRes = dimensions == "1792x1024" || dimensions == "1024x1792"
+            baseCost = isHighRes ? 0.50 : 0.30
         case .STABILITY_ULTRA:
             baseCost = 8.0
         case .STABILITY_CORE:
@@ -103,8 +111,6 @@ struct CostEstimator {
             baseCost = 0.025
         case .FAL_FLUX_PRO:
             baseCost = 0.05
-        case .HUGGING_FACE_FLUX_SCHNELL, .HUGGING_FACE_FLUX_DEV:
-            baseCost = 0.00
         }
         
         return baseCost * Double(numberOfImages)
@@ -136,14 +142,19 @@ struct CostEstimator {
     static func estimatedVideoCost(
         modelCode: EnumConnectionModelCode,
         durationSeconds: Int,
-        numberOfVideos: Int = 1
+        numberOfVideos: Int = 1,
+        dimensions: String = "1280x720"
     ) -> Double {
         let costPerSecond: Double
         
         switch modelCode {
         case .STABILITY_IMAGE_TO_VIDEO:
             return 20.0 * Double(numberOfVideos)
-            
+        case .OPENAI_SORA_2:
+            costPerSecond = 0.10
+        case .OPENAI_SORA_2_PRO:
+            let isHighRes = dimensions == "1792x1024" || dimensions == "1024x1792"
+            costPerSecond = isHighRes ? 0.50 : 0.30
         case .GOOGLE_VEO_31, .GOOGLE_VEO_3:
             costPerSecond = 0.40
         case .GOOGLE_VEO_31_FAST, .GOOGLE_VEO_3_FAST:

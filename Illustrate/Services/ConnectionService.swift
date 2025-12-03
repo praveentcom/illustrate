@@ -60,8 +60,7 @@ class ConnectionService: ObservableObject {
             StabilityModels.createModels(),
             GoogleCloudModels.createModels(),
             ReplicateModels.createModels(),
-            FALModels.createModels(),
-            HuggingFaceModels.createModels()
+            FALModels.createModels()
         ].flatMap { $0 }
     }
 

@@ -80,6 +80,10 @@ func getImageGenerationAdapter(imageGenerationRequest: ImageGenerationRequest) t
     switch model.modelCode {
     case EnumConnectionModelCode.OPENAI_DALLE3:
         return G_OPENAI_DALLE3()
+    case EnumConnectionModelCode.OPENAI_GPT_IMAGE_1:
+        return G_OPENAI_GPT_IMAGE_1()
+    case EnumConnectionModelCode.OPENAI_GPT_IMAGE_1_EDIT:
+        return G_OPENAI_GPT_IMAGE_1_EDIT()
     case EnumConnectionModelCode.STABILITY_CORE:
         return G_STABILITY_CORE()
     case EnumConnectionModelCode.STABILITY_SDXL:
@@ -124,10 +128,6 @@ func getImageGenerationAdapter(imageGenerationRequest: ImageGenerationRequest) t
         return G_FAL_FLUX_DEV()
     case EnumConnectionModelCode.FAL_FLUX_PRO:
         return G_FAL_FLUX_PRO()
-    case EnumConnectionModelCode.HUGGING_FACE_FLUX_SCHNELL:
-        return G_HUGGING_FACE_FLUX_SCHNELL()
-    case EnumConnectionModelCode.HUGGING_FACE_FLUX_DEV:
-        return G_HUGGING_FACE_FLUX_DEV()
     case EnumConnectionModelCode.GOOGLE_GEMINI_FLASH_IMAGE:
         return G_GOOGLE_GEMINI_FLASH_IMAGE()
     case EnumConnectionModelCode.GOOGLE_GEMINI_FLASH_IMAGE_EDIT:

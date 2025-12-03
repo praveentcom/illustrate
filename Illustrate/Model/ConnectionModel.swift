@@ -6,6 +6,10 @@ enum EnumConnectionModelCode: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     case OPENAI_DALLE3
+    case OPENAI_GPT_IMAGE_1
+    case OPENAI_GPT_IMAGE_1_EDIT
+    case OPENAI_SORA_2
+    case OPENAI_SORA_2_PRO
     case STABILITY_SDXL
     case STABILITY_SD3
     case STABILITY_SD3_TURBO
@@ -29,8 +33,6 @@ enum EnumConnectionModelCode: String, Codable, CaseIterable, Identifiable {
     case FAL_FLUX_SCHNELL
     case FAL_FLUX_DEV
     case FAL_FLUX_PRO
-    case HUGGING_FACE_FLUX_SCHNELL
-    case HUGGING_FACE_FLUX_DEV
     case GOOGLE_GEMINI_FLASH_IMAGE
     case GOOGLE_GEMINI_FLASH_IMAGE_EDIT
     case GOOGLE_GEMINI_PRO_IMAGE
@@ -49,6 +51,14 @@ enum EnumConnectionModelCode: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .OPENAI_DALLE3:
             return UUID(uuidString: "20000000-0000-0000-0000-000000000101")!
+        case .OPENAI_GPT_IMAGE_1:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000102")!
+        case .OPENAI_GPT_IMAGE_1_EDIT:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000103")!
+        case .OPENAI_SORA_2:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000104")!
+        case .OPENAI_SORA_2_PRO:
+            return UUID(uuidString: "20000000-0000-0000-0000-000000000105")!
         case .STABILITY_SDXL:
             return UUID(uuidString: "20000000-0000-0000-0000-000000000201")!
         case .STABILITY_SD3:
@@ -95,10 +105,6 @@ enum EnumConnectionModelCode: String, Codable, CaseIterable, Identifiable {
             return UUID(uuidString: "20000000-0000-0000-0000-000000000502")!
         case .FAL_FLUX_PRO:
             return UUID(uuidString: "20000000-0000-0000-0000-000000000503")!
-        case .HUGGING_FACE_FLUX_SCHNELL:
-            return UUID(uuidString: "20000000-0000-0000-0000-000000000601")!
-        case .HUGGING_FACE_FLUX_DEV:
-            return UUID(uuidString: "20000000-0000-0000-0000-000000000602")!
         case .GOOGLE_GEMINI_FLASH_IMAGE:
             return UUID(uuidString: "20000000-0000-0000-0000-000000000302")!
         case .GOOGLE_GEMINI_FLASH_IMAGE_EDIT:

@@ -10,7 +10,6 @@ enum EnumConnectionCode: String, Codable, CaseIterable, Identifiable {
     case STABILITY_AI
     case REPLICATE
     case FAL_AI
-    case HUGGING_FACE
 
     var connectionId: UUID {
         switch self {
@@ -24,8 +23,6 @@ enum EnumConnectionCode: String, Codable, CaseIterable, Identifiable {
             return UUID(uuidString: "10000000-0000-0000-0000-000000000004")!
         case .FAL_AI:
             return UUID(uuidString: "10000000-0000-0000-0000-000000000005")!
-        case .HUGGING_FACE:
-            return UUID(uuidString: "10000000-0000-0000-0000-000000000006")!
         }
     }
 }
@@ -192,18 +189,6 @@ let connections = [
         connectionOnboardingUrl: "https://fal.ai",
         keyStructure: "^$",
         keyPlaceholder: "********-****-****-****-************:*******************",
-        keyType: EnumConnectionKeyType.API,
-        creditCurrency: EnumConnectionCreditCurrency.USD,
-        active: true
-    ),
-    Connection(
-        connectionId: EnumConnectionCode.HUGGING_FACE.connectionId,
-        connectionCode: EnumConnectionCode.HUGGING_FACE,
-        connectionName: "Hugging Face",
-        connectionDescription: "The AI community building the future.",
-        connectionOnboardingUrl: "https://huggingface.co",
-        keyStructure: "^hf_[a-zA-Z0-9]{38}$",
-        keyPlaceholder: "hf_************",
         keyType: EnumConnectionKeyType.API,
         creditCurrency: EnumConnectionCreditCurrency.USD,
         active: true

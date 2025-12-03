@@ -45,8 +45,6 @@
 		AC48BD3D2C7B7E820054F1AC /* G_FAL_FLUX_DEV.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC48BD3C2C7B7E820054F1AC /* G_FAL_FLUX_DEV.swift */; };
 		AC48BD3F2C7B7EAA0054F1AC /* G_FAL_FLUX_PRO.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC48BD3E2C7B7EAA0054F1AC /* G_FAL_FLUX_PRO.swift */; };
 		AC48BD412C7B84A00054F1AC /* StorageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC48BD402C7B84A00054F1AC /* StorageAdapter.swift */; };
-		AC48BD462C7B99870054F1AC /* G_HUGGING_FACE_FLUX_SCHNELL.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC48BD452C7B99870054F1AC /* G_HUGGING_FACE_FLUX_SCHNELL.swift */; };
-		AC48BD482C7BA7580054F1AC /* G_HUGGING_FACE_FLUX_DEV.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC48BD472C7BA7580054F1AC /* G_HUGGING_FACE_FLUX_DEV.swift */; };
 		AC6AEA1F6CC9CA45B8999C9B /* ConnectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5DC7B1CFF1F64D65A564A5 /* ConnectionService.swift */; };
 		ACA0FF572C6D3BE600A8C1D5 /* G_STABILITY_CORE.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0FF562C6D3BE600A8C1D5 /* G_STABILITY_CORE.swift */; };
 		ACA0FF592C6D489D00A8C1D5 /* G_STABILITY_SDXL.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0FF582C6D489D00A8C1D5 /* G_STABILITY_SDXL.swift */; };
@@ -81,7 +79,6 @@
 		ACA510642EDF905700738A80 /* OpenAIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA5105F2EDF905700738A80 /* OpenAIModels.swift */; };
 		ACA510652EDF905700738A80 /* FALModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA5105C2EDF905700738A80 /* FALModels.swift */; };
 		ACA510662EDF905700738A80 /* GoogleCloudModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA5105D2EDF905700738A80 /* GoogleCloudModels.swift */; };
-		ACA510672EDF905700738A80 /* HuggingFaceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA5105E2EDF905700738A80 /* HuggingFaceModels.swift */; };
 		ACA510682EDF905700738A80 /* StabilityModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA510612EDF905700738A80 /* StabilityModels.swift */; };
 		ACAB78602C6B1C2E00EED0E8 /* GalleryGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB785F2C6B1C2E00EED0E8 /* GalleryGridView.swift */; };
 		ACAB78622C6B4B5D00EED0E8 /* ImageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB78612C6B4B5D00EED0E8 /* ImageAdapter.swift */; };
@@ -108,6 +105,9 @@
 		ACCAC5D32C721F01009A2EA8 /* VideoAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCAC5D22C721F01009A2EA8 /* VideoAdapter.swift */; };
 		ACCAC5D52C72235E009A2EA8 /* GenerationVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCAC5D42C72235E009A2EA8 /* GenerationVideoView.swift */; };
 		ACCAC5D72C722540009A2EA8 /* GalleryVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCAC5D62C722540009A2EA8 /* GalleryVideoView.swift */; };
+		ACD966F62EDF9DF60054BCAB /* G_OPENAI_SORA.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD966F52EDF9DF60054BCAB /* G_OPENAI_SORA.swift */; };
+		ACD966F72EDF9DF60054BCAB /* G_OPENAI_GPT_IMAGE_1_EDIT.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD966F42EDF9DF60054BCAB /* G_OPENAI_GPT_IMAGE_1_EDIT.swift */; };
+		ACD966F82EDF9DF60054BCAB /* G_OPENAI_GPT_IMAGE_1.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD966F32EDF9DF60054BCAB /* G_OPENAI_GPT_IMAGE_1.swift */; };
 		ACE258012C738A6D00A989CA /* UsageMetricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE258002C738A6D00A989CA /* UsageMetricsView.swift */; };
 		ACE258032C738D3500A989CA /* BackgroundColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE258022C738D3500A989CA /* BackgroundColors.swift */; };
 		ACE44C312C78D2FC0008BB9D /* WorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE44C302C78D2FC0008BB9D /* WorkspaceView.swift */; };
@@ -173,8 +173,6 @@
 		AC48BD3C2C7B7E820054F1AC /* G_FAL_FLUX_DEV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_FAL_FLUX_DEV.swift; sourceTree = "<group>"; };
 		AC48BD3E2C7B7EAA0054F1AC /* G_FAL_FLUX_PRO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_FAL_FLUX_PRO.swift; sourceTree = "<group>"; };
 		AC48BD402C7B84A00054F1AC /* StorageAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageAdapter.swift; sourceTree = "<group>"; };
-		AC48BD452C7B99870054F1AC /* G_HUGGING_FACE_FLUX_SCHNELL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_HUGGING_FACE_FLUX_SCHNELL.swift; sourceTree = "<group>"; };
-		AC48BD472C7BA7580054F1AC /* G_HUGGING_FACE_FLUX_DEV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_HUGGING_FACE_FLUX_DEV.swift; sourceTree = "<group>"; };
 		AC5DC7B1CFF1F64D65A564A5 /* ConnectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionService.swift; sourceTree = "<group>"; };
 		ACA0FF562C6D3BE600A8C1D5 /* G_STABILITY_CORE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_STABILITY_CORE.swift; sourceTree = "<group>"; };
 		ACA0FF582C6D489D00A8C1D5 /* G_STABILITY_SDXL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_STABILITY_SDXL.swift; sourceTree = "<group>"; };
@@ -207,7 +205,6 @@
 		ACA5105A2EDF899300738A80 /* CostEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CostEstimator.swift; sourceTree = "<group>"; };
 		ACA5105C2EDF905700738A80 /* FALModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FALModels.swift; sourceTree = "<group>"; };
 		ACA5105D2EDF905700738A80 /* GoogleCloudModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCloudModels.swift; sourceTree = "<group>"; };
-		ACA5105E2EDF905700738A80 /* HuggingFaceModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuggingFaceModels.swift; sourceTree = "<group>"; };
 		ACA5105F2EDF905700738A80 /* OpenAIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIModels.swift; sourceTree = "<group>"; };
 		ACA510602EDF905700738A80 /* ReplicateModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplicateModels.swift; sourceTree = "<group>"; };
 		ACA510612EDF905700738A80 /* StabilityModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StabilityModels.swift; sourceTree = "<group>"; };
@@ -236,6 +233,9 @@
 		ACCAC5D22C721F01009A2EA8 /* VideoAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAdapter.swift; sourceTree = "<group>"; };
 		ACCAC5D42C72235E009A2EA8 /* GenerationVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerationVideoView.swift; sourceTree = "<group>"; };
 		ACCAC5D62C722540009A2EA8 /* GalleryVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryVideoView.swift; sourceTree = "<group>"; };
+		ACD966F32EDF9DF60054BCAB /* G_OPENAI_GPT_IMAGE_1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_OPENAI_GPT_IMAGE_1.swift; sourceTree = "<group>"; };
+		ACD966F42EDF9DF60054BCAB /* G_OPENAI_GPT_IMAGE_1_EDIT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_OPENAI_GPT_IMAGE_1_EDIT.swift; sourceTree = "<group>"; };
+		ACD966F52EDF9DF60054BCAB /* G_OPENAI_SORA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_OPENAI_SORA.swift; sourceTree = "<group>"; };
 		ACE258002C738A6D00A989CA /* UsageMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageMetricsView.swift; sourceTree = "<group>"; };
 		ACE258022C738D3500A989CA /* BackgroundColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundColors.swift; sourceTree = "<group>"; };
 		ACE44C302C78D2FC0008BB9D /* WorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceView.swift; sourceTree = "<group>"; };
@@ -420,6 +420,9 @@
 		AC2CE3492C6A36DC00893DC2 /* OpenAI */ = {
 			isa = PBXGroup;
 			children = (
+				ACD966F32EDF9DF60054BCAB /* G_OPENAI_GPT_IMAGE_1.swift */,
+				ACD966F42EDF9DF60054BCAB /* G_OPENAI_GPT_IMAGE_1_EDIT.swift */,
+				ACD966F52EDF9DF60054BCAB /* G_OPENAI_SORA.swift */,
 				AC2CE34A2C6A36F800893DC2 /* G_OPENAI_DALLE3.swift */,
 			);
 			path = OpenAI;
@@ -457,15 +460,6 @@
 				AC48BD3E2C7B7EAA0054F1AC /* G_FAL_FLUX_PRO.swift */,
 			);
 			path = Fal;
-			sourceTree = "<group>";
-		};
-		AC48BD442C7B99720054F1AC /* HuggingFace */ = {
-			isa = PBXGroup;
-			children = (
-				AC48BD452C7B99870054F1AC /* G_HUGGING_FACE_FLUX_SCHNELL.swift */,
-				AC48BD472C7BA7580054F1AC /* G_HUGGING_FACE_FLUX_DEV.swift */,
-			);
-			path = HuggingFace;
 			sourceTree = "<group>";
 		};
 		ACA0FF552C6D3BD800A8C1D5 /* Stability */ = {
@@ -527,7 +521,6 @@
 			children = (
 				ACA5105C2EDF905700738A80 /* FALModels.swift */,
 				ACA5105D2EDF905700738A80 /* GoogleCloudModels.swift */,
-				ACA5105E2EDF905700738A80 /* HuggingFaceModels.swift */,
 				ACA5105F2EDF905700738A80 /* OpenAIModels.swift */,
 				ACA510602EDF905700738A80 /* ReplicateModels.swift */,
 				ACA510612EDF905700738A80 /* StabilityModels.swift */,
@@ -539,7 +532,6 @@
 			isa = PBXGroup;
 			children = (
 				ACA510492EDF66D100738A80 /* Google */,
-				AC48BD442C7B99720054F1AC /* HuggingFace */,
 				AC48BD392C7B772C0054F1AC /* Fal */,
 				ACEC4D8A2C77C2C100928688 /* Replicate */,
 				ACA0FF552C6D3BD800A8C1D5 /* Stability */,
@@ -876,14 +868,15 @@
 				ACA510642EDF905700738A80 /* OpenAIModels.swift in Sources */,
 				ACA510652EDF905700738A80 /* FALModels.swift in Sources */,
 				ACA510662EDF905700738A80 /* GoogleCloudModels.swift in Sources */,
-				ACA510672EDF905700738A80 /* HuggingFaceModels.swift in Sources */,
 				ACA510682EDF905700738A80 /* StabilityModels.swift in Sources */,
 				ACCAC5D72C722540009A2EA8 /* GalleryVideoView.swift in Sources */,
 				AC2CE3412C69F77B00893DC2 /* NetworkAdapter.swift in Sources */,
 				ACBAB1712C7E073600769F79 /* CommonAdapter.swift in Sources */,
 				ACEC4D922C77D1D700928688 /* EditPromptImageView.swift in Sources */,
-				AC48BD462C7B99870054F1AC /* G_HUGGING_FACE_FLUX_SCHNELL.swift in Sources */,
 				ACAB78652C6B53FC00EED0E8 /* GenerationImageView.swift in Sources */,
+				ACD966F62EDF9DF60054BCAB /* G_OPENAI_SORA.swift in Sources */,
+				ACD966F72EDF9DF60054BCAB /* G_OPENAI_GPT_IMAGE_1_EDIT.swift in Sources */,
+				ACD966F82EDF9DF60054BCAB /* G_OPENAI_GPT_IMAGE_1.swift in Sources */,
 				ACA510582EDF7B1000738A80 /* TextToVideoView.swift in Sources */,
 				ACA510592EDF7B1000738A80 /* EditVideoView.swift in Sources */,
 				ACA5104A2EDF66D100738A80 /* G_GOOGLE_GEMINI_PRO_IMAGE.swift in Sources */,
@@ -901,7 +894,6 @@
 				AC48BD2E2C7A82FD0054F1AC /* ICloudVideoLoader.swift in Sources */,
 				AC3740432C6BFA36006E818D /* RequestsView.swift in Sources */,
 				AC48BD2C2C7A7A960054F1AC /* ICloudImageLoader.swift in Sources */,
-				AC48BD482C7BA7580054F1AC /* G_HUGGING_FACE_FLUX_DEV.swift in Sources */,
 				ACAB78622C6B4B5D00EED0E8 /* ImageAdapter.swift in Sources */,
 				ACA0FF612C6D5A6E00A8C1D5 /* EditUpscaleImageView.swift in Sources */,
 				AC2CE32F2C69C8BD00893DC2 /* GalleryImageView.swift in Sources */,
