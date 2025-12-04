@@ -81,7 +81,7 @@ struct ReplicateModels {
                 modelId: EnumProviderModelCode.REPLICATE_SEEDREAM_3.modelId,
                 modelCode: EnumProviderModelCode.REPLICATE_SEEDREAM_3,
                 modelSetType: EnumSetType.GENERATE,
-                modelName: "Seedream 3",
+                modelName: "ByteDance Seedream 3",
                 modelDescription: "A text-to-image model from ByteDance with support for native high-resolution (2K) image generation.",
                 modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
@@ -105,7 +105,7 @@ struct ReplicateModels {
                 modelId: EnumProviderModelCode.REPLICATE_SEEDREAM_4.modelId,
                 modelCode: EnumProviderModelCode.REPLICATE_SEEDREAM_4,
                 modelSetType: EnumSetType.GENERATE,
-                modelName: "Seedream 4",
+                modelName: "ByteDance Seedream 4",
                 modelDescription: "Next-generation text-to-image model from ByteDance with native 4K resolution support and enhanced prompt understanding.",
                 modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
@@ -129,7 +129,7 @@ struct ReplicateModels {
                 modelId: EnumProviderModelCode.REPLICATE_SEEDREAM_4_EDIT.modelId,
                 modelCode: EnumProviderModelCode.REPLICATE_SEEDREAM_4_EDIT,
                 modelSetType: EnumSetType.EDIT_PROMPT,
-                modelName: "Seedream 4",
+                modelName: "ByteDance Seedream 4",
                 modelDescription: "Edit images with text prompts using ByteDance's Seedream 4 model with multi-reference image support.",
                 modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
@@ -153,7 +153,7 @@ struct ReplicateModels {
                 modelId: EnumProviderModelCode.REPLICATE_SEEDREAM_4_5.modelId,
                 modelCode: EnumProviderModelCode.REPLICATE_SEEDREAM_4_5,
                 modelSetType: EnumSetType.GENERATE,
-                modelName: "Seedream 4.5",
+                modelName: "ByteDance Seedream 4.5",
                 modelDescription: "Latest ByteDance text-to-image model with enhanced quality. Currently in beta with 2K resolution and 1:1 aspect ratio support.",
                 modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
@@ -177,7 +177,7 @@ struct ReplicateModels {
                 modelId: EnumProviderModelCode.REPLICATE_SEEDREAM_4_5_EDIT.modelId,
                 modelCode: EnumProviderModelCode.REPLICATE_SEEDREAM_4_5_EDIT,
                 modelSetType: EnumSetType.EDIT_PROMPT,
-                modelName: "Seedream 4.5",
+                modelName: "ByteDance Seedream 4.5",
                 modelDescription: "Edit images with text prompts using ByteDance's latest Seedream 4.5 model. Currently in beta.",
                 modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
@@ -201,7 +201,7 @@ struct ReplicateModels {
                 modelId: EnumProviderModelCode.REPLICATE_DREAMINA_3_1.modelId,
                 modelCode: EnumProviderModelCode.REPLICATE_DREAMINA_3_1,
                 modelSetType: EnumSetType.GENERATE,
-                modelName: "Dreamina 3.1",
+                modelName: "ByteDance Dreamina 3.1",
                 modelDescription: "4MP text-to-image with enhanced cinematic quality, precise style control, improved text rendering, and commercial design optimization.",
                 modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
@@ -225,7 +225,7 @@ struct ReplicateModels {
                 modelId: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO.modelId,
                 modelCode: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO,
                 modelSetType: EnumSetType.VIDEO_TEXT,
-                modelName: "Seedance 1 Pro",
+                modelName: "ByteDance Seedance 1 Pro",
                 modelDescription: "Text-to-video generation from ByteDance at up to 1080p resolution.",
                 modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
@@ -253,7 +253,7 @@ struct ReplicateModels {
                 modelId: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_EDIT.modelId,
                 modelCode: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_EDIT,
                 modelSetType: EnumSetType.VIDEO_IMAGE,
-                modelName: "Seedance 1 Pro",
+                modelName: "ByteDance Seedance 1 Pro",
                 modelDescription: "Image-to-video generation from ByteDance at up to 1080p resolution.",
                 modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
@@ -282,7 +282,7 @@ struct ReplicateModels {
                 modelId: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_FAST.modelId,
                 modelCode: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_FAST,
                 modelSetType: EnumSetType.VIDEO_TEXT,
-                modelName: "Seedance 1 Pro Fast",
+                modelName: "ByteDance Seedance 1 Pro Fast",
                 modelDescription: "30-60% faster text-to-video generation from ByteDance with ~60% reduced cost.",
                 modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
@@ -310,7 +310,7 @@ struct ReplicateModels {
                 modelId: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_FAST_EDIT.modelId,
                 modelCode: EnumProviderModelCode.REPLICATE_SEEDANCE_1_PRO_FAST_EDIT,
                 modelSetType: EnumSetType.VIDEO_IMAGE,
-                modelName: "Seedance 1 Pro Fast",
+                modelName: "ByteDance Seedance 1 Pro Fast",
                 modelDescription: "30-60% faster image-to-video generation from ByteDance with ~60% reduced cost.",
                 modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
@@ -339,7 +339,7 @@ struct ReplicateModels {
                 modelId: EnumProviderModelCode.REPLICATE_SEEDANCE_1_LITE.modelId,
                 modelCode: EnumProviderModelCode.REPLICATE_SEEDANCE_1_LITE,
                 modelSetType: EnumSetType.VIDEO_TEXT,
-                modelName: "Seedance 1 Lite",
+                modelName: "ByteDance Seedance 1 Lite",
                 modelDescription: "Lightweight text-to-video generation from ByteDance at up to 1080p resolution.",
                 modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,
@@ -367,7 +367,7 @@ struct ReplicateModels {
                 modelId: EnumProviderModelCode.REPLICATE_SEEDANCE_1_LITE_EDIT.modelId,
                 modelCode: EnumProviderModelCode.REPLICATE_SEEDANCE_1_LITE_EDIT,
                 modelSetType: EnumSetType.VIDEO_IMAGE,
-                modelName: "Seedance 1 Lite",
+                modelName: "ByteDance Seedance 1 Lite",
                 modelDescription: "Lightweight image-to-video generation from ByteDance at up to 1080p resolution.",
                 modelSupportedParams: ProviderModelSupportParams(
                     prompt: true,

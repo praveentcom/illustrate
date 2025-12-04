@@ -15,7 +15,7 @@ struct ProviderDetailsView: View {
     private func navigateToAddProvider() {
         isPresented = false
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            navigationManager.navigate(to: .addProvider(providerId: selectedProvider.providerId))
+            navigationManager.pushDetail(.addProvider(providerId: selectedProvider.providerId))
         }
     }
 
