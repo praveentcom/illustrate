@@ -5,26 +5,8 @@ import UniformTypeIdentifiers
 #if os(macOS)
     import AppKit
 #else
+    import Photos
     import UIKit
-
-    struct UIImageFileDocument: FileDocument {
-        static var readableContentTypes: [UTType] { [.png] }
-
-        var image: UIImage
-
-        init(image: UIImage) {
-            self.image = image
-        }
-
-        init(configuration _: ReadConfiguration) throws {
-            image = UIImage()
-        }
-
-        func fileWrapper(configuration _: WriteConfiguration) throws -> FileWrapper {
-            let data = image.pngData()!
-            return FileWrapper(regularFileWithContents: data)
-        }
-    }
 
     struct ImageShareSheet: UIViewControllerRepresentable {
         var activityItems: [Any]
@@ -74,8 +56,10 @@ struct GenerationImageView: View {
 
     @State private var showMask: Bool = false
     @State private var showDeleteConfirmation = false
-    @State private var showDocumentPicker = false
     @State private var showShareSheet = false
+    @State private var showSaveSuccess = false
+    @State private var showSaveError = false
+    @State private var saveErrorMessage = ""
     
     @State private var exportImage: PlatformImage? = nil
     
@@ -213,8 +197,27 @@ struct GenerationImageView: View {
                             #if os(macOS)
                                 image.saveImageToDownloads(fileName: generation.id.uuidString)
                             #else
-                                exportImage = image
-                                showDocumentPicker = true
+                                PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
+                                    DispatchQueue.main.async {
+                                        if status == .authorized || status == .limited {
+                                            PHPhotoLibrary.shared().performChanges({
+                                                PHAssetChangeRequest.creationRequestForAsset(from: image)
+                                            }) { success, error in
+                                                DispatchQueue.main.async {
+                                                    if success {
+                                                        showSaveSuccess = true
+                                                    } else {
+                                                        saveErrorMessage = error?.localizedDescription ?? "Failed to save image"
+                                                        showSaveError = true
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            saveErrorMessage = "Photo library access denied. Please enable access in Settings."
+                                            showSaveError = true
+                                        }
+                                    }
+                                }
                             #endif
                         }
                     }
@@ -240,22 +243,6 @@ struct GenerationImageView: View {
             }
         }
         #if !os(macOS)
-        .fileExporter(
-            isPresented: $showDocumentPicker,
-            document: UIImageFileDocument(
-                image: exportImage ?? PlatformImage()
-            ),
-            contentType: .png,
-            defaultFilename: "illustrate_\(selectedGeneration?.id.uuidString ?? "")"
-        ) { result in
-            switch result {
-            case let .success(url):
-                print("Saved to \(url)")
-            case let .failure(error):
-                print("Failed to save image: \(error.localizedDescription)")
-            }
-            exportImage = nil
-        }
         .sheet(isPresented: $showShareSheet) {
             if let image = exportImage {
                 ImageShareSheet(activityItems: [image])
@@ -265,6 +252,16 @@ struct GenerationImageView: View {
             if !isPresented {
                 exportImage = nil
             }
+        }
+        .alert("Saved to Photos", isPresented: $showSaveSuccess) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Image has been saved to your photo library.")
+        }
+        .alert("Save Failed", isPresented: $showSaveError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(saveErrorMessage)
         }
         #endif
         .alert(isPresented: $showDeleteConfirmation) {

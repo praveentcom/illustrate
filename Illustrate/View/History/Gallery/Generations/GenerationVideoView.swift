@@ -7,26 +7,8 @@ import UniformTypeIdentifiers
 #if os(macOS)
     import AppKit
 #else
+    import Photos
     import UIKit
-
-    struct VideoFileDocument: FileDocument {
-        static var readableContentTypes: [UTType] { [.movie] }
-
-        var url: URL?
-
-        init(url: URL?) {
-            self.url = url
-        }
-
-        init(configuration _: ReadConfiguration) throws {
-            url = URL(fileURLWithPath: "")
-        }
-
-        func fileWrapper(configuration _: WriteConfiguration) throws -> FileWrapper {
-            let data = try Data(contentsOf: url!)
-            return FileWrapper(regularFileWithContents: data)
-        }
-    }
 
     struct VideoShareSheet: UIViewControllerRepresentable {
         var activityItems: [Any]
@@ -51,8 +33,10 @@ struct GenerationVideoView: View {
 
     @State private var showMask: Bool = false
     @State private var showDeleteConfirmation = false
-    @State private var showDocumentPicker = false
     @State private var showShareSheet = false
+    @State private var showSaveSuccess = false
+    @State private var showSaveError = false
+    @State private var saveErrorMessage = ""
 
     private func getVideoAspectRatio(from dimensions: String?) -> CGFloat {
         guard let dimensions = dimensions else { return 16.0 / 9.0 }
@@ -278,15 +262,31 @@ struct GenerationVideoView: View {
                     Button("Download", systemImage: "arrow.down") {
                         let videoURL: URL? = loadVideoFromiCloud("\(getSelectedGeneration()!.id.uuidString)")
                         if let videoURL = videoURL {
-                            Task {
-                                #if os(macOS)
-                                    saveVideoToDownloads(url: videoURL, fileName: "\(getSelectedGeneration()!.id.uuidString)")
-                                #else
+                            #if os(macOS)
+                                saveVideoToDownloads(url: videoURL, fileName: "\(getSelectedGeneration()!.id.uuidString)")
+                            #else
+                                PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
                                     DispatchQueue.main.async {
-                                        showDocumentPicker = true
+                                        if status == .authorized || status == .limited {
+                                            PHPhotoLibrary.shared().performChanges({
+                                                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: videoURL)
+                                            }) { success, error in
+                                                DispatchQueue.main.async {
+                                                    if success {
+                                                        showSaveSuccess = true
+                                                    } else {
+                                                        saveErrorMessage = error?.localizedDescription ?? "Failed to save video"
+                                                        showSaveError = true
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            saveErrorMessage = "Photo library access denied. Please enable access in Settings."
+                                            showSaveError = true
+                                        }
                                     }
-                                #endif
-                            }
+                                }
+                            #endif
                         }
                     }
                 }
@@ -316,21 +316,6 @@ struct GenerationVideoView: View {
             }
         }
         #if !os(macOS)
-        .fileExporter(
-            isPresented: $showDocumentPicker,
-            document: VideoFileDocument(
-                url: imageSet != nil ? loadVideoFromiCloud("\(getSelectedGeneration()?.id.uuidString ?? "")") : nil
-            ),
-            contentType: .movie,
-            defaultFilename: "illustrate_\(getSelectedGeneration()?.id.uuidString ?? "")"
-        ) { result in
-            switch result {
-            case let .success(url):
-                print("Saved to \(url)")
-            case let .failure(error):
-                print("Failed to save video: \(error.localizedDescription)")
-            }
-        }
         .sheet(isPresented: $showShareSheet) {
             if imageSet != nil {
                 let videoURL: URL? = loadVideoFromiCloud("\(getSelectedGeneration()?.id.uuidString ?? "")")
@@ -338,6 +323,16 @@ struct GenerationVideoView: View {
                     VideoShareSheet(activityItems: [videoURL])
                 }
             }
+        }
+        .alert("Saved to Photos", isPresented: $showSaveSuccess) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Video has been saved to your photo library.")
+        }
+        .alert("Save Failed", isPresented: $showSaveError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(saveErrorMessage)
         }
         #endif
         .alert(isPresented: $showDeleteConfirmation) {
