@@ -336,6 +336,16 @@ struct RemoveBackgroundImageView: View {
                     .disabled(selectedImage == nil)
                     }
                     .formStyle(.grouped)
+#if !os(macOS)
+                    .toolbar {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            Spacer()
+                            Button("Done") {
+                                focusedField = nil
+                            }
+                        }
+                    }
+#endif
                     .photosPicker(isPresented: $isPhotoPickerOpen, selection: $selectedImageItem, matching: .all(of: [
                         .not(.videos),
                     ]))

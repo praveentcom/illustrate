@@ -224,6 +224,16 @@ struct EditVideoView: View {
                     .disabled(!viewModel.canGenerate)
                 }
                 .formStyle(.grouped)
+#if !os(macOS)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") {
+                            focusedField = nil
+                        }
+                    }
+                }
+#endif
                 .photosPicker(isPresented: $viewModel.isVideoPickerOpen, selection: $viewModel.selectedVideoItem, matching: .videos)
                 .onChange(of: viewModel.selectedVideoItem) {
                     Task {

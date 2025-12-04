@@ -142,6 +142,16 @@ struct TextToVideoView: View {
                     .disabled(!viewModel.canGenerate)
                 }
                 .formStyle(.grouped)
+#if !os(macOS)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") {
+                            focusedField = nil
+                        }
+                    }
+                }
+#endif
 
             } else {
                 PendingProviderView(setType: .VIDEO_TEXT)

@@ -292,6 +292,16 @@ struct GenerateImageView: View {
                     .disabled(prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
                 .formStyle(.grouped)
+#if !os(macOS)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") {
+                            focusedField = nil
+                        }
+                    }
+                }
+#endif
             } else {
                 PendingProviderView(setType: .GENERATE)
             }

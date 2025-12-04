@@ -391,6 +391,16 @@ struct EditMaskImageView: View {
                     .disabled(selectedImage == nil || maskPath.isEmpty)
                 }
                 .formStyle(.grouped)
+#if !os(macOS)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") {
+                            focusedField = nil
+                        }
+                    }
+                }
+#endif
                 .photosPicker(isPresented: $isPhotoPickerOpen, selection: $selectedImageItem, matching: .all(of: [
                     .not(.videos),
                 ]))

@@ -375,6 +375,16 @@ struct ImageToVideoView: View {
                     .disabled(!viewModel.canGenerate)
                 }
                 .formStyle(.grouped)
+#if !os(macOS)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") {
+                            focusedField = nil
+                        }
+                    }
+                }
+#endif
                 .photosPicker(isPresented: $viewModel.isPhotoPickerOpen, selection: $viewModel.selectedImageItem, matching: .all(of: [
                     .not(.videos),
                 ]))
