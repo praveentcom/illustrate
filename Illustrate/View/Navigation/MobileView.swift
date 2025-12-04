@@ -7,7 +7,6 @@ struct MobileView: View {
     @State private var homeNavigationPath = NavigationPath()
     @State private var generationsNavigationPath = NavigationPath()
     @State private var historyNavigationPath = NavigationPath()
-    @State private var metricsNavigationPath = NavigationPath()
     @State private var settingsNavigationPath = NavigationPath()
 
     var body: some View {
@@ -32,6 +31,12 @@ struct MobileView: View {
                 Label("Generate", systemImage: "sparkles")
             }
 
+            MobileQueueView()
+                .tabItem {
+                    Label("Queue", systemImage: "list.bullet.rectangle")
+                }
+                .badge(queueManager.totalCount > 0 ? queueManager.totalCount : 0)
+
             NavigationStack(path: $historyNavigationPath) {
                 HistoryView()
                     .navigationDestination(for: EnumNavigationItem.self) { item in
@@ -40,16 +45,6 @@ struct MobileView: View {
             }
             .tabItem {
                 Label("History", systemImage: "photo.on.rectangle.angled")
-            }
-
-            NavigationStack(path: $metricsNavigationPath) {
-                UsageMetricsView()
-                    .navigationDestination(for: EnumNavigationItem.self) { item in
-                        viewForItem(item)
-                    }
-            }
-            .tabItem {
-                Label("Metrics", systemImage: "chart.bar.xaxis")
             }
 
             NavigationStack(path: $settingsNavigationPath) {

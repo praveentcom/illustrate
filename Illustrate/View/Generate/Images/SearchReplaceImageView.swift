@@ -418,7 +418,6 @@ struct SearchReplaceImageView: View {
                 }
             }
         }
-#if os(macOS)
         .toast(isPresenting: $errorState.isShowing, duration: 12, offsetY: 16) {
             AlertToast(
                 displayMode: .hud,
@@ -432,51 +431,9 @@ struct SearchReplaceImageView: View {
                 displayMode: .hud,
                 type: .systemImage("checkmark.circle", Color.green),
                 title: "Added to queue",
-                subTitle: "Check the queue sidebar for progress"
+                subTitle: "Check the queue pane for progress"
             )
         }
-#else
-        .sheet(isPresented: $errorState.isShowing) { [errorState] in
-            VStack(alignment: .center, spacing: 24) {
-                VStack(alignment: .center, spacing: 8) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                    VStack(alignment: .center) {
-                        Text(errorState.message)
-                            .multilineTextAlignment(.center)
-                        Text("Dismiss to try again")
-                            .multilineTextAlignment(.center)
-                            .opacity(0.7)
-                    }
-                }
-            }
-            .padding(.all, 32)
-        }
-        .sheet(isPresented: $showQueuedToast) {
-            VStack(alignment: .center, spacing: 24) {
-                VStack(alignment: .center, spacing: 8) {
-                    Image(systemName: "checkmark.circle")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(.green)
-                    VStack(alignment: .center) {
-                        Text("Added to queue")
-                            .multilineTextAlignment(.center)
-                        Text("Check the queue for progress")
-                            .multilineTextAlignment(.center)
-                            .opacity(0.7)
-                    }
-                }
-            }
-            .padding(.all, 32)
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    showQueuedToast = false
-                }
-            }
-        }
-#endif
         .navigationDestination(isPresented: $isNavigationActive) {
             if let _selectedSetId = selectedSetId {
                 GenerationImageView(setId: _selectedSetId)

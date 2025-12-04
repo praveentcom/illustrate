@@ -160,7 +160,6 @@ struct TextToVideoView: View {
         .onAppear {
             viewModel.initialize(providerKeys: providerKeys)
         }
-#if os(macOS)
         .toast(isPresenting: $viewModel.errorState.isShowing, duration: 12, offsetY: 16) {
             AlertToast(
                 displayMode: .hud,
@@ -174,51 +173,9 @@ struct TextToVideoView: View {
                 displayMode: .hud,
                 type: .systemImage("checkmark.circle", Color.green),
                 title: "Added to queue",
-                subTitle: "Check the queue sidebar for progress"
+                subTitle: "Check the queue pane for progress"
             )
         }
-#else
-        .sheet(isPresented: $viewModel.errorState.isShowing) { [viewModel] in
-            VStack(alignment: .center, spacing: 24) {
-                VStack(alignment: .center, spacing: 8) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                    VStack(alignment: .center) {
-                        Text(viewModel.errorState.message)
-                            .multilineTextAlignment(.center)
-                        Text("Dismiss to try again")
-                            .multilineTextAlignment(.center)
-                            .opacity(0.7)
-                    }
-                }
-            }
-            .padding(.all, 32)
-        }
-        .sheet(isPresented: $viewModel.showQueuedToast) {
-            VStack(alignment: .center, spacing: 24) {
-                VStack(alignment: .center, spacing: 8) {
-                    Image(systemName: "checkmark.circle")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(.green)
-                    VStack(alignment: .center) {
-                        Text("Added to queue")
-                            .multilineTextAlignment(.center)
-                        Text("Check the queue for progress")
-                            .multilineTextAlignment(.center)
-                            .opacity(0.7)
-                    }
-                }
-            }
-            .padding(.all, 32)
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    viewModel.showQueuedToast = false
-                }
-            }
-        }
-#endif
         .navigationDestination(isPresented: $viewModel.isNavigationActive) {
             if let _selectedSetId = viewModel.selectedSetId {
                 GenerationVideoView(setId: _selectedSetId)

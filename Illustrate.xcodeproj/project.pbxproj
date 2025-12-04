@@ -87,6 +87,7 @@
 		ACAB786A2C6B899500EED0E8 /* SectionKeyValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB78692C6B899500EED0E8 /* SectionKeyValueView.swift */; };
 		ACAB786C2C6BB62E00EED0E8 /* GenerateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB786B2C6BB62E00EED0E8 /* GenerateView.swift */; };
 		ACAB78702C6BB6B700EED0E8 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB786F2C6BB6B700EED0E8 /* HistoryView.swift */; };
+		ACB3C1422EE1E912000260DF /* MobileQueueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB3C1412EE1E912000260DF /* MobileQueueView.swift */; };
 		ACBAB1712C7E073600769F79 /* CommonAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBAB1702C7E073600769F79 /* CommonAdapter.swift */; };
 		ACCAC5B32C70A6C0009A2EA8 /* EditExpandImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCAC5B22C70A6C0009A2EA8 /* EditExpandImageView.swift */; };
 		ACCAC5B52C70A6CB009A2EA8 /* EditMaskImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCAC5B42C70A6CB009A2EA8 /* EditMaskImageView.swift */; };
@@ -121,6 +122,7 @@
 		ACEC4D8E2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D8D2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift */; };
 		ACEC4D902C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D8F2C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift */; };
 		ACEC4D912C77CF1500928688 /* G_REPLICATE_SEEDREAM_3.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D902C77CF1500928688 /* G_REPLICATE_SEEDREAM_3.swift */; };
+		ACEC4D922C77D1D700928688 /* EditPromptImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D912C77D1D700928688 /* EditPromptImageView.swift */; };
 		ACEC4D932C77CF1600928688 /* G_REPLICATE_SEEDREAM_4.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D922C77CF1600928688 /* G_REPLICATE_SEEDREAM_4.swift */; };
 		ACEC4D952C77CF1700928688 /* G_REPLICATE_SEEDREAM_4_EDIT.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D942C77CF1700928688 /* G_REPLICATE_SEEDREAM_4_EDIT.swift */; };
 		ACEC4D962C77CF1800928688 /* G_REPLICATE_SEEDREAM_4_5.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D952C77CF1800928688 /* G_REPLICATE_SEEDREAM_4_5.swift */; };
@@ -128,7 +130,6 @@
 		ACEC4D992C77CF2000928688 /* ReplicateFileUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D982C77CF2000928688 /* ReplicateFileUploader.swift */; };
 		ACEC4D9B2C77CF2200928688 /* G_REPLICATE_DREAMINA_3_1.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D9A2C77CF2200928688 /* G_REPLICATE_DREAMINA_3_1.swift */; };
 		ACEC4D9C2C77CF2300928688 /* G_REPLICATE_SEEDANCE_1_PRO.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D9B2C77CF2300928688 /* G_REPLICATE_SEEDANCE_1_PRO.swift */; };
-		ACEC4D922C77D1D700928688 /* EditPromptImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEC4D912C77D1D700928688 /* EditPromptImageView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -223,6 +224,7 @@
 		ACAB78692C6B899500EED0E8 /* SectionKeyValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionKeyValueView.swift; sourceTree = "<group>"; };
 		ACAB786B2C6BB62E00EED0E8 /* GenerateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateView.swift; sourceTree = "<group>"; };
 		ACAB786F2C6BB6B700EED0E8 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		ACB3C1412EE1E912000260DF /* MobileQueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileQueueView.swift; sourceTree = "<group>"; };
 		ACBAB1702C7E073600769F79 /* CommonAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonAdapter.swift; sourceTree = "<group>"; };
 		ACCAC5B22C70A6C0009A2EA8 /* EditExpandImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditExpandImageView.swift; sourceTree = "<group>"; };
 		ACCAC5B42C70A6CB009A2EA8 /* EditMaskImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMaskImageView.swift; sourceTree = "<group>"; };
@@ -257,15 +259,15 @@
 		ACEC4D8D2C77CF0200928688 /* G_REPLICATE_FLUX_DEV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_FLUX_DEV.swift; sourceTree = "<group>"; };
 		ACEC4D8F2C77CF0F00928688 /* G_REPLICATE_FLUX_PRO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_FLUX_PRO.swift; sourceTree = "<group>"; };
 		ACEC4D902C77CF1500928688 /* G_REPLICATE_SEEDREAM_3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_SEEDREAM_3.swift; sourceTree = "<group>"; };
+		ACEC4D912C77D1D700928688 /* EditPromptImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPromptImageView.swift; sourceTree = "<group>"; };
 		ACEC4D922C77CF1600928688 /* G_REPLICATE_SEEDREAM_4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_SEEDREAM_4.swift; sourceTree = "<group>"; };
 		ACEC4D942C77CF1700928688 /* G_REPLICATE_SEEDREAM_4_EDIT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_SEEDREAM_4_EDIT.swift; sourceTree = "<group>"; };
 		ACEC4D952C77CF1800928688 /* G_REPLICATE_SEEDREAM_4_5.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_SEEDREAM_4_5.swift; sourceTree = "<group>"; };
+		ACEC4D952C77DFCA00928688 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		ACEC4D972C77CF1900928688 /* G_REPLICATE_SEEDREAM_4_5_EDIT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_SEEDREAM_4_5_EDIT.swift; sourceTree = "<group>"; };
 		ACEC4D982C77CF2000928688 /* ReplicateFileUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplicateFileUploader.swift; sourceTree = "<group>"; };
 		ACEC4D9A2C77CF2200928688 /* G_REPLICATE_DREAMINA_3_1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_DREAMINA_3_1.swift; sourceTree = "<group>"; };
 		ACEC4D9B2C77CF2300928688 /* G_REPLICATE_SEEDANCE_1_PRO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G_REPLICATE_SEEDANCE_1_PRO.swift; sourceTree = "<group>"; };
-		ACEC4D912C77D1D700928688 /* EditPromptImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPromptImageView.swift; sourceTree = "<group>"; };
-		ACEC4D952C77DFCA00928688 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -338,14 +340,6 @@
 			path = Illustrate;
 			sourceTree = "<group>";
 		};
-		ACEC4D9A2C77CF2100928688 /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				ACEC4D982C77CF2000928688 /* ReplicateFileUploader.swift */,
-			);
-			path = Utils;
-			sourceTree = "<group>";
-		};
 		AC2CE3152C69478400893DC2 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
@@ -385,6 +379,7 @@
 		AC2CE3272C69C7C000893DC2 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
+				ACB3C1412EE1E912000260DF /* MobileQueueView.swift */,
 				AC2CE3282C69C7DE00893DC2 /* MainView.swift */,
 				ACE44C342C78DDFA0008BB9D /* MobileView.swift */,
 				ACE44C362C78DF2E0008BB9D /* DesktopView.swift */,
@@ -745,6 +740,14 @@
 			path = Replicate;
 			sourceTree = "<group>";
 		};
+		ACEC4D9A2C77CF2100928688 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				ACEC4D982C77CF2000928688 /* ReplicateFileUploader.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -860,6 +863,7 @@
 				ACA0FF6C2C6E307300A8C1D5 /* MathAdapter.swift in Sources */,
 				ACCAC5CF2C71E997009A2EA8 /* G_STABILITY_IMAGE_TO_VIDEO.swift in Sources */,
 				AC2CE32C2C69C88600893DC2 /* GenerateImageView.swift in Sources */,
+				ACB3C1422EE1E912000260DF /* MobileQueueView.swift in Sources */,
 				ACA50E212EDF149900738A80 /* EraseMaskImageViewModel.swift in Sources */,
 				ACA50E222EDF149900738A80 /* GenerateImageViewModel.swift in Sources */,
 				ACA50E232EDF149900738A80 /* ImageToVideoViewModel.swift in Sources */,

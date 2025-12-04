@@ -10,6 +10,14 @@ struct SettingsView: View {
                     }
                 }
             }
+            
+            #if !os(macOS)
+            Section("Analytics") {
+                NavigationLink(value: EnumNavigationItem.historyUsageMetrics) {
+                    Label(labelForItem(.historyUsageMetrics), systemImage: iconForItem(.historyUsageMetrics))
+                }
+            }
+            #endif
         }
         .formStyle(.grouped)
         .navigationTitle(EnumNavigationSection.Settings.rawValue)
