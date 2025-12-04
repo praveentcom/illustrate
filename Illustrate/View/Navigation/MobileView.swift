@@ -3,6 +3,7 @@ import SwiftUI
 
 struct MobileView: View {
     @StateObject private var navigationManager = NavigationManager()
+    @StateObject private var queueManager = QueueManager.shared
     @State private var homeNavigationPath = NavigationPath()
     @State private var generationsNavigationPath = NavigationPath()
     @State private var historyNavigationPath = NavigationPath()
@@ -62,5 +63,6 @@ struct MobileView: View {
             }
         }
         .environmentObject(navigationManager)
+        .environmentObject(queueManager)
     }
 }
